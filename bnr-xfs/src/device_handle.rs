@@ -1,7 +1,7 @@
 use time as datetime;
 
 use crate::capabilities::Capabilities;
-use crate::cash_unit::CashUnit;
+use crate::cash_unit::{CashUnit, LogicalCashUnitList, PhysicalCashUnitList};
 use crate::currency::CurrencyCode;
 use crate::status::CdrStatus;
 use crate::{Error, Result};
@@ -261,6 +261,25 @@ impl DeviceHandle {
     /// [LogicalCashUnit]s on the BNR device.
     pub fn query_cash_unit(&self) -> Result<CashUnit> {
         self.query_cash_unit_inner()
+    }
+
+    /// Updates the BNR’s cash unit. This function is used to change counts and thresholds of the BNR
+    /// [CashUnit]s.
+    ///
+    /// Those settings are persistent over power cycles.
+    ///
+    /// Params:
+    ///
+    /// - `transport_count`: number of bills in the transport system.
+    /// - `lcu_list`: [LogicalCashUnitList] for configuring [LogicalCashUnit]s.
+    /// - `pcu_list`: [PhysicalCashUnitList] for configuring [PhysicalCashUnit]s.
+    pub fn update_cash_unit(
+        &self,
+        transport_count: u32,
+        lcu_list: &LogicalCashUnitList,
+        pcu_list: &PhysicalCashUnitList,
+    ) -> Result<()> {
+        self.update_cash_unit_inner(transport_count, lcu_list, pcu_list)
     }
 
     /// Gets a reference to the [UsbDeviceHandle].

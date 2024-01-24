@@ -8,6 +8,7 @@ use datetime::format_description::well_known::{
 use time as datetime;
 
 use super::*;
+use crate::cash_unit::TransportCount;
 use crate::xfs::{
     self,
     method_call::{XfsMethodCall, XfsMethodName},
@@ -506,6 +507,30 @@ impl DeviceHandle {
         Self::write_call(usb, &call, timeout)?;
 
         Self::read_response(usb, call.name()?, timeout)?.try_into()
+    }
+
+    pub(crate) fn update_cash_unit_inner(
+        &self,
+        transport_count: u32,
+        lcu_list: &LogicalCashUnitList,
+        pcu_list: &PhysicalCashUnitList,
+    ) -> Result<()> {
+        let call = XfsMethodCall::new()
+            .with_name(XfsMethodName::UpdateCashUnit)
+            .with_params(XfsParams::create([
+                XfsParam::create(TransportCount::create(transport_count).into()),
+                XfsParam::create(lcu_list.into()),
+                XfsParam::create(pcu_list.into()),
+            ]));
+
+        let timeout = std::time::Duration::from_millis(50);
+        let usb = self.usb();
+
+        Self::write_call(usb, &call, timeout)?;
+
+        Self::read_response(usb, call.name()?, timeout)?;
+
+        Ok(())
     }
 
     /// Writes an [XfsMethodCall] to the BNR device.

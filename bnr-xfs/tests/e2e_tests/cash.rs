@@ -216,3 +216,35 @@ fn test_query_cash_unit() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+fn test_update_cash_unit() -> Result<()> {
+    let _lock = common::init();
+
+    let handle = DeviceHandle::open(None, None, None)?;
+
+    handle.close()?;
+
+    let date = handle.get_date_time()?;
+    if date.year() == 2001 {
+        handle.set_current_date_time()?;
+    }
+
+    let cu = handle.query_cash_unit()?;
+
+    log::debug!("CashUnit: {cu}");
+
+    // Not realistic, this is essentially a no-op.
+    // We're just updating with the same information already on the device.
+    //
+    // This is only used to exercise the API.
+    handle.update_cash_unit(
+        cu.transport_count(),
+        cu.logical_cash_unit_list(),
+        cu.physical_cash_unit_list(),
+    )?;
+
+    handle.reset()?;
+
+    Ok(())
+}
