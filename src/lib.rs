@@ -55,8 +55,30 @@ pub(crate) fn lock_handle() -> Result<MutexGuard<'static, Option<DeviceHandle>>>
 
 /// Locks the global [DeviceHandle] instance, and calls the provided callback.
 pub fn with_handle<T>(f: impl Fn(&DeviceHandle) -> Result<T>) -> Result<T> {
-    let handle = lock_handle()?;
-    f(handle
-        .as_ref()
-        .ok_or(Error::Usb("Uninitialized device handle".into()))?)
+    let mut handle = lock_handle()?;
+    let uninit_msg = "Uninitialized device handle";
+
+    match f(handle.as_ref().ok_or(Error::Usb(uninit_msg.into()))?) {
+        Ok(res) => Ok(res),
+        Err(err) => {
+            let err_msg = format!("{err}");
+
+            if err_msg.contains("No such device") {
+                log::info!("Reconnecting to BNR device...");
+
+                if let Err(err) = handle
+                    .as_mut()
+                    .ok_or(Error::Usb(uninit_msg.into()))?
+                    .reconnect()
+                {
+                    log::warn!("{err}");
+                    Err(err)
+                } else {
+                    Err(Error::Usb("Device reconnected successfully".into()))
+                }
+            } else {
+                Err(err)
+            }
+        }
+    }
 }
