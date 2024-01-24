@@ -127,6 +127,11 @@ impl DeviceHandle {
         self.get_status_inner()
     }
 
+    /// "Parks" the device for maintenance, disabling all modules.
+    pub fn park(&self) -> Result<()> {
+        self.park_inner()
+    }
+
     /// Gets a reference to the [UsbDeviceHandle].
     pub const fn usb(&self) -> &UsbDeviceHandle {
         &self.usb

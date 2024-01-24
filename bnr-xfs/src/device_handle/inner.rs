@@ -221,6 +221,19 @@ impl DeviceHandle {
         Self::read_response(usb, call.name()?, timeout)
     }
 
+    pub(crate) fn park_inner(&self) -> Result<()> {
+        let call = XfsMethodCall::new().with_name(XfsMethodName::Park);
+
+        let timeout = std::time::Duration::from_millis(50);
+        let usb = self.usb();
+
+        Self::write_call(usb, &call, timeout)?;
+
+        let _res = Self::read_response(usb, call.name()?, timeout)?;
+
+        Ok(())
+    }
+
     /// Writes an [XfsMethodCall] to the BNR device.
     pub fn write_call(
         usb: &UsbDeviceHandle,
