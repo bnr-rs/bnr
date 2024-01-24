@@ -23,3 +23,6 @@ features = ["derive"]
 [dependencies.bnr-sys]
 path = "./bnr-sys"
 version = "0.1"
+
+[features]
+e2e-tests = []
