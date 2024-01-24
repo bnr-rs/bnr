@@ -304,6 +304,41 @@ impl DeviceHandle {
         self.denominate_inner(request)
     }
 
+    /// Dispenses the amount requested by value or by bill list.
+    ///
+    /// From the MEI/CPI documentation:
+    ///
+    /// The BNR will make a bundle of notes and wait for the bnr_Present() command to give it to the customer.
+    ///
+    /// Three methods are possible:
+    ///
+    /// - `DispenseRequest::mix_number` is #XFS_C_CDR_MXA_MIN_BILLS: The BNR chooses the banknotes to be distributed in order to obtain the total amount using the minimum number of banknotes. Two parameters must be correctly set:
+    ///   - `DispenseRequest::denomination.amount` has to be expressed in MDUs
+    ///   - `DispenseRequest::currency.currency_code`
+    ///
+    /// - `DispenseRequest::mix_number` is #BNRXFS_C_CDR_MXA_OPTIMUM_CHANGE: The BNR chooses the banknotes to be distributed in order to obtain the total amount in a way that slows down cashbox filling. As long as the low denomination Recyclers are not near to full, change is determined like with the MinBills algorithm. But when a Recycler becomes nearly full (5/6 of Full threshold), this algorithm will try to put more of this denomination in the change so that the Recycler doesn’t become full and this denomination doesn’t start to be cashed. Two parameters must be correctly set:
+    ///   - `DispenseRequest::denomination.amount` has to be expressed in MDUs
+    ///   - `DispenseRequest::currency.currency_code`
+    ///
+    /// - `DispenseRequest::mix_number` is #XFS_C_CDR_MIX_DENOM: The user chooses through a list of Logical Cash Units the banknotes to be distributed by the BNR in order to obtain the total amount. The following parameters must be correctly set:
+    ///   - `DispenseRequest::denomination::size` gives the size of the items array
+    ///       for each item of [DispenseRequest::denomination::items] from 0 to `DispenseRequest::denomination::size - 1`:
+    ///      - `DispenseRequest::denomination::items[item]::unit` contains the number of a LCU from where banknotes must be distributed.
+    ///      - `DispenseRequest::denomination::items[item]::count` gives the number of banknotes to distribute from the LCU.
+    ///
+    /// - `DispenseRequest::currency.currency_code` is a string in the C library.
+    ///   - See [CurrencyCode](crate::currency::CurrencyCode) for a full list of the existing ISO currency codes, also: <http://www.iso.org/iso/home/standards/currency_codes.htm>
+    ///   - conversion from the enum to a string is handled internally, the user does not need to worry about this.
+    ///
+    /// Params:
+    ///
+    /// - `request`: Amount or bill list requested for dispense.
+    ///
+    /// Returns `Ok` If function call is successful. Otherwise, return is strictly negative and its absolute value contains the error code.
+    pub fn dispense(&self, request: &DispenseRequest) -> Result<()> {
+        self.dispense_inner(request)
+    }
+
     /// Gets a reference to the [UsbDeviceHandle].
     pub const fn usb(&self) -> &UsbDeviceHandle {
         &self.usb
