@@ -22,6 +22,11 @@ impl XfsParams {
     pub const fn create(params: Vec<XfsParam>) -> Self {
         Self { params }
     }
+
+    /// Gets a reference to the list of [XfsParam]s.
+    pub fn params(&self) -> &[XfsParam] {
+        self.params.as_ref()
+    }
 }
 
 impl fmt::Display for XfsParams {
@@ -57,6 +62,8 @@ impl XfsParam {
         Self::Param(XfsValues::create(value))
     }
 }
+
+inner_enum!(XfsParam, Param, XfsValues);
 
 impl fmt::Display for XfsParam {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

@@ -114,6 +114,22 @@ impl DeviceHandle {
         }
     }
 
+    pub(crate) fn get_date_time_inner(&self) -> Result<String> {
+        let call = XfsMethodCall::new().with_name(XfsMethodName::GetDateTime);
+        let timeout = time::Duration::from_millis(50);
+        let usb = self.usb();
+
+        Self::write_call(usb, &call, timeout)?;
+
+        let res = Self::read_response(usb, call.name()?, timeout)?;
+        let params = res.into_params()?;
+
+        match params.params().iter().find(|p| p.is_param()) {
+            Some(p) => Ok(p.as_param()?.as_value()?.as_date_time()?.into()),
+            None => Err(Error::Xfs("expected DateTime param, none found".into())),
+        }
+    }
+
     /// Writes an [XfsMethodCall] to the BNR device.
     pub fn write_call(
         usb: &UsbDeviceHandle,

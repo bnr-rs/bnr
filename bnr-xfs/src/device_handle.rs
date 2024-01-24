@@ -101,6 +101,11 @@ impl DeviceHandle {
         self.reboot_inner()
     }
 
+    /// Gets the ISO 8601 formatted date-time from the device. 
+    pub fn get_date_time(&self) -> Result<String> {
+        self.get_date_time_inner()
+    }
+
     /// Gets a reference to the [UsbDeviceHandle].
     pub const fn usb(&self) -> &UsbDeviceHandle {
         &self.usb

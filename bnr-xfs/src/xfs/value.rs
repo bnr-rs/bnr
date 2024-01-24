@@ -49,6 +49,15 @@ impl XfsValue {
 
 impl_default!(XfsValue);
 
+inner_enum!(XfsValue, Int, i64);
+inner_enum!(XfsValue, Int4, i32);
+inner_enum!(XfsValue, Base64, String);
+inner_enum!(XfsValue, DateTime, String);
+inner_enum!(XfsValue, Boolean, u8);
+inner_enum!(XfsValue, String, String);
+inner_enum!(XfsValue, Struct, XfsStruct);
+inner_enum!(XfsValue, Array, XfsArray);
+
 impl fmt::Display for XfsValue {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{{")?;
@@ -88,6 +97,8 @@ impl XfsValues {
         Self::Value(value)
     }
 }
+
+inner_enum!(XfsValues, Value, XfsValue);
 
 impl From<XfsValue> for XfsValues {
     fn from(val: XfsValue) -> Self {
