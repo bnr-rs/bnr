@@ -2,95 +2,36 @@
 
 use crate::{check_res, Result};
 
-/// Status of a CDR stacker.
-#[repr(C)]
-#[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
-pub struct PositionStatus {
-    pub position: u32,
-    pub content_status: u32,
-    pub shutter_status: u32,
-}
+mod content;
+mod device;
+mod dispenser;
+mod hardware;
+mod inter_stacker;
+mod position;
+mod safe_door;
+mod shutter;
+mod transport;
 
-impl PositionStatus {
-    pub const fn new() -> Self {
-        Self {
-            position: 0,
-            content_status: 0,
-            shutter_status: 0,
-        }
-    }
-}
-
-impl From<PositionStatus> for bnr_sys::PositionStatus {
-    fn from(val: PositionStatus) -> Self {
-        Self {
-            position: val.position,
-            contentStatus: val.content_status,
-            shutterStatus: val.shutter_status,
-        }
-    }
-}
-
-impl From<bnr_sys::PositionStatus> for PositionStatus {
-    fn from(val: bnr_sys::PositionStatus) -> Self {
-        Self {
-            position: val.position,
-            content_status: val.contentStatus,
-            shutter_status: val.shutterStatus,
-        }
-    }
-}
-
-/// List of CDR stacker status by position.
-#[repr(C)]
-#[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
-pub struct CdrPositionStatusList {
-    pub max_size: u32,
-    pub size: u32,
-    pub items: [PositionStatus; 2],
-}
-
-impl CdrPositionStatusList {
-    /// Creates a new [XfsCdrPositionStatusList].
-    pub const fn new() -> Self {
-        Self {
-            max_size: 2,
-            size: 0,
-            items: [PositionStatus::new(); 2],
-        }
-    }
-}
-
-impl From<CdrPositionStatusList> for bnr_sys::XfsCdrPositionStatusList {
-    fn from(val: CdrPositionStatusList) -> Self {
-        Self {
-            maxSize: val.max_size,
-            size: val.size,
-            items: [val.items[0].into(), val.items[1].into()],
-        }
-    }
-}
-
-impl From<bnr_sys::XfsCdrPositionStatusList> for CdrPositionStatusList {
-    fn from(val: bnr_sys::XfsCdrPositionStatusList) -> Self {
-        Self {
-            max_size: val.maxSize,
-            size: val.size,
-            items: [val.items[0].into(), val.items[1].into()],
-        }
-    }
-}
+pub use content::*;
+pub use device::*;
+pub use dispenser::*;
+pub use hardware::*;
+pub use inter_stacker::*;
+pub use position::*;
+pub use safe_door::*;
+pub use shutter::*;
+pub use transport::*;
 
 /// Represents the CDR status returned by the [`bnr_GetStatus`](bnr_sys::bnr_GetStatus) call.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
 pub struct CdrStatus {
-    pub device_status: u32,
-    pub dispenser_status: u32,
-    pub intermediate_stacker_status: u32,
-    pub safe_door_status: u32,
-    pub shutter_status: u32,
-    pub transport_status: u32,
+    pub device_status: DeviceStatus,
+    pub dispenser_status: DispenserStatus,
+    pub intermediate_stacker_status: InterStackerStatus,
+    pub safe_door_status: SafeDoorStatus,
+    pub shutter_status: ShutterStatus,
+    pub transport_status: TransportStatus,
     pub position_status_list: CdrPositionStatusList,
 }
 
@@ -98,12 +39,12 @@ impl CdrStatus {
     /// Creates a new [CdrStatus].
     pub const fn new() -> Self {
         Self {
-            device_status: 0,
-            dispenser_status: 0,
-            intermediate_stacker_status: 0,
-            safe_door_status: 0,
-            shutter_status: 0,
-            transport_status: 0,
+            device_status: DeviceStatus::new(),
+            dispenser_status: DispenserStatus::new(),
+            intermediate_stacker_status: InterStackerStatus::new(),
+            safe_door_status: SafeDoorStatus::new(),
+            shutter_status: ShutterStatus::new(),
+            transport_status: TransportStatus::new(),
             position_status_list: CdrPositionStatusList::new(),
         }
     }
@@ -122,12 +63,12 @@ impl CdrStatus {
 impl From<CdrStatus> for bnr_sys::XfsCdrStatus {
     fn from(val: CdrStatus) -> Self {
         Self {
-            deviceStatus: val.device_status,
-            dispenserStatus: val.dispenser_status,
-            intermediateStackerStatus: val.intermediate_stacker_status,
-            safeDoorStatus: val.safe_door_status,
-            shutterStatus: val.shutter_status,
-            transportStatus: val.transport_status,
+            deviceStatus: val.device_status.into(),
+            dispenserStatus: val.dispenser_status.into(),
+            intermediateStackerStatus: val.intermediate_stacker_status.into(),
+            safeDoorStatus: val.safe_door_status.into(),
+            shutterStatus: val.shutter_status.into(),
+            transportStatus: val.transport_status.into(),
             positionStatusList: val.position_status_list.into(),
         }
     }
@@ -136,14 +77,29 @@ impl From<CdrStatus> for bnr_sys::XfsCdrStatus {
 impl From<bnr_sys::XfsCdrStatus> for CdrStatus {
     fn from(val: bnr_sys::XfsCdrStatus) -> Self {
         Self {
-            device_status: val.deviceStatus,
-            dispenser_status: val.dispenserStatus,
-            intermediate_stacker_status: val.intermediateStackerStatus,
-            safe_door_status: val.safeDoorStatus,
-            shutter_status: val.shutterStatus,
-            transport_status: val.transportStatus,
+            device_status: val.deviceStatus.into(),
+            dispenser_status: val.dispenserStatus.into(),
+            intermediate_stacker_status: val.intermediateStackerStatus.into(),
+            safe_door_status: val.safeDoorStatus.into(),
+            shutter_status: val.shutterStatus.into(),
+            transport_status: val.transportStatus.into(),
             position_status_list: val.positionStatusList.into(),
         }
+    }
+}
+
+impl From<CdrStatus> for HardwareStatus {
+    fn from(val: CdrStatus) -> Self {
+        [
+            HardwareStatus::from(val.device_status),
+            HardwareStatus::from(val.dispenser_status),
+            HardwareStatus::from(val.intermediate_stacker_status),
+            HardwareStatus::from(val.safe_door_status),
+            HardwareStatus::from(val.shutter_status),
+            HardwareStatus::from(val.transport_status),
+            HardwareStatus::from(val.position_status_list),
+        ]
+        .into()
     }
 }
 
