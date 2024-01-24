@@ -2,13 +2,13 @@
 
 use std::fmt;
 
+pub use currency_iso4217::Currency as CurrencyCode;
+
 mod cash_type;
-mod code;
 mod denomination;
 mod mix;
 
 pub use cash_type::*;
-pub use code::*;
 pub use denomination::*;
 pub use mix::*;
 
