@@ -2,7 +2,7 @@
 
 use std::fmt;
 
-use crate::{check_res, Result, CB, OB};
+use crate::{check_res, Result};
 
 mod content;
 mod device;
@@ -107,20 +107,19 @@ impl From<CdrStatus> for HardwareStatus {
 
 impl fmt::Display for CdrStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "\"status\": {OB}")?;
-        write!(f, "\"device_status\": \"{}\", ", self.device_status)?;
-        write!(f, "\"dispenser_status\": \"{}\", ", self.dispenser_status)?;
+        write!(f, r#"{{"device_status": "{}","#, self.device_status)?;
+        write!(f, r#" "dispenser_status": "{}","#, self.dispenser_status)?;
         write!(
             f,
-            "\"intermediate_stacker_status\": \"{}\", ",
+            r#" "intermediate_stacker_status": "{}","#,
             self.intermediate_stacker_status
         )?;
-        write!(f, "\"safe_door_status\": \"{}\", ", self.safe_door_status)?;
-        write!(f, "\"shutter_status\": \"{}\", ", self.shutter_status)?;
-        write!(f, "\"transport_status\": \"{}\", ", self.transport_status)?;
+        write!(f, r#" "safe_door_status": "{}","#, self.safe_door_status)?;
+        write!(f, r#" "shutter_status": "{}","#, self.shutter_status)?;
+        write!(f, r#" "transport_status": "{}","#, self.transport_status)?;
         write!(
             f,
-            "\"position_status_list\": {}{CB}",
+            r#" "position_status_list": {}}}"#,
             self.position_status_list
         )
     }

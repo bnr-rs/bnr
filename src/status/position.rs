@@ -1,7 +1,5 @@
 use std::fmt;
 
-use crate::{CB, OB};
-
 use super::{ContentStatus, HardwareStatus, ShutterStatus};
 
 /// Status of a CDR stacker.
@@ -55,10 +53,9 @@ impl From<PositionStatus> for HardwareStatus {
 
 impl fmt::Display for PositionStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "\"position_status\": {OB}")?;
-        write!(f, "\"position\": \"{}\", ", self.position)?;
-        write!(f, "\"content_status\": \"{}\", ", self.content_status)?;
-        write!(f, "\"shutter_status\": \"{}\"{CB}", self.shutter_status)
+        write!(f, r#"{{"position": "{}", "#, self.position)?;
+        write!(f, r#""content_status": "{}", "#, self.content_status)?;
+        write!(f, r#""shutter_status": "{}"}}"#, self.shutter_status)
     }
 }
 
@@ -110,13 +107,12 @@ impl From<CdrPositionStatusList> for HardwareStatus {
 
 impl fmt::Display for CdrPositionStatusList {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "\"cdr_position_status_list\": {OB}")?;
         write!(
             f,
-            "\"max_size\": {}, \"size\": {}",
+            r#""{{"max_size": {}, "size": {}"#,
             self.max_size, self.size
         )?;
-        write!(f, "\"items\": [")?;
+        write!(f, r#", "items": ["#)?;
 
         let items_len = self.items.len();
         for (i, item) in self.items.iter().enumerate() {
@@ -127,7 +123,7 @@ impl fmt::Display for CdrPositionStatusList {
             }
         }
 
-        write!(f, "]{CB}")
+        write!(f, "]}}")
     }
 }
 

@@ -1,7 +1,5 @@
 use std::fmt;
 
-use crate::{CB, OB};
-
 pub const DENOM_ITEM_LEN: usize = 20;
 
 /// Represents the logical cash unit in the CDR.
@@ -213,7 +211,7 @@ impl fmt::Display for Denomination {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "\"denomination\": {OB}\"size\": {}, \"amount\": {}, \"cashbox\": {}, \"items\": [",
+            r#""denomination": {{"size": {}, "amount": {}, "cashbox": {}, "items": ["#,
             self.size, self.amount, self.cashbox
         )?;
 
@@ -226,7 +224,7 @@ impl fmt::Display for Denomination {
             }
         }
 
-        write!(f, "]{CB}")
+        write!(f, "]}}")
     }
 }
 
@@ -284,7 +282,7 @@ impl fmt::Display for DenominationItem {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "\"denomination_item\": {OB}\"unit\": \"{}\", \"count\": {}{CB}",
+            r#""denomination_item": {{"unit": "{}", "count": {}}}"#,
             self.unit, self.count
         )
     }

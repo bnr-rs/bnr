@@ -2,8 +2,6 @@
 
 use std::fmt;
 
-use crate::{CB, OB};
-
 mod code;
 mod denomination;
 
@@ -75,7 +73,7 @@ impl fmt::Display for Currency {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "\"currency\": {OB}\"currency_code\": \"{}\", \"exponent\": {}{CB}",
+            r#""currency": {{"currency_code": "{}", "exponent": {}}}"#,
             self.currency_code, self.exponent
         )
     }
