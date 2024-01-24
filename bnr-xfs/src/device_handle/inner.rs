@@ -11,7 +11,9 @@ use datetime::format_description::well_known::{
 use time as datetime;
 
 use super::*;
-use crate::callback_response::{CallbackIntermediateResponse, CallbackOperationResponse, CallbackStatusResponse};
+use crate::callback_response::{
+    CallbackIntermediateResponse, CallbackOperationResponse, CallbackStatusResponse,
+};
 use crate::cash_unit::TransportCount;
 use crate::currency::{Currency, Denomination};
 use crate::xfs::{
@@ -192,7 +194,9 @@ impl DeviceHandle {
                                 op_complete(id, op_id.into(), ret, stat, &mut ());
                             }
 
-                            Some(XfsMethodResponse::new_params([XfsParam::create(CallbackOperationResponse::create(id, op_id.into()).into())]))
+                            Some(XfsMethodResponse::new_params([XfsParam::create(
+                                CallbackOperationResponse::create(id, op_id.into()).into(),
+                            )]))
                         }
                         Ok(XfsMethodName::IntermediateOccurred) => {
                             let mut params_iter =
@@ -242,7 +246,9 @@ impl DeviceHandle {
                                 intermediate_occurred(id, op_id.into(), ret, &mut ());
                             }
 
-                            Some(XfsMethodResponse::new_params([XfsParam::create(CallbackIntermediateResponse::create(id, op_id.into()).into())]))
+                            Some(XfsMethodResponse::new_params([XfsParam::create(
+                                CallbackIntermediateResponse::create(id, op_id.into()).into(),
+                            )]))
                         }
                         Ok(XfsMethodName::StatusOccurred) => {
                             let mut params_iter =
@@ -287,7 +293,9 @@ impl DeviceHandle {
                                 status_occurred(id, op_id.into(), ret, &mut ());
                             }
 
-                            Some(XfsMethodResponse::new_params([XfsParam::create(CallbackStatusResponse::create(id, ret).into())]))
+                            Some(XfsMethodResponse::new_params([XfsParam::create(
+                                CallbackStatusResponse::create(id, ret).into(),
+                            )]))
                         }
                         Err(_err) if msg.name_str().is_empty() => {
                             log::trace!("No callback call");
