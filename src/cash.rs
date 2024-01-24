@@ -108,6 +108,36 @@ pub fn query_cash_unit() -> Result<CashUnit> {
     Ok(cu.into())
 }
 
+/// Configures the BNR’s cash unit. This function is used to add or remove Logical and Physical Cash Unit in the BNR.
+///
+/// Those settings are persistent over power cycles.
+///
+/// Params:
+///
+/// - `transport_count`: number of bills in the transport system.
+/// - `lcu_list`: [LogicalCashUnitList] for configuring [LogicalCashUnit]s.
+/// - `pcu_list`: [PhysicalCashUnitList] for configuring [PhysicalCashUnit]s.
+pub fn configure_cash_unit(
+    transport_count: u32,
+    lcu_list: &LogicalCashUnitList,
+    pcu_list: &PhysicalCashUnitList,
+) -> Result<(LogicalCashUnitList, PhysicalCashUnitList)> {
+    let mut lcu = bnr_sys::LogicalCashUnitList::from(lcu_list);
+    let mut pcu = bnr_sys::PhysicalCashUnitList::from(pcu_list);
+
+    check_res(
+        unsafe {
+            bnr_sys::bnr_ConfigureCashUnit(transport_count, &mut lcu as *mut _, &mut pcu as *mut _)
+        },
+        "configure_cash_unit",
+    )?;
+
+    Ok((
+        LogicalCashUnitList::from(lcu),
+        PhysicalCashUnitList::from(pcu),
+    ))
+}
+
 /// BNR_CASH_OPERATIONS Determines if the amount requested by value or by bill list, is available for dispense.
 ///
 /// From the MEI/CPI documentation:
