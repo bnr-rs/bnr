@@ -125,7 +125,7 @@ pub fn configure_cash_unit(
     let mut lcu = bnr_sys::LogicalCashUnitList::from(lcu_list);
     let mut pcu = bnr_sys::PhysicalCashUnitList::from(pcu_list);
 
-    set_pcu_for_lcu(&mut lcu, &lcu_list, &mut pcu);
+    set_pcu_for_lcu(&mut lcu, lcu_list, &mut pcu);
 
     check_res(
         unsafe {
@@ -157,7 +157,7 @@ pub fn update_cash_unit(
     let mut lcu = bnr_sys::LogicalCashUnitList::from(lcu_list);
     let mut pcu = bnr_sys::PhysicalCashUnitList::from(pcu_list);
 
-    set_pcu_for_lcu(&mut lcu, &lcu_list, &mut pcu);
+    set_pcu_for_lcu(&mut lcu, lcu_list, &mut pcu);
 
     check_res(
         unsafe {
@@ -165,6 +165,61 @@ pub fn update_cash_unit(
         },
         "update_cash_unit",
     )
+}
+
+/// Resets the [LogicalCashUnit]s and [PhysicalCashUnit]s `count` to zero.
+///
+/// Useful for resetting device counters after physically removing notes from a device.
+pub fn reset_cash_unit_counts() -> Result<()> {
+    let cu = query_cash_unit()?;
+
+    let lcu_keep: Vec<LogicalCashUnit> = cu
+        .logical_cash_unit_list()
+        .items()
+        .iter()
+        .filter(|l| l.count() != 0)
+        .map(|l| l.with_count(0))
+        .collect();
+
+    let mut lcu_keep_list = [LogicalCashUnit::new(); LCU_LIST_LEN];
+
+    let lcu_keep_len = lcu_keep.len();
+
+    lcu_keep_list[..lcu_keep_len]
+        .iter_mut()
+        .zip(lcu_keep.iter())
+        .for_each(|(dst, src)| {
+            *dst = *src;
+        });
+
+    let lcu = LogicalCashUnitList::new()
+        .with_size(lcu_keep_len as u32)
+        .with_items(lcu_keep_list);
+
+    let pcu_keep: Vec<PhysicalCashUnit> = cu
+        .physical_cash_unit_list()
+        .items()
+        .iter()
+        .filter(|p| p.count() != 0)
+        .map(|p| p.with_count(0))
+        .collect();
+
+    let mut pcu_keep_list = [PhysicalCashUnit::new(); PCU_LIST_LEN];
+
+    let pcu_keep_len = pcu_keep.len();
+
+    pcu_keep_list[..pcu_keep_len]
+        .iter_mut()
+        .zip(pcu_keep.iter())
+        .for_each(|(dst, src)| {
+            *dst = *src;
+        });
+
+    let pcu = PhysicalCashUnitList::new()
+        .with_size(pcu_keep_len as u32)
+        .with_items(pcu_keep_list);
+
+    update_cash_unit(0, &lcu, &pcu)
 }
 
 /// BNR_CASH_OPERATIONS Determines if the amount requested by value or by bill list, is available for dispense.

@@ -86,10 +86,11 @@ pub(crate) fn set_pcu_for_lcu(
 
     for lcu in lcu_sys.items[..lcu_sys.size as usize].iter_mut() {
         if let Some(pcu) = pcu_for_lcu_sys(lcu.number, lcu_list, pcu_list) {
-            if !seen.contains(&(lcu.number as u32)) {
-                seen.push(lcu.number);
+            let lcu_num = lcu.number;
+            if !seen.contains(&lcu_num) {
+                seen.push(lcu_num);
             } else {
-                dup.push(lcu.number);
+                dup.push(lcu_num);
             }
 
             lcu.physicalCashUnit = pcu as *mut _;
@@ -147,6 +148,11 @@ impl CashUnit {
     /// Gets a reference to the [LogicalCashUnitList].
     pub const fn logical_cash_unit_list(&self) -> &LogicalCashUnitList {
         &self.logical_cash_unit_list
+    }
+
+    /// Gets a mutable reference to the [LogicalCashUnitList].
+    pub fn logical_cash_unit_list_mut(&mut self) -> &mut LogicalCashUnitList {
+        &mut self.logical_cash_unit_list
     }
 
     /// Sets the [LogicalCashUnitList].
@@ -241,6 +247,22 @@ impl LogicalCashUnitList {
         }
     }
 
+    /// Gets the size of the items list.
+    pub const fn size(&self) -> u32 {
+        self.size
+    }
+
+    /// Sets the size of the items list.
+    pub fn set_size(&mut self, size: u32) {
+        self.size = size;
+    }
+
+    /// Builder function that sets the size of the items list.
+    pub fn with_size(mut self, size: u32) -> Self {
+        self.set_size(size);
+        self
+    }
+
     /// Gets a list of the [LogicalCashUnit]s.
     pub fn items(&self) -> &[LogicalCashUnit] {
         let size = self.size as usize;
@@ -259,6 +281,17 @@ impl LogicalCashUnitList {
         } else {
             self.items.as_mut()
         }
+    }
+
+    /// Sets a list of [LogicalCashUnit]s.
+    pub fn set_items(&mut self, items: [LogicalCashUnit; LCU_LIST_LEN]) {
+        self.items = items;
+    }
+
+    /// Builder function that sets a list of [LogicalCashUnit]s.
+    pub fn with_items(mut self, items: [LogicalCashUnit; LCU_LIST_LEN]) -> Self {
+        self.set_items(items);
+        self
     }
 }
 
@@ -304,55 +337,17 @@ impl From<bnr_sys::LogicalCashUnitList> for LogicalCashUnitList {
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
 pub struct LogicalCashUnit {
-    /// Defines the main type of cash used by this cash unit.
-    pub cash_type: CashType,
-    /// Defines the additional types of cash used by this cash unit.
-    pub secondary_cash_types: CashTypeList,
-    /// Logical number of cash unit.
-    ///
-    /// Unique number of the cash unit. This number is assigned (or reassigned) on bnr_Reset() and identifies the unit
-    /// along the time; therefore, it can be used to track unit changes, or uniquely reference units in method calls
-    /// ([DenominationItem::unit](DenominationItem::unit) property is an example).
-    pub number: u32,
-    ///
-    /// Specifies, if cash unit can dispense, deposit cash or both.
-    ///
-    /// One of the following values:
-    /// - [LCU::NA]
-    /// - [LCU::Deposit]
-    /// - [LCU::Dispense]
-    /// - [LCU::Recycle]
-    pub cu_kind: LCU,
-    /// Type of cash unit.
-    ///
-    /// One of the following values:
-    /// - [LCU::NA]
-    /// - [LCU::BillCassette]
-    /// - [LCU::RejectCassette]
-    pub cu_type: LCU,
-    /// See [UnitId].
-    pub unit_id: UnitId,
-    /// For customer purpose only; this value is initialized by the bnr_ConfigureCashUnit() and bnr_UpdateCashUnit() methods and not changed by the BNR.
-    /// - Type: User data.
-    /// - Max: 65535.
-    /// - Access: Read-Write (write through bnr_ConfigureCashUnit() and bnr_UpdateCashUnit() methods).
-    pub initial_count: u32,
-    /// Actual count of bills in the logical cash unit.
-    ///
-    /// - Type: One Shot.
-    /// - Max: 65535.
-    /// - Access:
-    ///   - Bundler and Recycler Physical Cash Units - Read-Only
-    ///   - Cashbox and Loader Physical Cash Units - Read-Write (write through bnr_ConfigureCashUnit() and bnr_UpdateCashUnit() methods).
-    pub count: u32,
-    /// Cash unit status. Correspond to [PhysicalCashUnit::status].
-    pub status: u32,
-    /// Extended counters for [LCU::Deposit] and [LCU::Dispense] cash unit types.
-    pub extended_counters: ExtendedCounters,
-    /// ID of the [PhysicalCashUnit] backing this [LogicalCashUnit].
-    ///
-    /// The C library uses a pointer here, but that is wildly unsafe. Use the ID instead.
-    pub physical_cash_unit: UnitId,
+    cash_type: CashType,
+    secondary_cash_types: CashTypeList,
+    number: u32,
+    cu_kind: LCU,
+    cu_type: LCU,
+    unit_id: UnitId,
+    initial_count: u32,
+    count: u32,
+    status: u32,
+    extended_counters: ExtendedCounters,
+    physical_cash_unit: UnitId,
 }
 
 impl LogicalCashUnit {
@@ -371,6 +366,248 @@ impl LogicalCashUnit {
             extended_counters: ExtendedCounters::new(),
             physical_cash_unit: [0; UNIT_ID_LEN],
         }
+    }
+
+    /// Gets the [CashType].
+    ///
+    /// Defines the main type of cash used by this cash unit.
+    pub const fn cash_type(&self) -> CashType {
+        self.cash_type
+    }
+
+    /// Sets the [CashType].
+    pub fn set_cash_type(&mut self, cash_type: CashType) {
+        self.cash_type = cash_type;
+    }
+
+    /// Builder function that sets the [CashType].
+    pub fn with_cash_type(mut self, cash_type: CashType) -> Self {
+        self.set_cash_type(cash_type);
+        self
+    }
+
+    /// Gets the secondary [CashTypeList].
+    ///
+    /// Defines the additional types of cash used by this cash unit.
+    pub const fn secondary_cash_types(&self) -> &CashTypeList {
+        &self.secondary_cash_types
+    }
+
+    /// Sets the secondary [CashTypeList].
+    pub fn set_secondary_cash_types(&mut self, secondary_cash_types: CashTypeList) {
+        self.secondary_cash_types = secondary_cash_types;
+    }
+
+    /// Builder function that sets the secondary [CashType].
+    pub fn with_secondary_cash_types(mut self, secondary_cash_types: CashTypeList) -> Self {
+        self.set_secondary_cash_types(secondary_cash_types);
+        self
+    }
+
+    /// Gets the logical number of cash unit.
+    ///
+    /// Unique number of the cash unit. This number is assigned (or reassigned) on bnr_Reset() and identifies the unit along the time; therefore, it can be used to track unit changes, or uniquely reference units in method calls ([DenominationItem::unit](DenominationItem::unit) property is an example).
+    pub const fn number(&self) -> u32 {
+        self.number
+    }
+
+    /// Sets the number.
+    pub fn set_number(&mut self, number: u32) {
+        self.number = number;
+    }
+
+    /// Builder function that sets the number.
+    pub fn with_number(mut self, number: u32) -> Self {
+        self.set_number(number);
+        self
+    }
+
+    /// Specifies, if cash unit can dispense, deposit cash or both.
+    ///
+    /// One of the following values:
+    /// - [LCU::NA]
+    /// - [LCU::Deposit]
+    /// - [LCU::Dispense]
+    /// - [LCU::Recycle]
+    pub const fn cu_kind(&self) -> LCU {
+        self.cu_kind
+    }
+
+    /// Sets the `cu_kind` field, see [LCU].
+    ///
+    /// One of the following values:
+    /// - [LCU::NA]
+    /// - [LCU::Deposit]
+    /// - [LCU::Dispense]
+    /// - [LCU::Recycle]
+    ///
+    /// No-op if the `cu_kind` parameter is invalid.
+    pub fn set_cu_kind(&mut self, cu_kind: LCU) {
+        if matches!(
+            cu_kind,
+            LCU::NA | LCU::Deposit | LCU::Dispense | LCU::Recycle
+        ) {
+            self.cu_kind = cu_kind;
+        }
+    }
+
+    /// Builder function that sets the cu_kind.
+    ///
+    /// One of the following values:
+    /// - [LCU::NA]
+    /// - [LCU::Deposit]
+    /// - [LCU::Dispense]
+    /// - [LCU::Recycle]
+    ///
+    /// No-op if the `cu_kind` parameter is invalid.
+    pub fn with_cu_kind(mut self, cu_kind: LCU) -> Self {
+        self.set_cu_kind(cu_kind);
+        self
+    }
+
+    /// Gets the type of cash unit.
+    ///
+    /// One of the following values:
+    /// - [LCU::NA]
+    /// - [LCU::BillCassette]
+    /// - [LCU::RejectCassette]
+    pub const fn cu_type(&self) -> LCU {
+        self.cu_type
+    }
+
+    /// Sets the `cu_type` field, see [LCU].
+    ///
+    /// One of the following values:
+    /// - [LCU::NA]
+    /// - [LCU::BillCassette]
+    /// - [LCU::RejectCassette]
+    ///
+    /// No-op if the `cu_type` parameter is invalid.
+    pub fn set_cu_type(&mut self, cu_type: LCU) {
+        if matches!(cu_type, LCU::NA | LCU::BillCassette | LCU::RejectCassette) {
+            self.cu_type = cu_type;
+        }
+    }
+
+    /// Builder function that sets the cu_type.
+    ///
+    /// One of the following values:
+    /// - [LCU::NA]
+    /// - [LCU::BillCassette]
+    /// - [LCU::RejectCassette]
+    ///
+    /// No-op if the `cu_type` parameter is invalid.
+    pub fn with_cu_type(mut self, cu_type: LCU) -> Self {
+        self.set_cu_type(cu_type);
+        self
+    }
+
+    /// Gets the [UnitId].
+    pub const fn unit_id(&self) -> UnitId {
+        self.unit_id
+    }
+
+    /// Sets the [UnitId].
+    pub fn set_unit_id(&mut self, unit_id: UnitId) {
+        self.unit_id = unit_id;
+    }
+
+    /// Builder function that sets the [UnitId].
+    pub fn with_unit_id(mut self, unit_id: UnitId) -> Self {
+        self.set_unit_id(unit_id);
+        self
+    }
+
+    /// For customer purpose only; this value is initialized by the [configure_cash_unit](super::configure_cash_unit) and [update_cash_unit](super::update_cash_unit) methods and not changed by the BNR.
+    ///
+    /// - Type: User data.
+    /// - Max: 65535.
+    /// - Access: Read-Write (write through [configure_cash_unit](super::configure_cash_unit) and [update_cash_unit](super::update_cash_unit) methods).
+    pub const fn initial_count(&self) -> u32 {
+        self.initial_count
+    }
+
+    /// Sets the initial count.
+    pub fn set_initial_count(&mut self, initial_count: u32) {
+        self.initial_count = initial_count;
+    }
+
+    /// Builder function that sets the initial count.
+    pub fn with_initial_count(mut self, initial_count: u32) -> Self {
+        self.set_initial_count(initial_count);
+        self
+    }
+
+    /// Actual count of bills in the logical cash unit.
+    ///
+    /// - Type: One Shot.
+    /// - Max: 65535.
+    /// - Access:
+    ///   - Bundler and Recycler Physical Cash Units - Read-Only
+    ///   - Cashbox and Loader Physical Cash Units - Read-Write (write through [configure_cash_unit](super::configure_cash_unit) and [update_cash_unit](super::update_cash_unit) methods).
+    pub const fn count(&self) -> u32 {
+        self.count
+    }
+
+    /// Sets the count.
+    pub fn set_count(&mut self, count: u32) {
+        self.count = count;
+    }
+
+    /// Builder function that sets the count.
+    pub fn with_count(mut self, count: u32) -> Self {
+        self.set_count(count);
+        self
+    }
+
+    /// Cash unit status. Correspond to [PhysicalCashUnit::status].
+    pub const fn status(&self) -> u32 {
+        self.status
+    }
+
+    /// Sets the status.
+    pub fn set_status(&mut self, status: u32) {
+        self.status = status;
+    }
+
+    /// Builder function that sets the status.
+    pub fn with_status(mut self, status: u32) -> Self {
+        self.set_status(status);
+        self
+    }
+
+    /// Gets the [ExtendedCounters] for [LCU::Deposit] and [LCU::Dispense] cash unit types.
+    pub const fn extended_counters(&self) -> &ExtendedCounters {
+        &self.extended_counters
+    }
+
+    /// Sets the [ExtendedCounters].
+    pub fn set_extended_counters(&mut self, extended_counters: ExtendedCounters) {
+        self.extended_counters = extended_counters;
+    }
+
+    /// Builder function that sets the extended_counters.
+    pub fn with_extended_counters(mut self, extended_counters: ExtendedCounters) -> Self {
+        self.set_extended_counters(extended_counters);
+        self
+    }
+
+    /// Gets the [UnitId] of the [PhysicalCashUnit] backing this [LogicalCashUnit].
+    ///
+    /// The C library uses a pointer here, but that is wildly unsafe. Use the ID instead.
+    pub const fn physical_cash_unit(&self) -> UnitId {
+        self.physical_cash_unit
+    }
+
+    /// Sets the physical cash unit [UnitId].
+    pub fn set_physical_cash_unit(&mut self, physical_cash_unit: UnitId) {
+        self.physical_cash_unit = physical_cash_unit;
+    }
+
+    /// Builder function that sets the physical cash unit [UnitId].
+    pub fn with_physical_cash_unit(mut self, physical_cash_unit: UnitId) -> Self {
+        self.set_physical_cash_unit(physical_cash_unit);
+        self
     }
 }
 
@@ -670,6 +907,22 @@ impl PhysicalCashUnitList {
         }
     }
 
+    /// Gets the size.
+    pub const fn size(&self) -> u32 {
+        self.size
+    }
+
+    /// Sets the size.
+    pub fn set_size(&mut self, size: u32) {
+        self.size = size;
+    }
+
+    /// Builder function that sets the size.
+    pub fn with_size(mut self, size: u32) -> Self {
+        self.set_size(size);
+        self
+    }
+
     /// Gets a list of the [PhysicalCashUnit]s.
     pub fn items(&self) -> &[PhysicalCashUnit] {
         let size = self.size as usize;
@@ -690,6 +943,17 @@ impl PhysicalCashUnitList {
         } else {
             self.items.as_mut()
         }
+    }
+
+    /// Sets a list of the [PhysicalCashUnit]s.
+    pub fn set_items(&mut self, items: [PhysicalCashUnit; PCU_LIST_LEN]) {
+        self.items = items;
+    }
+
+    /// Builder function that sets a list of the [PhysicalCashUnit]s.
+    pub fn with_items(mut self, items: [PhysicalCashUnit; PCU_LIST_LEN]) -> Self {
+        self.set_items(items);
+        self
     }
 }
 
@@ -772,9 +1036,31 @@ impl PhysicalCashUnit {
         &self.name
     }
 
+    /// Sets the [PcuName].
+    pub fn set_name(&mut self, name: PcuName) {
+        self.name = name;
+    }
+
+    /// Builder function that sets the [PcuName].
+    pub fn with_name(mut self, name: PcuName) -> Self {
+        self.set_name(name);
+        self
+    }
+
     /// Gets the [UnitId].
     pub const fn unit_id(&self) -> &UnitId {
         &self.unit_id
+    }
+
+    /// Sets the [UnitId].
+    pub fn set_unit_id(&mut self, unit_id: UnitId) {
+        self.unit_id = unit_id;
+    }
+
+    /// Builder function that sets the [UnitId].
+    pub fn with_unit_id(mut self, unit_id: UnitId) -> Self {
+        self.set_unit_id(unit_id);
+        self
     }
 
     /// Gets the count.
@@ -782,9 +1068,31 @@ impl PhysicalCashUnit {
         self.count
     }
 
+    /// Sets the count.
+    pub fn set_count(&mut self, count: u32) {
+        self.count = count;
+    }
+
+    /// Builder function that sets the count.
+    pub fn with_count(mut self, count: u32) -> Self {
+        self.set_count(count);
+        self
+    }
+
     /// Gets the [Threshold].
     pub const fn threshold(&self) -> Threshold {
         self.threshold
+    }
+
+    /// Sets the [Threshold].
+    pub fn set_threshold(&mut self, threshold: Threshold) {
+        self.threshold = threshold;
+    }
+
+    /// Builder function that sets the [Threshold].
+    pub fn with_threshold(mut self, threshold: Threshold) -> Self {
+        self.set_threshold(threshold);
+        self
     }
 
     /// Gets the status.
@@ -792,9 +1100,31 @@ impl PhysicalCashUnit {
         self.status
     }
 
+    /// Sets the status.
+    pub fn set_status(&mut self, status: u32) {
+        self.status = status;
+    }
+
+    /// Builder function that sets the status.
+    pub fn with_status(mut self, status: u32) -> Self {
+        self.set_status(status);
+        self
+    }
+
     /// Gets the [ThresholdStatus].
     pub const fn threshold_status(&self) -> ThresholdStatus {
         self.threshold_status
+    }
+
+    /// Sets the [ThresholdStatus].
+    pub fn set_threshold_status(&mut self, status: ThresholdStatus) {
+        self.threshold_status = status;
+    }
+
+    /// Builder function that sets the [ThresholdStatus].
+    pub fn with_threshold_status(mut self, status: ThresholdStatus) -> Self {
+        self.set_threshold_status(status);
+        self
     }
 
     /// Gets the [ThresholdMode].
@@ -802,9 +1132,31 @@ impl PhysicalCashUnit {
         self.threshold_mode
     }
 
+    /// Sets the [ThresholdMode].
+    pub fn set_threshold_mode(&mut self, mode: ThresholdMode) {
+        self.threshold_mode = mode;
+    }
+
+    /// Builder function that sets the [ThresholdMode].
+    pub fn with_threshold_mode(mut self, mode: ThresholdMode) -> Self {
+        self.set_threshold_mode(mode);
+        self
+    }
+
     /// Gets the lock.
     pub const fn lock(&self) -> bool {
         self.lock
+    }
+
+    /// Sets the lock.
+    pub fn set_lock(&mut self, lock: bool) {
+        self.lock = lock;
+    }
+
+    /// Builder function that sets the lock.
+    pub fn with_lock(mut self, lock: bool) -> Self {
+        self.set_lock(lock);
+        self
     }
 }
 
