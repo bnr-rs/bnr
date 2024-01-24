@@ -206,6 +206,21 @@ impl From<XfsMethodName> for XfsMethodCall {
     }
 }
 
+impl fmt::Display for XfsMethodCall {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{{")?;
+        write!(f, r#""name": {}", "#, self.name)?;
+        write!(f, r#""params": ["#)?;
+        for (i, param) in self.params.params().iter().enumerate() {
+            if i != 0 {
+                write!(f, ", ")?;
+            }
+            write!(f, "{param}")?;
+        }
+        write!(f, "]}}")
+    }
+}
+
 /// Represents the [XfsMethodCall] name used in a procedure call to a BNR device.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]

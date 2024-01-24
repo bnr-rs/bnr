@@ -231,17 +231,17 @@ impl DeviceHandle {
         }
 
         if let Some(msg) = res_call {
-            log::debug!("async response: {msg:?}");
+            log::debug!("async response: {msg}");
             let result = msg.result().unwrap_or(-1);
             match result {
                 0 => Ok(()),
                 -1 => {
-                    let err_msg = format!("async response: missing event result: {msg:?}");
+                    let err_msg = format!("async response: missing event result: {msg}");
                     log::error!("{err_msg}");
                     Err(Error::Xfs(err_msg.into()))
                 }
                 _ => {
-                    let err_msg = format!("async response: call failed: {msg:?}");
+                    let err_msg = format!("async response: call failed: {msg}");
                     log::error!("{err_msg}");
                     Err(Error::Xfs(err_msg.into()))
                 }
