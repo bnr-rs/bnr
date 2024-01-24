@@ -2,6 +2,7 @@
 
 use std::fmt;
 
+use super::operation_id::OperationId;
 use super::params::{XfsParam, XfsParams};
 use crate::{Error, Result};
 
@@ -97,6 +98,78 @@ impl XfsMethodCall {
         } else {
             false
         }
+    }
+
+    /// Gets the async callback ID from the [XfsMethodCall].
+    ///
+    /// Returns: `Ok(i32)` on success, `Err(Error)` on failure
+    pub fn call_id(&self) -> Result<i32> {
+        self
+            .params()
+            .params()
+            .iter()
+            .find(|&p| p.inner().value().i4().is_some())
+            .ok_or(Error::Xfs("missing callback ID".into()))?
+            .inner()
+            .value()
+            .i4()
+            .cloned()
+            .ok_or(Error::Xfs("missing callback ID".into()))
+    }
+
+    /// Gets the async operation ID from the [XfsMethodCall].
+    ///
+    /// Returns: `Ok(OperationId)` on success, `Err(Error)` on failure
+    pub fn operation_id(&self) -> Result<OperationId> {
+        Ok(OperationId::create(self
+            .params()
+            .params()
+            .iter()
+            .filter(|&p| p.inner().value().i4().is_some())
+            .nth(1)
+            .ok_or(Error::Xfs("missing operation ID".into()))?
+            .inner()
+            .value()
+            .i4()
+            .cloned()
+            .ok_or(Error::Xfs("missing operation ID".into()))? as u32
+        ))
+    }
+
+    /// Gets the async operation result from the [XfsMethodCall].
+    ///
+    /// Returns: `Ok(OperationId)` on success, `Err(Error)` on failure
+    pub fn result(&self) -> Result<i32> {
+        self
+            .params()
+            .params()
+            .iter()
+            .filter(|&p| p.inner().value().i4().is_some())
+            .nth(2)
+            .ok_or(Error::Xfs("missing result".into()))?
+            .inner()
+            .value()
+            .i4()
+            .cloned()
+            .ok_or(Error::Xfs("missing result".into()))
+    }
+
+    /// Gets the async operation extended result from the [XfsMethodCall].
+    ///
+    /// Returns: `Ok(OperationId)` on success, `Err(Error)` on failure
+    pub fn ext_result(&self) -> Result<i32> {
+        self
+            .params()
+            .params()
+            .iter()
+            .filter(|&p| p.inner().value().i4().is_some())
+            .nth(3)
+            .ok_or(Error::Xfs("missing extended result".into()))?
+            .inner()
+            .value()
+            .i4()
+            .cloned()
+            .ok_or(Error::Xfs("missing extended result".into()))
     }
 }
 

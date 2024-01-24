@@ -397,9 +397,41 @@ impl DeviceHandle {
 
         Self::write_call(usb, &call, timeout, self.async_active())?;
 
-        Self::read_response(usb, call.name()?, timeout)?;
+        let res = Self::read_response(usb, call.name()?, timeout)?;
 
-        Ok(())
+        let call_id = res.call_id()?;
+        let mut res_call: Option<XfsMethodCall> = None;
+        let response_timeout = std::time::Duration::from_secs(10);
+        let now = std::time::SystemTime::now();
+
+        while res_call.is_none() && now.elapsed()? < response_timeout {
+            if let Ok(msg) = self.response_rx.recv() {
+                let res_id = msg.call_id().unwrap_or(-1);
+                if res_id != -1 && res_id == call_id {
+                    res_call = Some(msg);
+                }
+            }
+        }
+
+        if let Some(msg) = res_call {
+            log::debug!("CashInStart response: {msg:?}");
+            let result = msg.result().unwrap_or(-1);
+            match result {
+                0 => Ok(()),
+                -1 => {
+                    let err_msg = format!("cash_in_start: missing event result: {msg:?}");
+                    log::error!("{err_msg}");
+                    Err(Error::Xfs(err_msg.into()))
+                }
+                _ => {
+                    let err_msg = format!("cash_in_start: call failed: {msg:?}");
+                    log::error!("{err_msg}");
+                    Err(Error::Xfs(err_msg.into()))
+                }
+            }
+        } else {
+            Err(Error::Xfs("cash_in_start: no operation complete response".into()))
+        }
     }
 
     pub(crate) fn cash_in_inner(

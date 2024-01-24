@@ -2,10 +2,9 @@
 
 use std::fmt;
 
-use super::{
-    fault::XfsFault,
-    params::{XfsParam, XfsParams},
-};
+use crate::{Error, Result};
+use super::fault::XfsFault;
+use super::params::{XfsParam, XfsParams};
 
 /// Represents an XFS method response containing (one of):
 ///
@@ -30,6 +29,23 @@ impl XfsMethodResponse {
     /// Creates a new [XfsMethodResponse::Fault] variant with the provided fault code.
     pub fn new_fault<S: Into<String>>(code: i32, string: S) -> Self {
         Self::Fault(XfsFault::create(code, string))
+    }
+
+    /// Gets the async callback ID from the [XfsMethodResponse].
+    ///
+    /// Returns: `Ok(i32)` on success, `Err(Error)` on failure
+    pub fn call_id(&self) -> Result<i32> {
+        self
+            .as_params()?
+            .params()
+            .iter()
+            .find(|&p| p.inner().value().i4().is_some())
+            .ok_or(Error::Xfs("missing response ID".into()))?
+            .inner()
+            .value()
+            .i4()
+            .cloned()
+            .ok_or(Error::Xfs("missing response ID".into()))
     }
 }
 

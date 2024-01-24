@@ -101,6 +101,12 @@ impl<E> From<mpsc::SendError<E>> for Error {
     }
 }
 
+impl From<std::time::SystemTimeError> for Error {
+    fn from(err: std::time::SystemTimeError) -> Self {
+        Self::DateTime(format!("time error: {err}"))
+    }
+}
+
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
