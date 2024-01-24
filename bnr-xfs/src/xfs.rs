@@ -37,7 +37,8 @@ pub fn to_iso_string<S: serde::Serialize>(s: S) -> Result<String> {
         xml::EmitterConfig::new().pad_self_closing(false),
     );
 
-    let mut ser = serde_xml_rs::Serializer::new_from_writer(event_writer).with_encoding("ISO-8859-1");
+    let mut ser =
+        serde_xml_rs::Serializer::new_from_writer(event_writer).with_encoding("ISO-8859-1");
     s.serialize(&mut ser)?;
 
     Ok(String::from_utf8(sink)?)

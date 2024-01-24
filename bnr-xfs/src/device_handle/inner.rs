@@ -11,7 +11,7 @@ use datetime::format_description::well_known::{
 use time as datetime;
 
 use super::*;
-use crate::callback_response::CallbackResponse;
+use crate::callback_response::{CallbackIntermediateResponse, CallbackOperationResponse, CallbackStatusResponse};
 use crate::cash_unit::TransportCount;
 use crate::currency::{Currency, Denomination};
 use crate::xfs::{
@@ -67,13 +67,6 @@ impl DeviceHandle {
         intermediate_occurred_callback: Option<IntermediateOccurredFn>,
         status_occurred_callback: Option<StatusOccurredFn>,
     ) -> Result<Self> {
-        let call = XfsMethodCall::create(
-            XfsMethodName::GetIdentification,
-            [XfsParam::create(
-                XfsValue::new().with_int(MAIN_MODULE_CLASS),
-            )],
-        );
-
         let timeout = std::time::Duration::from_millis(TIMEOUT);
 
         let mut ret = [0u8; 4];
@@ -108,15 +101,22 @@ impl DeviceHandle {
             status_occurred_callback,
         };
 
+        ret.start_background_listener()?;
+
         let usb = ret.usb();
+
+        let call = XfsMethodCall::create(
+            XfsMethodName::GetIdentification,
+            [XfsParam::create(
+                XfsValue::new().with_int(MAIN_MODULE_CLASS),
+            )],
+        );
 
         // write the `getIdentification` call to the call endpoint
         Self::write_call(usb, &call, timeout)?;
 
         // read the response
         Self::read_response(usb, call.name()?, timeout).ok();
-
-        ret.start_background_listener()?;
 
         Ok(ret)
     }
@@ -139,7 +139,7 @@ impl DeviceHandle {
 
             loop {
                 if let Ok(msg) = Self::read_callback_call(&usb, timeout) {
-                    let (id, op_id) = match msg.name() {
+                    let res = match msg.name() {
                         Ok(XfsMethodName::OperationCompleteOccurred) => {
                             let mut params_iter =
                                 msg.params().params().iter().map(|m| m.inner().value());
@@ -191,7 +191,7 @@ impl DeviceHandle {
                                 op_complete(id, op_id.into(), ret, stat, &mut ());
                             }
 
-                            (Some(id), Some(op_id))
+                            Some(XfsMethodResponse::new_params([XfsParam::create(CallbackOperationResponse::create(id, op_id.into()).into())]))
                         }
                         Ok(XfsMethodName::IntermediateOccurred) => {
                             let mut params_iter =
@@ -241,7 +241,7 @@ impl DeviceHandle {
                                 intermediate_occurred(id, op_id.into(), ret, &mut ());
                             }
 
-                            (Some(id), Some(op_id))
+                            Some(XfsMethodResponse::new_params([XfsParam::create(CallbackIntermediateResponse::create(id, op_id.into()).into())]))
                         }
                         Ok(XfsMethodName::StatusOccurred) => {
                             let mut params_iter =
@@ -286,29 +286,25 @@ impl DeviceHandle {
                                 status_occurred(id, op_id.into(), ret, &mut ());
                             }
 
-                            (Some(id), Some(op_id))
+                            Some(XfsMethodResponse::new_params([XfsParam::create(CallbackStatusResponse::create(id, ret).into())]))
                         }
                         Err(_err) if msg.name_str().is_empty() => {
                             log::trace!("No callback call");
-                            (None, None)
+                            None
                         }
                         _stat => {
                             let name = msg.name_str();
                             log::warn!("Received unknown device-sent message, {name}: {msg:?}");
-                            (None, None)
+                            None
                         }
                     };
 
-                    if let (Some(id), Some(op_id)) = (id, op_id) {
-                        let res = XfsMethodResponse::new_params([XfsParam::create(
-                            CallbackResponse::create(id, op_id.into()).into(),
-                        )]);
-
-                        Self::write_callback_response(&usb, &res, msg.name()?, timeout)?;
+                    if let Some(res) = res.as_ref() {
+                        Self::write_callback_response(&usb, res, msg.name()?, timeout)?;
                     }
                 }
 
-                std::thread::sleep(std::time::Duration::from_millis(2500));
+                std::thread::sleep(std::time::Duration::from_millis(1500));
             }
         });
 
@@ -931,7 +927,7 @@ impl DeviceHandle {
     ) -> Result<()> {
         match usb.write_bulk(
             BNR_CALLBACK_RESPONSE_EP,
-            xfs::to_string(res)?.as_bytes(),
+            xfs::to_iso_string(res)?.as_bytes(),
             timeout,
         ) {
             Ok(_) => Ok(()),
