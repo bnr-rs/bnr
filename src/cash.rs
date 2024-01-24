@@ -122,7 +122,7 @@ pub fn query_cash_unit() -> Result<CashUnit> {
 ///   - `DispenseRequest::currency.currency_code`
 ///
 /// - `DispenseRequest::mix_number` is #BNRXFS_C_CDR_MXA_OPTIMUM_CHANGE: The BNR chooses the banknotes to be distributed in order to obtain the total amount in a way that slows down cashbox filling. As long as the low denomination Recyclers are not near to full, change is determined like with the MinBills algorithm. But when a Recycler becomes nearly full (5/6 of Full threshold), this algorithm will try to put more of this denomination in the change so that the Recycler doesn’t become full and this denomination doesn’t start to be cashed. Two parameters must be correctly set:
-///   - `DispenseRequest::denomination::amount` has to be expressed in MDUs
+///   - `DispenseRequest::denomination.amount` has to be expressed in MDUs
 ///   - `DispenseRequest::currency.currency_code`
 ///
 /// - `DispenseRequest::mix_number` is #XFS_C_CDR_MIX_DENOM: The user chooses through a list of Logical Cash Units the banknotes to be distributed by the BNR in order to obtain the total amount. The following parameters must be correctly set:
@@ -131,7 +131,8 @@ pub fn query_cash_unit() -> Result<CashUnit> {
 ///      - `DispenseRequest::denomination::items[item]::unit` contains the number of a LCU from where banknotes must be distributed.
 ///      - `DispenseRequest::denomination::items[item]::count` gives the number of banknotes to distribute from the LCU.
 ///
-/// - `DispenseRequest::currency.currency_code` is a string in the C library. See [CurrencyCode](crate::currency::CurrencyCode) for a full list of the existing ISO currency codes, also: <http://www.iso.org/iso/home/standards/currency_codes.htm>
+/// - `DispenseRequest::currency.currency_code` is a string in the C library.
+///   - See [CurrencyCode](crate::currency::CurrencyCode) for a full list of the existing ISO currency codes, also: <http://www.iso.org/iso/home/standards/currency_codes.htm>
 ///   - conversion from the enum to a string is handled internally, the user does not need to worry about this.
 ///
 /// Params:
@@ -146,4 +147,47 @@ pub fn dispense(request: &DispenseRequest) -> Result<()> {
         unsafe { bnr_sys::bnr_Dispense(&mut req as *mut _) },
         "dispense",
     )
+}
+
+/// Activates the presentation of the cash.
+///
+/// It can only be used following the [dispense] method.
+///
+/// A #XFS_S_CDR_CASH_AVAILABLE status event is issued to report that the bills are presented at the outlet,
+/// then a #XFS_S_CDR_CASH_TAKEN status event is issued to report that the user has removed the bills, and the command completes.
+///
+/// After #XFS_S_CDR_CASH_AVAILABLE status event, if no #XFS_S_CDR_CASH_TAKEN status event is received within a reasonable time period,
+/// the application should send a [cancel_waiting_cash_taken] to terminate the command, then send a [retract] to clear the bills from the outlet.
+pub fn present() -> Result<()> {
+    check_res(unsafe { bnr_sys::bnr_Present() }, "present")
+}
+
+/// Asks the BNR to stop waiting for cash removal at the Bezel if any.
+///
+/// If it can do so, an OperationCompleteEvent is sent with the result field containing #XFS_E_CANCELLED to indicate that the operation was cancelled.
+/// Otherwise, the current operation’s messages will be sent as usual.
+///
+/// This method is meant to be called after the BNR has sent a #XFS_S_CDR_CASH_AVAILABLE status event, and before #XFS_S_CDR_CASH_TAKEN status event.
+/// If this method is called outside these conditions, then no operation will take place and no error will be returned.
+/// If this method is called after cash has been removed but before the #XFS_S_CDR_CASH_TAKEN status event has been returned to the caller,
+/// then no operation will take place and no error will be returned.
+pub fn cancel_waiting_cash_taken() -> Result<()> {
+    check_res(
+        unsafe { bnr_sys::bnr_CancelWaitingCashTaken() },
+        "cancel_waiting_cash_taken",
+    )
+}
+
+/// This command allows the application to force cash that has been presented to be retracted.
+///
+/// Retracted bills will be moved to the intermediate stacker area and accounted in the Bundler LCU. The application can then present bills to the user, using [cash_in_rollback] or [present]
+/// (depending of the kind od the transaction) or clear the intermediate stacker area using the [reject] method.
+///
+/// This method may only be called after bills have been presented at the outlet following a [dispense] (if autoPresent mode is active), [cash_in_rollback] or [present] method call,
+/// and before the bills have been taken by the user.
+///
+/// **Note** An asynchronous method must not be called before the preceding one is terminated (i.e. OperationComplete event has been received); typically before calling [retract],
+/// the preceding command must be terminated by calling [cancel_waiting_cash_taken].
+pub fn retract() -> Result<()> {
+    check_res(unsafe { bnr_sys::bnr_Retract() }, "retract")
 }
