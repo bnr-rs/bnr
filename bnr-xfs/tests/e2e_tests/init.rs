@@ -30,3 +30,13 @@ fn test_cancel() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+fn test_close() -> Result<()> {
+    let _lock = common::init();
+
+    let handle = DeviceHandle::open(None, None, None)?;
+    handle.close()?;
+
+    Ok(())
+}

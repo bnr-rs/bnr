@@ -91,6 +91,11 @@ impl DeviceHandle {
         self.cancel_inner()
     }
 
+    /// Stops secured communication session if started, ends the communication with the BNR and terminates the thread that has been started by a previous `open` call.
+    pub fn close(&self) -> Result<()> {
+        self.close_inner()
+    }
+
     /// Gets a reference to the [UsbDeviceHandle].
     pub const fn usb(&self) -> &UsbDeviceHandle {
         &self.usb
