@@ -125,7 +125,7 @@ pub fn configure_cash_unit(
     let mut lcu = bnr_sys::LogicalCashUnitList::from(lcu_list);
     let mut pcu = bnr_sys::PhysicalCashUnitList::from(pcu_list);
 
-    set_pcu_for_lcu(&mut lcu, &lcu_list, &pcu_list);
+    set_pcu_for_lcu(&mut lcu, &lcu_list, &mut pcu);
 
     check_res(
         unsafe {
@@ -157,7 +157,7 @@ pub fn update_cash_unit(
     let mut lcu = bnr_sys::LogicalCashUnitList::from(lcu_list);
     let mut pcu = bnr_sys::PhysicalCashUnitList::from(pcu_list);
 
-    set_pcu_for_lcu(&mut lcu, &lcu_list, &pcu_list);
+    set_pcu_for_lcu(&mut lcu, &lcu_list, &mut pcu);
 
     check_res(
         unsafe {

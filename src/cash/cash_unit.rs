@@ -51,6 +51,22 @@ pub fn pcu_for_lcu_mut<'p>(
         })
 }
 
+pub(crate) fn pcu_for_lcu_sys<'p>(
+    lcu_id: u32,
+    lcu: &LogicalCashUnitList,
+    pcu: &'p mut bnr_sys::PhysicalCashUnitList,
+) -> Option<&'p mut bnr_sys::XfsPhysicalCashUnit> {
+    let pcu_size = pcu.size as usize;
+    lcu.items()
+        .iter()
+        .find(|l| l.number == lcu_id)
+        .and_then(|l| {
+            pcu.items[..pcu_size]
+                .iter_mut()
+                .find(|p| p.unitId == l.physical_cash_unit)
+        })
+}
+
 /// Sets the [PhysicalCashUnit] pointer in the FFI
 /// [LogicalCashUnitList](bnr_sys::LogicalCashUnitList).
 ///
@@ -58,15 +74,30 @@ pub fn pcu_for_lcu_mut<'p>(
 /// item references while the `lcu_sys` parameter is in use. For example, do not sort or change the
 /// items in the list, do not delete items from the list, etc. This function is safe, but the safety
 /// of future use of the `physicalCashUnit` pointer is dependent on the previous constraint.
-pub fn set_pcu_for_lcu(
+pub(crate) fn set_pcu_for_lcu(
     lcu_sys: &mut bnr_sys::LogicalCashUnitList,
     lcu_list: &LogicalCashUnitList,
-    pcu_list: &PhysicalCashUnitList,
+    pcu_list: &mut bnr_sys::PhysicalCashUnitList,
 ) {
-    for lcu in lcu_sys.items.iter_mut() {
-        if let Some(pcu) = pcu_for_lcu(lcu.unitId, lcu_list, pcu_list) {
-            lcu.physicalCashUnit = pcu as *const _ as *mut _;
+    let lcu_size = lcu_list.size as usize;
+
+    let mut seen: Vec<u32> = Vec::with_capacity(lcu_size);
+    let mut dup: Vec<u32> = Vec::with_capacity(lcu_size);
+
+    for lcu in lcu_sys.items[..lcu_sys.size as usize].iter_mut() {
+        if let Some(pcu) = pcu_for_lcu_sys(lcu.number, lcu_list, pcu_list) {
+            if !seen.contains(&(lcu.number as u32)) {
+                seen.push(lcu.number);
+            } else {
+                dup.push(lcu.number);
+            }
+
+            lcu.physicalCashUnit = pcu as *mut _;
         }
+    }
+
+    if !dup.is_empty() {
+        log::warn!("Duplicate(s) found: {:x?}", dup);
     }
 }
 
@@ -151,16 +182,19 @@ impl From<&CashUnit> for bnr_sys::XfsCashUnit {
         let mut logical_cash_unit_list =
             bnr_sys::LogicalCashUnitList::from(val.logical_cash_unit_list);
 
+        let mut physical_cash_unit_list =
+            bnr_sys::PhysicalCashUnitList::from(val.physical_cash_unit_list);
+
         set_pcu_for_lcu(
             &mut logical_cash_unit_list,
             val.logical_cash_unit_list(),
-            val.physical_cash_unit_list(),
+            &mut physical_cash_unit_list,
         );
 
         Self {
             transportCount: val.transport_count,
             logicalCashUnitList: logical_cash_unit_list,
-            physicalCashUnitList: val.physical_cash_unit_list.into(),
+            physicalCashUnitList: physical_cash_unit_list,
         }
     }
 }
