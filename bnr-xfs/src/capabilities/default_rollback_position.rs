@@ -1,6 +1,9 @@
 use std::fmt;
 
-use crate::{impl_xfs_enum, status::{CDR_POS_TOP, CDR_POS_BOTTOM}};
+use crate::{
+    impl_xfs_enum,
+    status::{CDR_POS_BOTTOM, CDR_POS_TOP},
+};
 
 /// Represents a CDR position
 #[repr(u32)]

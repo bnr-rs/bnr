@@ -309,7 +309,11 @@ impl fmt::Display for Capabilities {
             r#""report_usb_consumption":{},"#,
             self.report_usb_consumption
         )?;
-        write!(f, r#""auto_retract_at_inlet":{},"#, self.auto_retract_at_inlet)?;
+        write!(
+            f,
+            r#""auto_retract_at_inlet":{},"#,
+            self.auto_retract_at_inlet
+        )?;
         write!(f, r#""reject_via_outlet":{},"#, self.reject_via_outlet)?;
         write!(f, r#""secured_comm_level":{}"#, self.secured_comm_level)?;
         write!(f, "}}")

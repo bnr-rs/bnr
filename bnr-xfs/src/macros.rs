@@ -728,7 +728,11 @@ macro_rules! impl_xfs_array {
                 {
                     *dst = match src.try_into() {
                         Ok(d) => d,
-                        Err(err) => return Err($crate::Error::Xfs(format!("Failed to convert item[{i}]: {err}"))),
+                        Err(err) => {
+                            return Err($crate::Error::Xfs(format!(
+                                "Failed to convert item[{i}]: {err}"
+                            )))
+                        }
                     };
                 }
 

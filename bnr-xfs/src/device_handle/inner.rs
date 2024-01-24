@@ -178,7 +178,9 @@ impl DeviceHandle {
                                 match xfs.xfs_struct() {
                                     Some(xfs)
                                         if xfs.find_member(Currency::xfs_name()).is_ok()
-                                            && xfs.find_member(Denomination::xfs_name()).is_ok() =>
+                                            && xfs
+                                                .find_member(Denomination::xfs_name())
+                                                .is_ok() =>
                                     {
                                         let mut cash_order = CashOrder::try_from(xfs)?;
                                         op_complete(id, op_id.into(), ret, stat, &mut cash_order);
@@ -221,10 +223,17 @@ impl DeviceHandle {
                                 match xfs.xfs_struct() {
                                     Some(xfs)
                                         if xfs.find_member(Currency::xfs_name()).is_ok()
-                                            && xfs.find_member(Denomination::xfs_name()).is_ok() =>
+                                            && xfs
+                                                .find_member(Denomination::xfs_name())
+                                                .is_ok() =>
                                     {
                                         let mut cash_order = CashOrder::try_from(xfs)?;
-                                        intermediate_occurred(id, op_id.into(), ret, &mut cash_order);
+                                        intermediate_occurred(
+                                            id,
+                                            op_id.into(),
+                                            ret,
+                                            &mut cash_order,
+                                        );
                                     }
                                     _ => intermediate_occurred(id, op_id.into(), ret, &mut ()),
                                 }
@@ -264,7 +273,9 @@ impl DeviceHandle {
                                 match xfs.xfs_struct() {
                                     Some(xfs)
                                         if xfs.find_member(Currency::xfs_name()).is_ok()
-                                            && xfs.find_member(Denomination::xfs_name()).is_ok() =>
+                                            && xfs
+                                                .find_member(Denomination::xfs_name())
+                                                .is_ok() =>
                                     {
                                         let mut cash_order = CashOrder::try_from(xfs)?;
                                         status_occurred(id, op_id.into(), ret, &mut cash_order);
@@ -295,7 +306,6 @@ impl DeviceHandle {
 
                         Self::write_callback_response(&usb, &res, msg.name()?, timeout)?;
                     }
-
                 }
 
                 std::thread::sleep(std::time::Duration::from_millis(2500));
@@ -496,7 +506,7 @@ impl DeviceHandle {
 
         match Capabilities::try_from(&res) {
             Ok(c) => Ok(c),
-            Err(_err)  => Ok(caps.clone()),
+            Err(_err) => Ok(*caps),
         }
     }
 

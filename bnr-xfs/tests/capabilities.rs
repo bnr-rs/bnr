@@ -1,4 +1,10 @@
-use bnr_xfs::{xfs::{from_str, xfs_struct::{XfsMember, XfsStruct}}, Capabilities, CdrPositionCapabilitiesList, Result};
+use bnr_xfs::{
+    xfs::{
+        from_str,
+        xfs_struct::{XfsMember, XfsStruct},
+    },
+    Capabilities, CdrPositionCapabilitiesList, Result,
+};
 
 #[test]
 fn test_caps_serde() -> Result<()> {

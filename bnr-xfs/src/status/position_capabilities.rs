@@ -1,9 +1,6 @@
 use std::{cmp, fmt};
 
-use crate::{
-    create_xfs_bool, create_xfs_i4, impl_xfs_array, impl_xfs_struct,
-    ShutterCmd, Size,
-};
+use crate::{create_xfs_bool, create_xfs_i4, impl_xfs_array, impl_xfs_struct, ShutterCmd, Size};
 
 use super::CdrPosition;
 
@@ -219,39 +216,35 @@ mod tests {
     fn test_cdr_position_capabitilities_xfs() -> Result<()> {
         let exp_xfs = XfsMember::create(
             CdrPositionCapabilitiesList::xfs_name(),
-            XfsValue::new().with_array(XfsArray::create([XfsValue::new()
-                .with_xfs_struct(XfsStruct::create([
+            XfsValue::new().with_array(XfsArray::create([XfsValue::new().with_xfs_struct(
+                XfsStruct::create([
                     XfsMember::create("position", XfsValue::new().with_i4(1)),
-                    XfsMember::create(
-                        "contentStatusSupported",
-                        XfsValue::new().with_boolean(1),
-                    ),
-                    XfsMember::create(
-                        "shutterStatusSupported",
-                        XfsValue::new().with_boolean(0),
-                    ),
+                    XfsMember::create("contentStatusSupported", XfsValue::new().with_boolean(1)),
+                    XfsMember::create("shutterStatusSupported", XfsValue::new().with_boolean(0)),
                     XfsMember::create("shutterCmd", XfsValue::new().with_boolean(0)),
                     XfsMember::create("maxItems", XfsValue::new().with_i4(1)),
                     XfsMember::create("input", XfsValue::new().with_boolean(1)),
                     XfsMember::create("output", XfsValue::new().with_boolean(0)),
                     XfsMember::create("rollback", XfsValue::new().with_boolean(0)),
                     XfsMember::create("refusal", XfsValue::new().with_boolean(1)),
-                ]))])),
+                ]),
+            )])),
         );
         let exp_cap_list = CdrPositionCapabilitiesList {
             size: Size::create(1),
-            items: [CdrPositionCapabilities {
-                position: CdrPosition::Top,
-                shutter_status_supported: false.into(),
-                shutter_cmd: false.into(),
-                content_status_supported: true.into(),
-                max_items: 1u32.into(),
-                input: true.into(),
-                output: false.into(),
-                rollback: false.into(),
-                refusal: true.into(),
-            },
-            CdrPositionCapabilities::new(),
+            items: [
+                CdrPositionCapabilities {
+                    position: CdrPosition::Top,
+                    shutter_status_supported: false.into(),
+                    shutter_cmd: false.into(),
+                    content_status_supported: true.into(),
+                    max_items: 1u32.into(),
+                    input: true.into(),
+                    output: false.into(),
+                    rollback: false.into(),
+                    refusal: true.into(),
+                },
+                CdrPositionCapabilities::new(),
             ],
         };
 
@@ -261,16 +254,59 @@ mod tests {
         );
 
         let xfs_list = XfsMember::from(exp_cap_list);
-        for (exp, item) in exp_xfs.value().array().unwrap().data().iter().map(|m| m.inner().xfs_struct().unwrap()).zip(xfs_list.value().array().unwrap().data().iter().map(|m| m.inner().xfs_struct().unwrap())) {
-            assert_eq!(exp.find_member(CdrPosition::xfs_name())?, item.find_member(CdrPosition::xfs_name())?);
-            assert_eq!(exp.find_member(ShutterStatusSupported::xfs_name())?, item.find_member(ShutterStatusSupported::xfs_name())?);
-            assert_eq!(exp.find_member(ShutterCmd::xfs_name())?, item.find_member(ShutterCmd::xfs_name())?);
-            assert_eq!(exp.find_member(ContentStatusSupported::xfs_name())?, item.find_member(ContentStatusSupported::xfs_name())?);
-            assert_eq!(exp.find_member(MaxItems::xfs_name())?, item.find_member(MaxItems::xfs_name())?);
-            assert_eq!(exp.find_member(Input::xfs_name())?, item.find_member(Input::xfs_name())?);
-            assert_eq!(exp.find_member(Output::xfs_name())?, item.find_member(Output::xfs_name())?);
-            assert_eq!(exp.find_member(Rollback::xfs_name())?, item.find_member(Rollback::xfs_name())?);
-            assert_eq!(exp.find_member(Refusal::xfs_name())?, item.find_member(Refusal::xfs_name())?);
+        for (exp, item) in exp_xfs
+            .value()
+            .array()
+            .unwrap()
+            .data()
+            .iter()
+            .map(|m| m.inner().xfs_struct().unwrap())
+            .zip(
+                xfs_list
+                    .value()
+                    .array()
+                    .unwrap()
+                    .data()
+                    .iter()
+                    .map(|m| m.inner().xfs_struct().unwrap()),
+            )
+        {
+            assert_eq!(
+                exp.find_member(CdrPosition::xfs_name())?,
+                item.find_member(CdrPosition::xfs_name())?
+            );
+            assert_eq!(
+                exp.find_member(ShutterStatusSupported::xfs_name())?,
+                item.find_member(ShutterStatusSupported::xfs_name())?
+            );
+            assert_eq!(
+                exp.find_member(ShutterCmd::xfs_name())?,
+                item.find_member(ShutterCmd::xfs_name())?
+            );
+            assert_eq!(
+                exp.find_member(ContentStatusSupported::xfs_name())?,
+                item.find_member(ContentStatusSupported::xfs_name())?
+            );
+            assert_eq!(
+                exp.find_member(MaxItems::xfs_name())?,
+                item.find_member(MaxItems::xfs_name())?
+            );
+            assert_eq!(
+                exp.find_member(Input::xfs_name())?,
+                item.find_member(Input::xfs_name())?
+            );
+            assert_eq!(
+                exp.find_member(Output::xfs_name())?,
+                item.find_member(Output::xfs_name())?
+            );
+            assert_eq!(
+                exp.find_member(Rollback::xfs_name())?,
+                item.find_member(Rollback::xfs_name())?
+            );
+            assert_eq!(
+                exp.find_member(Refusal::xfs_name())?,
+                item.find_member(Refusal::xfs_name())?
+            );
         }
 
         Ok(())
@@ -283,14 +319,8 @@ mod tests {
             XfsValue::new().with_array(XfsArray::create([
                 XfsValue::new().with_xfs_struct(XfsStruct::create([
                     XfsMember::create("position", XfsValue::new().with_i4(1)),
-                    XfsMember::create(
-                        "contentStatusSupported",
-                        XfsValue::new().with_boolean(1),
-                    ),
-                    XfsMember::create(
-                        "shutterStatusSupported",
-                        XfsValue::new().with_boolean(0),
-                    ),
+                    XfsMember::create("contentStatusSupported", XfsValue::new().with_boolean(1)),
+                    XfsMember::create("shutterStatusSupported", XfsValue::new().with_boolean(0)),
                     XfsMember::create("shutterCmd", XfsValue::new().with_boolean(0)),
                     XfsMember::create("maxItems", XfsValue::new().with_i4(1)),
                     XfsMember::create("input", XfsValue::new().with_boolean(1)),
@@ -300,14 +330,8 @@ mod tests {
                 ])),
                 XfsValue::new().with_xfs_struct(XfsStruct::create([
                     XfsMember::create("position", XfsValue::new().with_i4(2)),
-                    XfsMember::create(
-                        "contentStatusSupported",
-                        XfsValue::new().with_boolean(1),
-                    ),
-                    XfsMember::create(
-                        "shutterStatusSupported",
-                        XfsValue::new().with_boolean(1),
-                    ),
+                    XfsMember::create("contentStatusSupported", XfsValue::new().with_boolean(1)),
+                    XfsMember::create("shutterStatusSupported", XfsValue::new().with_boolean(1)),
                     XfsMember::create("shutterCmd", XfsValue::new().with_boolean(1)),
                     XfsMember::create("maxItems", XfsValue::new().with_i4(15)),
                     XfsMember::create("input", XfsValue::new().with_boolean(0)),
@@ -352,16 +376,59 @@ mod tests {
         );
 
         let xfs_list = XfsMember::from(exp_cap_list);
-        for (exp, item) in exp_xfs.value().array().unwrap().data().iter().map(|m| m.inner().xfs_struct().unwrap()).zip(xfs_list.value().array().unwrap().data().iter().map(|m| m.inner().xfs_struct().unwrap())) {
-            assert_eq!(exp.find_member(CdrPosition::xfs_name())?, item.find_member(CdrPosition::xfs_name())?);
-            assert_eq!(exp.find_member(ShutterStatusSupported::xfs_name())?, item.find_member(ShutterStatusSupported::xfs_name())?);
-            assert_eq!(exp.find_member(ShutterCmd::xfs_name())?, item.find_member(ShutterCmd::xfs_name())?);
-            assert_eq!(exp.find_member(ContentStatusSupported::xfs_name())?, item.find_member(ContentStatusSupported::xfs_name())?);
-            assert_eq!(exp.find_member(MaxItems::xfs_name())?, item.find_member(MaxItems::xfs_name())?);
-            assert_eq!(exp.find_member(Input::xfs_name())?, item.find_member(Input::xfs_name())?);
-            assert_eq!(exp.find_member(Output::xfs_name())?, item.find_member(Output::xfs_name())?);
-            assert_eq!(exp.find_member(Rollback::xfs_name())?, item.find_member(Rollback::xfs_name())?);
-            assert_eq!(exp.find_member(Refusal::xfs_name())?, item.find_member(Refusal::xfs_name())?);
+        for (exp, item) in exp_xfs
+            .value()
+            .array()
+            .unwrap()
+            .data()
+            .iter()
+            .map(|m| m.inner().xfs_struct().unwrap())
+            .zip(
+                xfs_list
+                    .value()
+                    .array()
+                    .unwrap()
+                    .data()
+                    .iter()
+                    .map(|m| m.inner().xfs_struct().unwrap()),
+            )
+        {
+            assert_eq!(
+                exp.find_member(CdrPosition::xfs_name())?,
+                item.find_member(CdrPosition::xfs_name())?
+            );
+            assert_eq!(
+                exp.find_member(ShutterStatusSupported::xfs_name())?,
+                item.find_member(ShutterStatusSupported::xfs_name())?
+            );
+            assert_eq!(
+                exp.find_member(ShutterCmd::xfs_name())?,
+                item.find_member(ShutterCmd::xfs_name())?
+            );
+            assert_eq!(
+                exp.find_member(ContentStatusSupported::xfs_name())?,
+                item.find_member(ContentStatusSupported::xfs_name())?
+            );
+            assert_eq!(
+                exp.find_member(MaxItems::xfs_name())?,
+                item.find_member(MaxItems::xfs_name())?
+            );
+            assert_eq!(
+                exp.find_member(Input::xfs_name())?,
+                item.find_member(Input::xfs_name())?
+            );
+            assert_eq!(
+                exp.find_member(Output::xfs_name())?,
+                item.find_member(Output::xfs_name())?
+            );
+            assert_eq!(
+                exp.find_member(Rollback::xfs_name())?,
+                item.find_member(Rollback::xfs_name())?
+            );
+            assert_eq!(
+                exp.find_member(Refusal::xfs_name())?,
+                item.find_member(Refusal::xfs_name())?
+            );
         }
 
         Ok(())
