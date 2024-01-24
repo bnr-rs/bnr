@@ -1,5 +1,11 @@
 use std::fmt;
 
+mod bnr_error;
+mod usb_error;
+
+pub use bnr_error::*;
+pub use usb_error::*;
+
 use time as datetime;
 
 /// Convenience alias for a `Result` type for the crate.
@@ -17,6 +23,8 @@ pub enum Error {
     Io(String),
     Xfs(String),
     DateTime(String),
+    Bnr(BnrError),
+    BnrUsb(UsbError),
 }
 
 impl From<rusb::Error> for Error {
@@ -84,6 +92,8 @@ impl fmt::Display for Error {
             Self::Io(err) => write!(f, "I/O error: {err}"),
             Self::Xfs(err) => write!(f, "XFS error: {err}"),
             Self::DateTime(err) => write!(f, "DateTime error: {err}"),
+            Self::Bnr(err) => write!(f, "BNR error: {err}"),
+            Self::BnrUsb(err) => write!(f, "BNR USB error: {err}"),
         }
     }
 }
