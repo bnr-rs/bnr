@@ -170,7 +170,9 @@ impl DeviceHandle {
                     let mut callback_arg = match msg.xfs_struct() {
                         Ok(xfs) if xfs.find_member(Currency::xfs_name()).is_ok()
                             && xfs.find_member(Denomination::xfs_name()).is_ok() => {
-                                CashOrder::try_from(xfs).ok()
+                                CashOrder::try_from(xfs)
+                                    .map_err(|err| log::error!("Error converting CashOrder: {err}"))
+                                    .ok()
                         }
                         _ => None,
                     };

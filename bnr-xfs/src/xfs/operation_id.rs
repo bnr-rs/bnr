@@ -20,6 +20,8 @@ const EMPTY: u32 = 6125;
 const PRESENT: u32 = 6126;
 const REJECT: u32 = 6127;
 const RETRACT: u32 = 6128;
+const CASHUNIT_CHANGED: u32 = 6153;
+const CASHUNIT_THRESHOLD: u32 = 6155;
 
 /// Represents an XFS operation ID.
 #[repr(u32)]
@@ -44,6 +46,8 @@ pub enum OperationId {
     Present = PRESENT,
     Reject = REJECT,
     Retract = RETRACT,
+    CashUnitChanged = CASHUNIT_CHANGED,
+    CashUnitThreshold = CASHUNIT_THRESHOLD,
 }
 
 impl OperationId {
@@ -73,6 +77,8 @@ impl OperationId {
             PRESENT => Self::Present,
             REJECT => Self::Reject,
             RETRACT => Self::Retract,
+            CASHUNIT_CHANGED => Self::CashUnitChanged,
+            CASHUNIT_THRESHOLD => Self::CashUnitThreshold,
             _ => Self::Offset,
         }
     }

@@ -76,7 +76,7 @@ impl Cashbox {
     }
 }
 
-impl_xfs_i4!(Cashbox, "cashbox");
+impl_xfs_i4!(Cashbox, "cashBox");
 
 impl fmt::Display for Cashbox {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -116,7 +116,7 @@ impl Unit {
     }
 }
 
-impl_xfs_i4!(Unit, "amount");
+impl_xfs_i4!(Unit, "unit");
 
 impl fmt::Display for Unit {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -235,7 +235,6 @@ impl_xfs_struct!(
     Denomination,
     "denomination",
     [
-        size: Size,
         amount: Amount,
         cashbox: Cashbox,
         items: DenominationItems
@@ -391,4 +390,4 @@ impl fmt::Display for DenominationItems {
     }
 }
 
-impl_xfs_array!(DenominationItems, "denominations");
+impl_xfs_array!(DenominationItems, "items");
