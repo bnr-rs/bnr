@@ -403,6 +403,11 @@ impl DeviceHandle {
         self.dispense_inner(request)
     }
 
+    /// Stops any active sessions on the BNR device.
+    pub fn stop_session(&self) -> Result<()> {
+        self.stop_session_inner()
+    }
+
     /// Gets a reference to the [UsbDeviceHandle].
     pub(crate) fn usb(&self) -> &UsbDeviceHandle {
         self.usb.as_ref()

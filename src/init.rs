@@ -44,6 +44,11 @@ pub fn reboot() -> Result<()> {
     with_handle::<()>(|h| h.reboot())
 }
 
+/// Stops any active sessions on the BNR device.
+pub fn stop_session() -> Result<()> {
+    with_handle::<()>(|h| h.stop_session())
+}
+
 /// De-initializes the global [DeviceHandle] instance.
 ///
 /// **NOTE** users are required to call either [DeviceHandle::open] or [open()] before further BNR

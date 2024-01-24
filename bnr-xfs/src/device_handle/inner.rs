@@ -780,6 +780,19 @@ impl DeviceHandle {
         Ok(())
     }
 
+    pub(crate) fn stop_session_inner(&self) -> Result<()> {
+        let call = XfsMethodCall::create(XfsMethodName::StopSession, []);
+
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
+        let usb = self.usb();
+
+        Self::write_call(usb, &call, timeout)?;
+
+        Self::read_response(usb, call.name()?, timeout)?;
+
+        Ok(())
+    }
+
     /// Writes an [XfsMethodCall] to the BNR device.
     pub fn write_call(
         usb: &UsbDeviceHandle,
