@@ -196,6 +196,11 @@ impl DeviceHandle {
         self.cash_in_rollback_inner()
     }
 
+    /// This command allows the application to force cash that has been presented to be ejected from the bezel.
+    pub fn eject(&self) -> Result<()> {
+        self.eject_inner()
+    }
+
     /// Gets a reference to the [UsbDeviceHandle].
     pub const fn usb(&self) -> &UsbDeviceHandle {
         &self.usb

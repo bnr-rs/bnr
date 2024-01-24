@@ -94,3 +94,23 @@ fn test_cash_in_rollback() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+fn test_eject() -> Result<()> {
+    let _lock = common::init();
+
+    let handle = DeviceHandle::open(None, None, None)?;
+
+    handle.close()?;
+
+    let date = handle.get_date_time()?;
+    if date.year() == 2001 {
+        handle.set_current_date_time()?;
+    }
+
+    handle.eject()?;
+
+    handle.reset()?;
+
+    Ok(())
+}
