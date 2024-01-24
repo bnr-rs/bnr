@@ -844,6 +844,6 @@ impl<const N: usize> From<[u8; N]> for CurrencyCode {
 
 impl fmt::Display for CurrencyCode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", <&str>::from(self))
+        write!(f, r#""{}""#, <&str>::from(self))
     }
 }

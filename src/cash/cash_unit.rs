@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::{
     arrays,
     currency::{CashType, CashTypeList, LCU},
@@ -14,6 +16,13 @@ pub type UnitId = [i8; UNIT_ID_LEN];
 
 pub const PCU_NAME_LEN: usize = 5;
 pub type PcuName = [i8; PCU_NAME_LEN];
+
+/// Convert a C-like char array into a `str`.
+macro_rules! c_str {
+    ($item:expr) => {{
+        std::str::from_utf8($item.map(|i| i as u8).as_ref()).unwrap_or("")
+    }};
+}
 
 /// Finds a [PhysicalCashUnit] item referenced by the [LogicalCashUnit].
 ///
@@ -111,6 +120,24 @@ pub struct CashUnit {
     transport_count: u32,
     logical_cash_unit_list: LogicalCashUnitList,
     physical_cash_unit_list: PhysicalCashUnitList,
+}
+
+impl fmt::Display for CashUnit {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{{")?;
+        write!(f, r#""transport_count":{},"#, self.transport_count)?;
+        write!(
+            f,
+            r#""logical_cash_unit_list":{},"#,
+            self.logical_cash_unit_list
+        )?;
+        write!(
+            f,
+            r#""physical_cash_unit_list":{}"#,
+            self.physical_cash_unit_list
+        )?;
+        write!(f, "}}")
+    }
 }
 
 impl CashUnit {
@@ -330,6 +357,25 @@ impl From<&bnr_sys::LogicalCashUnitList> for LogicalCashUnitList {
 impl From<bnr_sys::LogicalCashUnitList> for LogicalCashUnitList {
     fn from(val: bnr_sys::LogicalCashUnitList) -> Self {
         (&val).into()
+    }
+}
+
+impl fmt::Display for LogicalCashUnitList {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{{")?;
+        write!(f, r#""max_size": {},"#, self.max_size)?;
+        write!(f, r#""size": {},"#, self.size)?;
+
+        write!(f, r#""items": ["#)?;
+        let items_len = self.items().len();
+        for (i, item) in self.items().iter().enumerate() {
+            write!(f, "{item}")?;
+
+            if i != items_len - 1 {
+                write!(f, ",")?;
+            }
+        }
+        write!(f, "]}}")
     }
 }
 
@@ -678,6 +724,32 @@ impl From<bnr_sys::XfsLogicalCashUnit> for LogicalCashUnit {
     }
 }
 
+impl fmt::Display for LogicalCashUnit {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{{")?;
+        write!(f, r#""cash_type":{},"#, self.cash_type)?;
+        write!(
+            f,
+            r#""secondary_cash_types":{},"#,
+            self.secondary_cash_types
+        )?;
+        write!(f, r#""number":{},"#, self.number)?;
+        write!(f, r#""cu_kind":{},"#, self.cu_kind)?;
+        write!(f, r#""cu_type":{},"#, self.cu_type)?;
+        write!(f, r#""unit_id":{},"#, c_str!(&self.unit_id))?;
+        write!(f, r#""initial_count":{},"#, self.initial_count)?;
+        write!(f, r#""count":{},"#, self.count)?;
+        write!(f, r#""status":{},"#, self.status)?;
+        write!(f, r#""extended_counters":{},"#, self.extended_counters)?;
+        write!(
+            f,
+            r#""physical_cash_unit":{}"#,
+            c_str!(&self.physical_cash_unit)
+        )?;
+        write!(f, "}}")
+    }
+}
+
 /// Represents extended counters for a cash unit.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
@@ -780,6 +852,26 @@ impl From<&DispenseCounters> for ExtendedCounters {
     }
 }
 
+impl fmt::Display for ExtendedCounters {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{{")?;
+
+        if let Some(d) = self.deposit.as_ref() {
+            write!(f, r#""deposit":{d}"#)?;
+        }
+
+        if let Some(d) = self.dispense.as_ref() {
+            if self.deposit.is_some() {
+                write!(f, ",")?;
+            }
+
+            write!(f, r#""dispense":{d}"#)?;
+        }
+
+        write!(f, "}}")
+    }
+}
+
 /// Represents counters for deposits.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
@@ -840,6 +932,18 @@ impl From<bnr_sys::DepositCounters> for DepositCounters {
     }
 }
 
+impl fmt::Display for DepositCounters {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{{")?;
+        write!(f, r#""deposit_count":{}"#, self.deposit_count)?;
+        write!(f, r#""retracted_count":{}"#, self.retracted_count)?;
+        write!(f, r#""emptied_count":{}"#, self.emptied_count)?;
+        write!(f, r#""forgery_count":{}"#, self.forgery_count)?;
+        write!(f, r#""disappeared_count":{}"#, self.disappeared_count)?;
+        write!(f, "}}")
+    }
+}
+
 /// Represents counters for dispensed notes.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
@@ -885,6 +989,15 @@ impl From<&bnr_sys::DispenseCounters> for DispenseCounters {
 impl From<bnr_sys::DispenseCounters> for DispenseCounters {
     fn from(val: bnr_sys::DispenseCounters) -> Self {
         (&val).into()
+    }
+}
+
+impl fmt::Display for DispenseCounters {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{{")?;
+        write!(f, r#""dispense_count":{}"#, self.dispense_count)?;
+        write!(f, r#""reject_count":{}"#, self.reject_count)?;
+        write!(f, "}}")
     }
 }
 
@@ -989,31 +1102,36 @@ impl From<PhysicalCashUnitList> for bnr_sys::PhysicalCashUnitList {
     }
 }
 
+impl fmt::Display for PhysicalCashUnitList {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{{")?;
+        write!(f, r#""max_size":{}"#, self.max_size)?;
+        write!(f, r#""size":{}"#, self.size)?;
+
+        write!(f, r#""items":["#)?;
+        let item_len = self.items().len();
+        for (i, item) in self.items().iter().enumerate() {
+            write!(f, r#"{item}"#)?;
+
+            if i != item_len - 1 {
+                write!(f, ",")?;
+            }
+        }
+        write!(f, "]}}")
+    }
+}
+
 /// Represents a XFS physical cash unit and its parameters.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
 pub struct PhysicalCashUnit {
-    /// Name of the physical location in the BNR where this cash unit is installed.
     name: PcuName,
-    /// Physical cash unit ID. Correspond to the BNR Module Serial Number (MSN).
     unit_id: UnitId,
-
-    /// Actual count of bills in the physical cash unit.
-    /// - Type: One Shot.
-    /// - Max: 65535.
-    /// - Access:
-    ///   - Bundler and Recycler Physical Cash Units - Read-Only
-    ///   - Cashbox and Loader Physical Cash Units - Read-Write (write through bnr_ConfigureCashUnit() and bnr_UpdateCashUnit() methods).
     count: u32,
-    /// Defines limits to determine [threshold_status](Self::threshold_status).
     threshold: Threshold,
-    /// Status of the physical cash unit.
     status: u32,
-    /// [ThresholdStatus] of the physical cash unit.
     threshold_status: ThresholdStatus,
-    /// Defines how [threshold_status](Self::threshold_status) is determined.
     threshold_mode: ThresholdMode,
-    /// Enables or disables the physical cash unit.
     lock: bool,
 }
 
@@ -1032,6 +1150,8 @@ impl PhysicalCashUnit {
         }
     }
     /// Gets the [PcuName].
+    ///
+    /// Name of the physical location in the BNR where this cash unit is installed.
     pub const fn name(&self) -> &PcuName {
         &self.name
     }
@@ -1048,6 +1168,8 @@ impl PhysicalCashUnit {
     }
 
     /// Gets the [UnitId].
+    ///
+    /// Physical cash unit ID. Corresponds to the BNR Module Serial Number (MSN).
     pub const fn unit_id(&self) -> &UnitId {
         &self.unit_id
     }
@@ -1064,6 +1186,13 @@ impl PhysicalCashUnit {
     }
 
     /// Gets the count.
+    ///
+    /// Actual count of bills in the physical cash unit.
+    /// - Type: One Shot.
+    /// - Max: 65535.
+    /// - Access:
+    ///   - Bundler and Recycler Physical Cash Units - Read-Only
+    ///   - Cashbox and Loader Physical Cash Units - Read-Write (write through [configure_cash_unit](super::configure_cash_unit) and [update_cash_unit](super::update_cash_unit) methods).
     pub const fn count(&self) -> u32 {
         self.count
     }
@@ -1080,6 +1209,8 @@ impl PhysicalCashUnit {
     }
 
     /// Gets the [Threshold].
+    ///
+    /// Defines limits to determine [threshold_status](Self::threshold_status).
     pub const fn threshold(&self) -> Threshold {
         self.threshold
     }
@@ -1096,6 +1227,8 @@ impl PhysicalCashUnit {
     }
 
     /// Gets the status.
+    ///
+    /// Status of the physical cash unit.
     pub const fn status(&self) -> u32 {
         self.status
     }
@@ -1112,6 +1245,8 @@ impl PhysicalCashUnit {
     }
 
     /// Gets the [ThresholdStatus].
+    ///
+    /// [ThresholdStatus] of the physical cash unit.
     pub const fn threshold_status(&self) -> ThresholdStatus {
         self.threshold_status
     }
@@ -1128,6 +1263,8 @@ impl PhysicalCashUnit {
     }
 
     /// Gets the [ThresholdMode].
+    ///
+    /// Defines how [threshold_status](Self::threshold_status) is determined.
     pub const fn threshold_mode(&self) -> ThresholdMode {
         self.threshold_mode
     }
@@ -1144,6 +1281,8 @@ impl PhysicalCashUnit {
     }
 
     /// Gets the lock.
+    ///
+    /// Enables or disables the physical cash unit.
     pub const fn lock(&self) -> bool {
         self.lock
     }
@@ -1199,6 +1338,21 @@ impl From<&PhysicalCashUnit> for bnr_sys::XfsPhysicalCashUnit {
 impl From<PhysicalCashUnit> for bnr_sys::XfsPhysicalCashUnit {
     fn from(val: PhysicalCashUnit) -> Self {
         (&val).into()
+    }
+}
+
+impl fmt::Display for PhysicalCashUnit {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{{")?;
+        write!(f, r#""name":"{}","#, c_str!(&self.name))?;
+        write!(f, r#""unit_id":"{}","#, c_str!(&self.unit_id))?;
+        write!(f, r#""count":{},"#, self.count)?;
+        write!(f, r#""threshold":{},"#, self.threshold)?;
+        write!(f, r#""status":{},"#, self.status)?;
+        write!(f, r#""threshold_status":{},"#, self.threshold_status)?;
+        write!(f, r#""threshold_mode":{},"#, self.threshold_mode)?;
+        write!(f, r#""lock":{}"#, self.lock)?;
+        write!(f, "}}")
     }
 }
 
@@ -1282,6 +1436,17 @@ impl From<Threshold> for bnr_sys::XfsThreshold {
     }
 }
 
+impl fmt::Display for Threshold {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{{")?;
+        write!(f, r#""full":{},"#, self.full)?;
+        write!(f, r#""high":{},"#, self.high)?;
+        write!(f, r#""low":{},"#, self.low)?;
+        write!(f, r#""empty":{}"#, self.empty)?;
+        write!(f, "}}")
+    }
+}
+
 /// Filling status of a cash unit.
 ///
 /// How the threshold status of a cash unit is determined, depends of the threshold mode :
@@ -1342,6 +1507,32 @@ impl From<ThresholdStatus> for u32 {
     }
 }
 
+impl From<&ThresholdStatus> for &'static str {
+    fn from(val: &ThresholdStatus) -> Self {
+        match val {
+            ThresholdStatus::Ok => "OK",
+            ThresholdStatus::Full => "full",
+            ThresholdStatus::High => "high",
+            ThresholdStatus::Low => "low",
+            ThresholdStatus::Empty => "empty",
+            ThresholdStatus::Unknown => "unknown",
+            ThresholdStatus::NotSupported => "not supported",
+        }
+    }
+}
+
+impl From<ThresholdStatus> for &'static str {
+    fn from(val: ThresholdStatus) -> Self {
+        (&val).into()
+    }
+}
+
+impl fmt::Display for ThresholdStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, r#""{}""#, <&str>::from(self))
+    }
+}
+
 /// Threshold mode used to determine the [ThresholdStatus] of a PCU.
 #[repr(u32)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
@@ -1373,5 +1564,26 @@ impl From<u32> for ThresholdMode {
 impl From<ThresholdMode> for u32 {
     fn from(val: ThresholdMode) -> Self {
         val as u32
+    }
+}
+
+impl From<&ThresholdMode> for &'static str {
+    fn from(val: &ThresholdMode) -> Self {
+        match val {
+            ThresholdMode::Sensor => "sensor",
+            ThresholdMode::Count => "count",
+        }
+    }
+}
+
+impl From<ThresholdMode> for &'static str {
+    fn from(val: ThresholdMode) -> Self {
+        (&val).into()
+    }
+}
+
+impl fmt::Display for ThresholdMode {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, r#""{}""#, <&str>::from(self))
     }
 }
