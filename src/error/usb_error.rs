@@ -2,7 +2,7 @@ use std::fmt;
 
 /// Represents USB error codes.
 #[repr(u32)]
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
 pub enum UsbError {
     CRC = bnr_sys::BXR_USB_CRC,
     BTStuff = bnr_sys::BXR_USB_BTSTUFF,

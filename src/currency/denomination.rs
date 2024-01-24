@@ -152,24 +152,73 @@ impl Denomination {
         }
     }
 
-    ///  Gets the size of the [Denomination].
+    /// Gets the size of the [Denomination].
     pub const fn size(&self) -> u32 {
         self.size
     }
 
-    ///  Gets the amount of the [Denomination].
+    /// Sets the size of the [Denomination].
+    pub fn set_size(&mut self, size: u32) {
+        self.size = size;
+    }
+
+    /// Builder function that sets the size of the [Denomination].
+    pub fn with_size(mut self, size: u32) -> Self {
+        self.set_size(size);
+        self
+    }
+
+    /// Gets the amount of the [Denomination].
     pub const fn amount(&self) -> u32 {
         self.amount
     }
 
-    ///  Gets the cashbox of the [Denomination].
+    /// Sets the amount of the [Denomination].
+    pub fn set_amount(&mut self, amount: u32) {
+        self.amount = amount;
+    }
+
+    /// Builder function that sets the amount of the [Denomination].
+    pub fn with_amount(mut self, amount: u32) -> Self {
+        self.set_amount(amount);
+        self
+    }
+
+    /// Gets the cashbox of the [Denomination].
     pub const fn cashbox(&self) -> u32 {
         self.cashbox
     }
 
-    ///  Gets the list of [DenominationItem]s of the [Denomination].
+    /// Sets the cashbox of the [Denomination].
+    pub fn set_cashbox(&mut self, cashbox: u32) {
+        self.cashbox = cashbox;
+    }
+
+    /// Builder function that sets the cashbox of the [Denomination].
+    pub fn with_cashbox(mut self, cashbox: u32) -> Self {
+        self.set_cashbox(cashbox);
+        self
+    }
+
+    /// Gets the list of [DenominationItem]s of the [Denomination].
     pub fn items(&self) -> &[DenominationItem] {
         self.items.as_ref()
+    }
+
+    /// Gets the mutable list of [DenominationItem]s of the [Denomination].
+    pub fn items_mut(&mut self) -> &mut [DenominationItem] {
+        self.items.as_mut()
+    }
+
+    /// Sets the list of [DenominationItem]s of the [Denomination].
+    pub fn set_items(&mut self, items: [DenominationItem; DENOM_ITEM_LEN]) {
+        self.items = items;
+    }
+
+    /// Builder function that sets the list of [DenominationItem]s of the [Denomination].
+    pub fn with_items(mut self, items: [DenominationItem; DENOM_ITEM_LEN]) -> Self {
+        self.set_items(items);
+        self
     }
 }
 

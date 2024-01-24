@@ -67,6 +67,16 @@ impl CashUnit {
                     .find(|p| p.unit_id == l.physical_cash_unit)
             })
     }
+
+    /// Gets a reference to the [LogicalCashUnitList].
+    pub const fn logical_cash_unit_list(&self) -> &LogicalCashUnitList {
+        &self.logical_cash_unit_list
+    }
+
+    /// Gets a reference to the [PhysicalCashUnitList].
+    pub const fn physical_cash_unit_list(&self) -> &PhysicalCashUnitList {
+        &self.physical_cash_unit_list
+    }
 }
 
 impl From<&CashUnit> for bnr_sys::XfsCashUnit {
@@ -551,12 +561,24 @@ impl PhysicalCashUnitList {
 
     /// Gets a list of the [PhysicalCashUnit]s.
     pub fn items(&self) -> &[PhysicalCashUnit] {
-        self.items.as_ref()
+        let size = self.size as usize;
+
+        if (0..self.items.len()).contains(&size) {
+            self.items[..self.size as usize].as_ref()
+        } else {
+            self.items.as_ref()
+        }
     }
 
     /// Gets a mutable list of the [PhysicalCashUnit]s.
     pub fn items_mut(&mut self) -> &mut [PhysicalCashUnit] {
-        self.items.as_mut()
+        let size = self.size as usize;
+
+        if (0..self.items.len()).contains(&size) {
+            self.items[..self.size as usize].as_mut()
+        } else {
+            self.items.as_mut()
+        }
     }
 }
 
@@ -633,6 +655,45 @@ impl PhysicalCashUnit {
             threshold_mode: ThresholdMode::new(),
             lock: false,
         }
+    }
+    /// Gets the [PcuName].
+    pub const fn name(&self) -> &PcuName {
+        &self.name
+    }
+
+    /// Gets the [UnitId].
+    pub const fn unit_id(&self) -> &UnitId {
+        &self.unit_id
+    }
+
+    /// Gets the count.
+    pub const fn count(&self) -> u32 {
+        self.count
+    }
+
+    /// Gets the [Threshold].
+    pub const fn threshold(&self) -> Threshold {
+        self.threshold
+    }
+
+    /// Gets the status.
+    pub const fn status(&self) -> u32 {
+        self.status
+    }
+
+    /// Gets the [ThresholdStatus].
+    pub const fn threshold_status(&self) -> ThresholdStatus {
+        self.threshold_status
+    }
+
+    /// Gets the [ThresholdMode].
+    pub const fn threshold_mode(&self) -> ThresholdMode {
+        self.threshold_mode
+    }
+
+    /// Gets the lock.
+    pub const fn lock(&self) -> bool {
+        self.lock
     }
 }
 

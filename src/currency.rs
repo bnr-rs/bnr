@@ -5,10 +5,12 @@ use std::fmt;
 mod cash_type;
 mod code;
 mod denomination;
+mod mix;
 
 pub use cash_type::*;
 pub use code::*;
 pub use denomination::*;
+pub use mix::*;
 
 /// Represents a currency set used in the CDR.
 #[repr(C)]
@@ -38,6 +40,28 @@ impl Currency {
     /// by the denomination amount.
     pub fn exponent(&self) -> i32 {
         self.exponent
+    }
+}
+
+impl From<CurrencyCode> for Currency {
+    fn from(val: CurrencyCode) -> Self {
+        let exponent = match val {
+            CurrencyCode::AUD
+            | CurrencyCode::CAD
+            | CurrencyCode::CHF
+            | CurrencyCode::EUR
+            | CurrencyCode::GBP
+            | CurrencyCode::USD => -2,
+            CurrencyCode::JPY | CurrencyCode::MXN => -3,
+            CurrencyCode::AMD => -4,
+            // FIXME: fill out with more actual values
+            _ => -4,
+        };
+
+        Self {
+            currency_code: val,
+            exponent,
+        }
     }
 }
 

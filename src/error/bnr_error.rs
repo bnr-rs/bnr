@@ -3,7 +3,7 @@
 /// Documentation for each variant includes recommendations for resolving the error.
 #[allow(non_camel_case_types)]
 #[repr(u32)]
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
 pub enum BnrError {
     /// E_SS01 : BNR is idle mode
     ///

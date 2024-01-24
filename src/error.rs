@@ -22,7 +22,7 @@ pub fn check_res(res: i32, name: &str) -> Result<()> {
 }
 
 /// Error types for the library.
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
 pub enum Error {
     Cash(String),
     Io(String),
