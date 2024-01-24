@@ -13,6 +13,7 @@ use time as datetime;
 use super::*;
 use crate::cash_unit::TransportCount;
 use crate::currency::{Currency, Denomination};
+use crate::{CallbackOperationResponse, CallbackIntermediateResponse, CallbackStatusResponse};
 use crate::xfs::{
     self,
     method_call::{XfsMethodCall, XfsMethodName},
@@ -164,6 +165,7 @@ impl DeviceHandle {
 
             while !stop.load(Ordering::Relaxed) {
                 if let Ok(msg) = Self::read_callback_call(&usb, timeout) {
+                    log::trace!("Callback call: {msg}");
                     let res_id = msg.call_id().unwrap_or(-1);
                     let mut callback_arg = match msg.xfs_struct() {
                         Ok(xfs) if xfs.find_member(Currency::xfs_name()).is_ok()
@@ -176,33 +178,53 @@ impl DeviceHandle {
                     let op_id: i32 = msg.operation_id()?.into();
                     let result = msg.result().unwrap_or(0);
                     let ext_result = msg.ext_result().unwrap_or(0);
-                    match msg_name {
+                    log::trace!("Callback message name: {msg_name}");
+                    let xfs_res = match msg_name {
                         XfsMethodName::OperationCompleteOccurred => {
+                            log::trace!("OperationComplete occurred: {msg}");
                             if let Some(cash_order) = callback_arg.as_mut() {
                                 op_complete(res_id, op_id, result, ext_result, cash_order);
                             } else {
                                 op_complete(res_id, op_id, result, ext_result, &mut ());
                             }
                             response_tx.send(msg)?;
+
+                            let response = CallbackOperationResponse::create(op_id, res_id);
+                            Some(XfsMethodResponse::new_params([
+                                XfsParam::create(XfsValue::new().with_xfs_struct(response.into()))
+                            ]))
                         }
                         XfsMethodName::IntermediateOccurred => {
+                            log::trace!("Intermediate occurred: {msg}");
                             if let Some(cash_order) = callback_arg.as_mut() {
                                 intermediate_occurred(res_id, op_id, result, cash_order);
                             } else {
                                 intermediate_occurred(res_id, op_id, result, &mut ());
                             }
+
+                            let response = CallbackIntermediateResponse::create(op_id, res_id);
+                            Some(XfsMethodResponse::new_params([
+                                XfsParam::create(XfsValue::new().with_xfs_struct(response.into()))
+                            ]))
                         }
-                        XfsMethodName::StatusOccurred if callback_arg.is_some() => {
+                        XfsMethodName::StatusOccurred => {
+                            log::trace!("Status occurred: {msg}");
                             if let Some(cash_order) = callback_arg.as_mut() {
                                 status_occurred(res_id, op_id, result, cash_order);
                             } else {
                                 status_occurred(res_id, op_id, result, &mut ());
                             }
+                            let response = CallbackStatusResponse::create(res_id, result);
+                            Some(XfsMethodResponse::new_params([
+                                XfsParam::create(XfsValue::new().with_xfs_struct(response.into()))
+                            ]))
                         }
-                        _ => (),
+                        _ => None,
+                    };
+                    if let Some(res) = xfs_res {
+                        let res_timeout = std::time::Duration::from_millis(1250);
+                        Self::write_callback_response(&usb, &res, msg_name, res_timeout)?;
                     }
-                } else {
-                    std::thread::sleep(std::time::Duration::from_millis(256));
                 }
             }
 
