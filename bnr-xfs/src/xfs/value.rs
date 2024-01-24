@@ -320,7 +320,7 @@ impl fmt::Display for XfsValue {
             if has_field {
                 write!(f, ", ")?;
             }
-            write!(f, r#""string": {v}"#)?;
+            write!(f, r#""string": "{v}""#)?;
             has_field = true;
         }
         if let Some(v) = self.xfs_struct() {

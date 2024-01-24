@@ -90,11 +90,7 @@ impl fmt::Display for XfsArray {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::xfs::{
-        self,
-        value::XfsValue,
-        //xfs_struct::{XfsMember, XfsStruct},
-    };
+    use crate::xfs::{self, value::XfsValue};
     use crate::Result;
 
     #[test]

@@ -1,6 +1,8 @@
 use time as datetime;
 
-use crate::{xfs::method_response::XfsMethodResponse, Error, Result};
+use crate::capabilities::Capabilities;
+use crate::xfs::method_response::XfsMethodResponse;
+use crate::{Error, Result};
 
 mod inner;
 
@@ -130,6 +132,16 @@ impl DeviceHandle {
     /// "Parks" the device for maintenance, disabling all modules.
     pub fn park(&self) -> Result<()> {
         self.park_inner()
+    }
+
+    /// Gets the [Capabilities](crate::Capabilities) of the BNR device.
+    pub fn get_capabilities(&self) -> Result<Capabilities> {
+        self.get_capabilities_inner()
+    }
+
+    /// Sets the [Capabilities](crate::status::CdrPositionCapabilitiesList) for the BNR device.
+    pub fn set_capabilities(&self, caps: &Capabilities) -> Result<()> {
+        self.set_capabilities_inner(caps)
     }
 
     /// Gets a reference to the [UsbDeviceHandle].

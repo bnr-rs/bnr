@@ -6,7 +6,8 @@ use super::common;
 fn test_open() -> Result<()> {
     let _lock = common::init();
 
-    let _handle = DeviceHandle::open(None, None, None)?;
+    let handle = DeviceHandle::open(None, None, None)?;
+    handle.close()?;
 
     Ok(())
 }
@@ -17,8 +18,11 @@ fn test_reset() -> Result<()> {
 
     let handle = DeviceHandle::open(None, None, None)?;
     handle.close()?;
+
     handle.get_date_time()?;
     handle.reset()?;
+
+    handle.close()?;
 
     Ok(())
 }
@@ -29,6 +33,8 @@ fn test_cancel() -> Result<()> {
 
     let handle = DeviceHandle::open(None, None, None)?;
     handle.cancel()?;
+
+    handle.close()?;
 
     Ok(())
 }
@@ -66,6 +72,8 @@ fn test_get_date_time() -> Result<()> {
 
     log::debug!("DateTime: {date}");
 
+    handle.close()?;
+
     Ok(())
 }
 
@@ -82,6 +90,8 @@ fn test_set_date_time() -> Result<()> {
     log::debug!("DateTime: {date}");
 
     handle.set_current_date_time()?;
+
+    handle.close()?;
 
     Ok(())
 }

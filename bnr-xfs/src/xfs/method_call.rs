@@ -141,6 +141,8 @@ pub enum XfsMethodName {
     CancelWaitingCashTaken,
     #[serde(rename = "bnr.retract")]
     Retract,
+    #[serde(rename = "bnr.getcapabilities")]
+    GetCapabilities,
     #[serde(rename = "bnr.setcapabilities")]
     SetCapabilities,
     // **NOTE**: `Occured` is not a typo here, it is a mispelling in the protocol message that we have to replicate
@@ -184,6 +186,7 @@ impl From<&XfsMethodName> for &'static str {
             XfsMethodName::Present => "bnr.present",
             XfsMethodName::CancelWaitingCashTaken => "bnr.cancelwaitingcashtaken",
             XfsMethodName::Retract => "bnr.retract",
+            XfsMethodName::GetCapabilities => "bnr.getcapabilities",
             XfsMethodName::SetCapabilities => "bnr.setcapabilities",
             XfsMethodName::OperationCompleteOccurred => "BnrListener.operationCompleteOccured",
             XfsMethodName::StatusOccurred => "BnrListener.statusOccured",
@@ -225,6 +228,7 @@ impl TryFrom<&str> for XfsMethodName {
             "bnr.present" => Ok(Self::Present),
             "bnr.cancelwaitingcashtaken" => Ok(Self::CancelWaitingCashTaken),
             "bnr.retract" => Ok(Self::Retract),
+            "bnr.getcapabilities" => Ok(Self::GetCapabilities),
             "bnr.setcapabilities" => Ok(Self::SetCapabilities),
             "bnrlistener.operationcompleteoccured" => Ok(Self::OperationCompleteOccurred),
             "bnrlistener.statusoccured" => Ok(Self::StatusOccurred),

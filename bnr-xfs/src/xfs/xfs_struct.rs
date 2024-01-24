@@ -52,14 +52,14 @@ impl XfsStruct {
 
 impl fmt::Display for XfsStruct {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{{")?;
+        write!(f, r#"{{"members": ["#)?;
         for (i, member) in self.members.iter().enumerate() {
             if i != 0 {
                 write!(f, ", ")?;
             }
             write!(f, "{member}")?;
         }
-        write!(f, "}}")
+        write!(f, "]}}")
     }
 }
 
@@ -174,7 +174,7 @@ impl XfsMember {
 impl fmt::Display for XfsMember {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{{")?;
-        write!(f, r#""name": {}, "#, self.name)?;
+        write!(f, r#""name": "{}", "#, self.name)?;
         write!(f, r#""value": {}"#, self.value)?;
         write!(f, "}}")
     }
