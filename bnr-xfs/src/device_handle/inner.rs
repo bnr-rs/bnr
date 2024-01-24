@@ -416,6 +416,28 @@ impl DeviceHandle {
         Ok(())
     }
 
+    pub(crate) fn empty_inner(&self, pcu_name: &str, to_float: bool) -> Result<()> {
+        increment_call_counter();
+        let count = XfsParam::create(XfsValue::new().with_base64(call_counter_base64()));
+
+        let call = XfsMethodCall::new()
+            .with_name(XfsMethodName::Empty)
+            .with_params(XfsParams::create([
+                 XfsParam::create(XfsValue::new().with_string(pcu_name)),
+                 XfsParam::create(XfsValue::new().with_boolean(to_float as u8)),
+                 count,
+            ]));
+
+        let timeout = std::time::Duration::from_millis(50);
+        let usb = self.usb();
+
+        Self::write_call(usb, &call, timeout)?;
+
+        Self::read_response(usb, call.name()?, timeout)?;
+
+        Ok(())
+    }
+
     /// Writes an [XfsMethodCall] to the BNR device.
     pub fn write_call(
         usb: &UsbDeviceHandle,

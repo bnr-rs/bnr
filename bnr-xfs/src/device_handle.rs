@@ -201,6 +201,18 @@ impl DeviceHandle {
         self.eject_inner()
     }
 
+    /// Empties a recycler or loader cash unit in the cashbox.
+    ///
+    /// **Note** When calling this function for a loader, the `to_float` parameter is not taken into account and the loader is completely emptied.
+    ///
+    /// Params:
+    ///
+    /// - `pcu_name`: Name of the physical cash unit to empty.
+    /// - `to_float` If `true`, the command empties up to the low threshold of the Physical Cash Unit, otherwise to zero.
+    pub fn empty(&self, pcu_name: &str, to_float: bool) -> Result<()> {
+        self.empty_inner(pcu_name, to_float)
+    }
+
     /// Gets a reference to the [UsbDeviceHandle].
     pub const fn usb(&self) -> &UsbDeviceHandle {
         &self.usb
