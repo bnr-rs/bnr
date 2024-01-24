@@ -96,6 +96,11 @@ impl DeviceHandle {
         self.close_inner()
     }
 
+    /// Reboots the BNR. This call puts the BNR in the same state than a power cycle (power off/on).
+    pub fn reboot(&self) -> Result<()> {
+        self.reboot_inner()
+    }
+
     /// Gets a reference to the [UsbDeviceHandle].
     pub const fn usb(&self) -> &UsbDeviceHandle {
         &self.usb

@@ -30,3 +30,4 @@ version = "0.1"
 
 [features]
 e2e-tests = []
+test-reboot = []

@@ -113,6 +113,8 @@ pub enum XfsMethodName {
     StopSession,
     #[serde(rename = "bnr.reset")]
     Reset,
+    #[serde(rename = "bnr.reboot")]
+    Reboot,
     #[serde(rename = "bnr.cancel")]
     Cancel,
     #[serde(rename = "bnr.park")]
@@ -166,6 +168,7 @@ impl From<&XfsMethodName> for &'static str {
             XfsMethodName::GetStatus => "bnr.getstatus",
             XfsMethodName::StopSession => "bnr.stopsession",
             XfsMethodName::Reset => "bnr.reset",
+            XfsMethodName::Reboot => "bnr.reboot",
             XfsMethodName::Cancel => "bnr.cancel",
             XfsMethodName::Park => "bnr.park",
             XfsMethodName::Empty => "bnr.empty",
@@ -205,6 +208,7 @@ impl TryFrom<&str> for XfsMethodName {
             "bnr.getstatus" => Ok(Self::GetStatus),
             "bnr.stopsession" => Ok(Self::StopSession),
             "bnr.reset" => Ok(Self::Reset),
+            "bnr.reboot" => Ok(Self::Reboot),
             "bnr.cancel" => Ok(Self::Cancel),
             "bnr.park" => Ok(Self::Park),
             "bnr.empty" => Ok(Self::Empty),

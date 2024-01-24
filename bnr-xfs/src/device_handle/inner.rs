@@ -101,6 +101,19 @@ impl DeviceHandle {
         }
     }
 
+    pub(crate) fn reboot_inner(&self) -> Result<()> {
+        let call = XfsMethodCall::new().with_name(XfsMethodName::Reboot);
+        let timeout = time::Duration::from_millis(50);
+        let usb = self.usb();
+
+        Self::write_call(usb, &call, timeout)?;
+
+        match Self::read_response(usb, call.name()?, timeout) {
+            Ok(_) => Ok(()),
+            Err(err) => Err(err),
+        }
+    }
+
     /// Writes an [XfsMethodCall] to the BNR device.
     pub fn write_call(
         usb: &UsbDeviceHandle,

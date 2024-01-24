@@ -40,3 +40,14 @@ fn test_close() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+#[cfg(feature = "test-reboot")]
+fn test_reboot() -> Result<()> {
+    let _lock = common::init();
+
+    let handle = DeviceHandle::open(None, None, None)?;
+    handle.reboot()?;
+
+    Ok(())
+}
