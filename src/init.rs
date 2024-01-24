@@ -92,3 +92,8 @@ pub fn cancel() -> Result<()> {
 pub fn close() -> Result<()> {
     check_res(unsafe { bnr_sys::bnr_Close() }, "close")
 }
+
+/// Reboots the BNR. This call puts the BNR in the same state than a power cycle (power off/on).
+pub fn reboot() -> Result<()> {
+    check_res(unsafe { bnr_sys::bnr_Reboot() }, "reboot")
+}

@@ -139,7 +139,6 @@ pub fn denominate(request: &DispenseRequest) -> Result<()> {
 ///
 /// From the MEI/CPI documentation:
 ///
-/// ```no_build, no_run
 /// The BNR will make a bundle of notes and wait for the bnr_Present() command to give it to the customer.
 ///
 /// Three methods are possible:
@@ -166,7 +165,7 @@ pub fn denominate(request: &DispenseRequest) -> Result<()> {
 ///
 /// - `request`: Amount or bill list requested for dispense.
 ///
-/// Returns `Ok` If function call is successful. Otherwise, return is strictly negative and its absolute value contains the error code. Specific error code usage :
+/// Returns `Ok` If function call is successful. Otherwise, return is strictly negative and its absolute value contains the error code.
 pub fn dispense(request: &DispenseRequest) -> Result<()> {
     let mut req = bnr_sys::XfsDispenseRequest::from(request);
 
