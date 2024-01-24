@@ -1,4 +1,7 @@
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{
+    atomic::{AtomicU64, Ordering},
+    Arc,
+};
 
 use base64::Engine;
 use datetime::format_description::well_known::{
@@ -8,6 +11,7 @@ use datetime::format_description::well_known::{
 use time as datetime;
 
 use super::*;
+use crate::callback_response::CallbackResponse;
 use crate::cash_unit::TransportCount;
 use crate::xfs::{
     self,
@@ -22,6 +26,13 @@ static CALL_COUNTER: AtomicU64 = AtomicU64::new(INIT_COUNT);
 
 /// Class identifier of the `MainModule`.
 pub const MAIN_MODULE_CLASS: i64 = 0xE0000;
+
+static OP_COMPLETED_FN_NOP: OperationCompletedFn =
+    |_id: i32, _op_id: i32, _ret: i32, _stat: i32, _cb: &mut dyn CallbackArg| {};
+static INTERMEDIATE_OCCURRED_FN_NOP: IntermediateOccurredFn =
+    |_id: i32, _op_id: i32, _ret: i32, _cb: &mut dyn CallbackArg| {};
+static STATUS_OCCURRED_FN_NOP: StatusOccurredFn =
+    |_id: i32, _op_id: i32, _stat: i32, _cb: &mut dyn CallbackArg| {};
 
 pub(crate) fn call_counter() -> u64 {
     CALL_COUNTER.load(Ordering::Relaxed)
@@ -87,21 +98,170 @@ impl DeviceHandle {
             }
         }
 
-        // FIXME: start a background thread to monitor device-sent events
-        Self::read_callback_call(&usb, timeout)?;
-
-        // write the `getIdentification` call to the call endpoint
-        Self::write_call(&usb, &call, timeout)?;
-
-        // read the response
-        Self::read_response(&usb, call.name()?, timeout).ok();
-
-        Ok(Self {
-            usb,
+        let ret = Self {
+            usb: Arc::new(usb),
             op_completed_callback,
             intermediate_occurred_callback,
             status_occurred_callback,
-        })
+        };
+
+        ret.start_background_listener()?;
+
+        let usb = ret.usb();
+
+        // write the `getIdentification` call to the call endpoint
+        Self::write_call(usb, &call, timeout)?;
+
+        // read the response
+        Self::read_response(usb, call.name()?, timeout).ok();
+
+        Ok(ret)
+    }
+
+    pub(crate) fn start_background_listener(&self) -> Result<()> {
+        let usb = self.usb_clone();
+
+        let op_complete = self.op_completed_callback().unwrap_or(OP_COMPLETED_FN_NOP);
+
+        let intermediate_occurred = self
+            .intermediate_occurred_callback()
+            .unwrap_or(INTERMEDIATE_OCCURRED_FN_NOP);
+
+        let status_occurred = self
+            .status_occurred_callback()
+            .unwrap_or(STATUS_OCCURRED_FN_NOP);
+
+        std::thread::spawn(move || -> Result<()> {
+            std::thread::sleep(std::time::Duration::from_millis(250));
+
+            let timeout = std::time::Duration::from_millis(50);
+
+            if let Ok(msg) = Self::read_callback_call(&usb, timeout) {
+                let (id, op_id) = match msg.name() {
+                    Ok(XfsMethodName::OperationCompleteOccurred) => {
+                        let mut params_iter =
+                            msg.params().params().iter().map(|m| m.inner().value());
+
+                        let id = params_iter
+                            .next()
+                            .cloned()
+                            .unwrap_or(XfsValue::new().with_i4(0))
+                            .i4()
+                            .cloned()
+                            .unwrap_or(0);
+
+                        let op_id = params_iter
+                            .next()
+                            .cloned()
+                            .unwrap_or(XfsValue::new().with_i4(0))
+                            .i4()
+                            .cloned()
+                            .unwrap_or(0);
+
+                        let ret = params_iter
+                            .next()
+                            .cloned()
+                            .unwrap_or(XfsValue::new().with_i4(0))
+                            .i4()
+                            .cloned()
+                            .unwrap_or(0);
+
+                        let stat = params_iter
+                            .next()
+                            .cloned()
+                            .unwrap_or(XfsValue::new().with_i4(0))
+                            .i4()
+                            .cloned()
+                            .unwrap_or(0);
+
+                        op_complete(id, op_id, ret, stat, &mut ());
+
+                        (Some(id), Some(op_id))
+                    }
+                    Ok(XfsMethodName::IntermediateOccurred) => {
+                        let mut params_iter =
+                            msg.params().params().iter().map(|m| m.inner().value());
+
+                        let id = params_iter
+                            .next()
+                            .cloned()
+                            .unwrap_or(XfsValue::new().with_i4(0))
+                            .i4()
+                            .cloned()
+                            .unwrap_or(0);
+
+                        let op_id = params_iter
+                            .next()
+                            .cloned()
+                            .unwrap_or(XfsValue::new().with_i4(0))
+                            .i4()
+                            .cloned()
+                            .unwrap_or(0);
+
+                        let ret = params_iter
+                            .next()
+                            .cloned()
+                            .unwrap_or(XfsValue::new().with_i4(0))
+                            .i4()
+                            .cloned()
+                            .unwrap_or(0);
+
+                        intermediate_occurred(id, op_id, ret, &mut ());
+
+                        (Some(id), Some(op_id))
+                    }
+                    Ok(XfsMethodName::StatusOccurred) => {
+                        let mut params_iter =
+                            msg.params().params().iter().map(|m| m.inner().value());
+
+                        let id = params_iter
+                            .next()
+                            .cloned()
+                            .unwrap_or(XfsValue::new().with_i4(0))
+                            .i4()
+                            .cloned()
+                            .unwrap_or(0);
+
+                        let op_id = params_iter
+                            .next()
+                            .cloned()
+                            .unwrap_or(XfsValue::new().with_i4(0))
+                            .i4()
+                            .cloned()
+                            .unwrap_or(0);
+
+                        let ret = params_iter
+                            .next()
+                            .cloned()
+                            .unwrap_or(XfsValue::new().with_i4(0))
+                            .i4()
+                            .cloned()
+                            .unwrap_or(0);
+
+                        status_occurred(id, op_id, ret, &mut ());
+
+                        (Some(id), Some(op_id))
+                    }
+                    _stat => {
+                        let name = msg.name_str();
+                        log::warn!("Received unknown device-sent message: {name}");
+                        (None, None)
+                    }
+                };
+
+                if let (Some(id), Some(op_id)) = (id, op_id) {
+                    let res = XfsMethodResponse::new_params([XfsParam::create(
+                        CallbackResponse::create(id, op_id).into(),
+                    )]);
+
+                    Self::write_callback_response(&usb, &res, msg.name()?, timeout)?;
+                }
+            }
+
+            Ok(())
+        });
+
+        Ok(())
     }
 
     pub(crate) fn reset_inner(&self) -> Result<()> {
@@ -682,5 +842,26 @@ impl DeviceHandle {
         log::trace!("Raw callback call: {call_str}");
 
         xfs::from_str::<XfsMethodCall>(call_str)
+    }
+
+    /// Writes an [XfsMethodCall] to the BNR device.
+    pub fn write_callback_response(
+        usb: &UsbDeviceHandle,
+        res: &XfsMethodResponse,
+        name: XfsMethodName,
+        timeout: std::time::Duration,
+    ) -> Result<()> {
+        match usb.write_bulk(
+            BNR_CALLBACK_RESPONSE_EP,
+            xfs::to_string(res)?.as_bytes(),
+            timeout,
+        ) {
+            Ok(_) => Ok(()),
+            Err(err) => {
+                let err_msg = format!("Error writing {name} callback response message: {err}");
+                log::warn!("{err_msg}");
+                Err(err.into())
+            }
+        }
     }
 }

@@ -149,6 +149,9 @@ pub enum XfsMethodName {
     #[serde(rename = "BnrListener.operationCompleteOccured")]
     OperationCompleteOccurred,
     // **NOTE**: `Occured` is not a typo here, it is a mispelling in the protocol message that we have to replicate
+    #[serde(rename = "BnrListener.intermediateOccured")]
+    IntermediateOccurred,
+    // **NOTE**: `Occured` is not a typo here, it is a mispelling in the protocol message that we have to replicate
     #[serde(rename = "BnrListener.statusOccured")]
     StatusOccurred,
 }
@@ -189,6 +192,7 @@ impl From<&XfsMethodName> for &'static str {
             XfsMethodName::GetCapabilities => "bnr.getcapabilities",
             XfsMethodName::SetCapabilities => "bnr.setcapabilities",
             XfsMethodName::OperationCompleteOccurred => "BnrListener.operationCompleteOccured",
+            XfsMethodName::IntermediateOccurred => "BnrListener.intermediateOccured",
             XfsMethodName::StatusOccurred => "BnrListener.statusOccured",
         }
     }
@@ -231,6 +235,7 @@ impl TryFrom<&str> for XfsMethodName {
             "bnr.getcapabilities" => Ok(Self::GetCapabilities),
             "bnr.setcapabilities" => Ok(Self::SetCapabilities),
             "bnrlistener.operationcompleteoccured" => Ok(Self::OperationCompleteOccurred),
+            "bnrlistener.intermediateoccured" => Ok(Self::IntermediateOccurred),
             "bnrlistener.statusoccured" => Ok(Self::StatusOccurred),
             _ => Err(Error::Parsing(format!("unknown method name: {val}"))),
         }

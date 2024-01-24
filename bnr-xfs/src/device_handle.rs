@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use time as datetime;
 
 use crate::capabilities::Capabilities;
@@ -35,6 +37,17 @@ pub type UsbDeviceHandle = rusb::DeviceHandle<rusb::Context>;
 /// Trait for arguments to state change callbacks used by the XFS API.
 pub trait CallbackArg {
     fn value(&self) -> i32;
+    fn is_null(&self) -> bool;
+}
+
+impl CallbackArg for () {
+    fn value(&self) -> i32 {
+        0
+    }
+
+    fn is_null(&self) -> bool {
+        true
+    }
 }
 
 /// Function signature for the `Operation Completed` callback used by the XFS API.
@@ -54,7 +67,7 @@ pub type StatusOccurredFn = fn(i32, i32, i32, &mut dyn CallbackArg);
 
 /// BNR XFS device handle for communication over USB.
 pub struct DeviceHandle {
-    usb: UsbDeviceHandle,
+    usb: Arc<UsbDeviceHandle>,
     op_completed_callback: Option<OperationCompletedFn>,
     intermediate_occurred_callback: Option<IntermediateOccurredFn>,
     status_occurred_callback: Option<StatusOccurredFn>,
@@ -340,8 +353,12 @@ impl DeviceHandle {
     }
 
     /// Gets a reference to the [UsbDeviceHandle].
-    pub const fn usb(&self) -> &UsbDeviceHandle {
+    pub fn usb(&self) -> &UsbDeviceHandle {
         &self.usb
+    }
+
+    pub(crate) fn usb_clone(&self) -> Arc<UsbDeviceHandle> {
+        Arc::clone(&self.usb)
     }
 
     /// Gets the callback function for operation completed events.

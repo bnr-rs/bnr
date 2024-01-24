@@ -1,4 +1,5 @@
 pub(crate) mod arrays;
+mod callback_response;
 mod capabilities;
 mod cash_unit;
 mod currency;
@@ -10,6 +11,7 @@ mod macros;
 mod status;
 pub mod xfs;
 
+pub use callback_response::*;
 pub use capabilities::*;
 pub use cash_unit::*;
 pub use currency::*;
