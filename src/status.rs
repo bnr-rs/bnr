@@ -1,4 +1,6 @@
-use crate::{Error, Result};
+//! Types and functions for handling system status events.
+
+use crate::{check_res, Result};
 
 /// Status of a CDR stacker.
 #[repr(C)]
@@ -42,13 +44,13 @@ impl From<bnr_sys::PositionStatus> for PositionStatus {
 /// List of CDR stacker status by position.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
-pub struct XfsCdrPositionStatusList {
+pub struct CdrPositionStatusList {
     pub max_size: u32,
     pub size: u32,
     pub items: [PositionStatus; 2],
 }
 
-impl XfsCdrPositionStatusList {
+impl CdrPositionStatusList {
     /// Creates a new [XfsCdrPositionStatusList].
     pub const fn new() -> Self {
         Self {
@@ -59,8 +61,8 @@ impl XfsCdrPositionStatusList {
     }
 }
 
-impl From<XfsCdrPositionStatusList> for bnr_sys::XfsCdrPositionStatusList {
-    fn from(val: XfsCdrPositionStatusList) -> Self {
+impl From<CdrPositionStatusList> for bnr_sys::XfsCdrPositionStatusList {
+    fn from(val: CdrPositionStatusList) -> Self {
         Self {
             maxSize: val.max_size,
             size: val.size,
@@ -69,7 +71,7 @@ impl From<XfsCdrPositionStatusList> for bnr_sys::XfsCdrPositionStatusList {
     }
 }
 
-impl From<bnr_sys::XfsCdrPositionStatusList> for XfsCdrPositionStatusList {
+impl From<bnr_sys::XfsCdrPositionStatusList> for CdrPositionStatusList {
     fn from(val: bnr_sys::XfsCdrPositionStatusList) -> Self {
         Self {
             max_size: val.maxSize,
@@ -82,18 +84,18 @@ impl From<bnr_sys::XfsCdrPositionStatusList> for XfsCdrPositionStatusList {
 /// Represents the CDR status returned by the [`bnr_GetStatus`](bnr_sys::bnr_GetStatus) call.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
-pub struct XfsCdrStatus {
+pub struct CdrStatus {
     pub device_status: u32,
     pub dispenser_status: u32,
     pub intermediate_stacker_status: u32,
     pub safe_door_status: u32,
     pub shutter_status: u32,
     pub transport_status: u32,
-    pub position_status_list: XfsCdrPositionStatusList,
+    pub position_status_list: CdrPositionStatusList,
 }
 
-impl XfsCdrStatus {
-    /// Creates a new [XfsCdrStatus].
+impl CdrStatus {
+    /// Creates a new [CdrStatus].
     pub const fn new() -> Self {
         Self {
             device_status: 0,
@@ -102,57 +104,57 @@ impl XfsCdrStatus {
             safe_door_status: 0,
             shutter_status: 0,
             transport_status: 0,
-            position_status_list: XfsCdrPositionStatusList::new(),
+            position_status_list: CdrPositionStatusList::new(),
         }
     }
 
-    /// Gets the [XfsCdrStatus] as a const pointer to a FFI [XfsCdrStatus](bnr_sys::XfsCdrStatus).
+    /// Gets the [CdrStatus] as a const pointer to a FFI [XfsCdrStatus](bnr_sys::XfsCdrStatus).
     pub fn as_raw_ptr(&self) -> *const bnr_sys::XfsCdrStatus {
         self as *const _ as *const _
     }
 
-    /// Gets the [XfsCdrStatus] as a mutable pointer to a FFI [XfsCdrStatus](bnr_sys::XfsCdrStatus).
+    /// Gets the [CdrStatus] as a mutable pointer to a FFI [XfsCdrStatus](bnr_sys::XfsCdrStatus).
     pub fn as_raw_ptr_mut(&mut self) -> *mut bnr_sys::XfsCdrStatus {
         self as *mut _ as *mut _
     }
 }
 
-impl From<XfsCdrStatus> for bnr_sys::XfsCdrStatus {
-    fn from(val: XfsCdrStatus) -> Self {
+impl From<CdrStatus> for bnr_sys::XfsCdrStatus {
+    fn from(val: CdrStatus) -> Self {
         Self {
             deviceStatus: val.device_status,
             dispenserStatus: val.dispenser_status,
             intermediateStackerStatus: val.intermediate_stacker_status,
-            safeDoorStatus: val.safe_door_status, 
-            shutterStatus: val.shutter_status, 
-            transportStatus: val.transport_status, 
-            positionStatusList: val.position_status_list.into(), 
+            safeDoorStatus: val.safe_door_status,
+            shutterStatus: val.shutter_status,
+            transportStatus: val.transport_status,
+            positionStatusList: val.position_status_list.into(),
         }
     }
 }
 
-impl From<bnr_sys::XfsCdrStatus> for XfsCdrStatus {
+impl From<bnr_sys::XfsCdrStatus> for CdrStatus {
     fn from(val: bnr_sys::XfsCdrStatus) -> Self {
         Self {
             device_status: val.deviceStatus,
             dispenser_status: val.dispenserStatus,
             intermediate_stacker_status: val.intermediateStackerStatus,
-            safe_door_status: val.safeDoorStatus, 
-            shutter_status: val.shutterStatus, 
-            transport_status: val.transportStatus, 
-            position_status_list: val.positionStatusList.into(), 
+            safe_door_status: val.safeDoorStatus,
+            shutter_status: val.shutterStatus,
+            transport_status: val.transportStatus,
+            position_status_list: val.positionStatusList.into(),
         }
     }
 }
 
 /// Gets the status of the CDR device.
-pub fn get_status() -> Result<XfsCdrStatus> {
-    let mut status = XfsCdrStatus::new();
-    let res = unsafe { bnr_sys::bnr_GetStatus(status.as_raw_ptr_mut()) };
+pub fn get_status() -> Result<CdrStatus> {
+    let mut status = CdrStatus::new();
 
-    if res < 0 {
-        Err(Error::Hal(res))
-    } else {
-        Ok(status)
-    }
+    check_res(
+        unsafe { bnr_sys::bnr_GetStatus(status.as_raw_ptr_mut()) },
+        "get_status",
+    )?;
+
+    Ok(status)
 }

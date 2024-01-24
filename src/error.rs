@@ -2,11 +2,25 @@ use std::fmt;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
+/// Check the result from a bnr-sys function call.
+pub fn check_res(res: i32, name: &str) -> Result<()> {
+    if res < 0 {
+        let err_str = format!("BNR {name} failure: {res}");
+        log::error!("{err_str}");
+        Err(Error::Hal(err_str))
+    } else {
+        log::debug!("BNR {name} success: {res}");
+        Ok(())
+    }
+}
+
+/// Error types for the library.
 #[derive(Debug, PartialEq)]
 pub enum Error {
+    Cash(String),
     Io(String),
     Rsa(String),
-    Hal(i32),
+    Hal(String),
     Json(String),
 }
 
@@ -55,6 +69,7 @@ impl<T> From<std::sync::PoisonError<T>> for Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::Cash(err) => write!(f, "Cash error: {err}"),
             Self::Io(err) => write!(f, "I/O error: {err})"),
             Self::Rsa(err) => write!(f, "RSA error: {err})"),
             Self::Hal(err) => write!(f, "HAL error: {err})"),
