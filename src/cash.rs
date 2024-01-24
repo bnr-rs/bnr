@@ -1,16 +1,12 @@
-use crate::{check_res, currency::CurrencyCode, Result};
+//! Functions for cash-related operations.
 
-mod cash_unit;
-mod dispense;
-mod order;
+use bnr_xfs::{CurrencyCode, CashUnit, DispenseRequest, LogicalCashUnit, LogicalCashUnitList, PhysicalCashUnit, PhysicalCashUnitList, LCU_LIST_LEN, PCU_LIST_LEN};
 
-pub use cash_unit::*;
-pub use dispense::*;
-pub use order::*;
+use crate::{with_handle, Result};
 
 /// Sends the initial message to start a `CashIn` transaction, and begin accepting notes.
 pub fn cash_in_start() -> Result<()> {
-    check_res(unsafe { bnr_sys::bnr_CashInStart() }, "cash_in_start")
+    with_handle::<()>(|h| h.cash_in_start())
 }
 
 /// Sends the follow-up message to start a `CashIn` transaction, and begin accepting notes.
@@ -40,21 +36,7 @@ pub fn cash_in_start() -> Result<()> {
 /// NULL or the string is empty, any currency will be accepted by the BNR.
 /// ```
 pub fn cash_in(limit: Option<u32>, currency: Option<CurrencyCode>) -> Result<()> {
-    let mut amount = limit.unwrap_or(0);
-    let amt_ptr = if limit.is_some() {
-        &mut amount as *mut _
-    } else {
-        std::ptr::null_mut()
-    };
-
-    let mut cur = currency.map(<[i8; 4]>::from).unwrap_or([0i8; 4]);
-    let cur_ptr = if currency.is_some() {
-        &mut cur as *mut _
-    } else {
-        std::ptr::null_mut()
-    };
-
-    check_res(unsafe { bnr_sys::bnr_CashIn(amt_ptr, cur_ptr) }, "cash_in")
+    with_handle::<()>(|h| h.cash_in(limit, currency))
 }
 
 /// Sends the message to rollback a `CashIn` transaction, returning any inserted notes to the
@@ -63,19 +45,19 @@ pub fn cash_in(limit: Option<u32>, currency: Option<CurrencyCode>) -> Result<()>
 /// The caller should first call the [cancel](crate::cancel) function to cancel the `CashIn`
 /// transaction.
 pub fn cash_in_rollback() -> Result<()> {
-    check_res(unsafe { bnr_sys::bnr_CashInRollback() }, "cash_in_rollback")
+    with_handle::<()>(|h| h.cash_in_rollback())
 }
 
 /// Sends the message to end a `CashIn` transaction.
 ///
 /// The caller will need to call [cash_in_start] and [cash_in] to begin accepting notes again.
 pub fn cash_in_end() -> Result<()> {
-    check_res(unsafe { bnr_sys::bnr_CashInEnd() }, "cash_in_end")
+    with_handle::<()>(|h| h.cash_in_end())
 }
 
 /// This command allows the application to force cash that has been presented to be ejected from the bezel.
 pub fn eject() -> Result<()> {
-    check_res(unsafe { bnr_sys::bnr_Eject() }, "eject")
+    with_handle::<()>(|h| h.eject())
 }
 
 /// Empties a recycler or loader cash unit in the cashbox.
@@ -86,11 +68,8 @@ pub fn eject() -> Result<()> {
 ///
 /// - `pcu_name`: Name of the physical cash unit to empty.
 /// - `to_float` If `true`, the command empties up to the low threshold of the Physical Cash Unit, otherwise to zero.
-pub fn empty(pcu_name: &PcuName, to_float: bool) -> Result<()> {
-    check_res(
-        unsafe { bnr_sys::bnr_Empty(pcu_name.clone().as_mut_ptr(), to_float.into()) },
-        "empty",
-    )
+pub fn empty(pcu_name: &str, to_float: bool) -> Result<()> {
+    with_handle::<()>(|h| h.empty(pcu_name, to_float))
 }
 
 /// Gets the complete state of all physical and logical cash units in the BNR.
@@ -98,14 +77,7 @@ pub fn empty(pcu_name: &PcuName, to_float: bool) -> Result<()> {
 /// Returns the [CashUnit] struct with details about the [PhysicalCashUnit]s and
 /// [LogicalCashUnit]s on the BNR device.
 pub fn query_cash_unit() -> Result<CashUnit> {
-    let mut cu = bnr_sys::XfsCashUnit::from(CashUnit::new());
-
-    check_res(
-        unsafe { bnr_sys::bnr_QueryCashUnit(&mut cu as *mut _) },
-        "query_cash_unit",
-    )?;
-
-    Ok(cu.into())
+    with_handle::<CashUnit>(|h| h.query_cash_unit())
 }
 
 /// Configures the BNR’s cash unit. This function is used to add or remove Logical and Physical Cash Unit in the BNR.
@@ -122,23 +94,12 @@ pub fn configure_cash_unit(
     lcu_list: &LogicalCashUnitList,
     pcu_list: &PhysicalCashUnitList,
 ) -> Result<(LogicalCashUnitList, PhysicalCashUnitList)> {
-    let mut lcu = bnr_sys::LogicalCashUnitList::from(lcu_list);
-    let mut pcu = bnr_sys::PhysicalCashUnitList::from(pcu_list);
-
-    set_pcu_for_lcu(&mut lcu, lcu_list, &mut pcu);
-
-    check_res(
-        unsafe {
-            bnr_sys::bnr_ConfigureCashUnit(transport_count, &mut lcu as *mut _, &mut pcu as *mut _)
-        },
-        "configure_cash_unit",
-    )?;
-
-    Ok((
-        LogicalCashUnitList::from(lcu),
-        PhysicalCashUnitList::from(pcu),
-    ))
+    with_handle::<(LogicalCashUnitList, PhysicalCashUnitList)>(|h| {
+        h.configure_cash_unit(transport_count, lcu_list, pcu_list)?;
+        Ok(h.query_cash_unit()?.into_lists())
+    })
 }
+
 /// Updates the BNR’s cash unit. This function is used to change counts and thresholds of the BNR
 /// [CashUnit]s.
 ///
@@ -154,17 +115,7 @@ pub fn update_cash_unit(
     lcu_list: &LogicalCashUnitList,
     pcu_list: &PhysicalCashUnitList,
 ) -> Result<()> {
-    let mut lcu = bnr_sys::LogicalCashUnitList::from(lcu_list);
-    let mut pcu = bnr_sys::PhysicalCashUnitList::from(pcu_list);
-
-    set_pcu_for_lcu(&mut lcu, lcu_list, &mut pcu);
-
-    check_res(
-        unsafe {
-            bnr_sys::bnr_UpdateCashUnit(transport_count, &mut lcu as *mut _, &mut pcu as *mut _)
-        },
-        "update_cash_unit",
-    )
+    with_handle::<()>(|h| h.update_cash_unit(transport_count, lcu_list, pcu_list))
 }
 
 /// Resets the [LogicalCashUnit]s and [PhysicalCashUnit]s `count` to zero.
@@ -194,7 +145,7 @@ pub fn reset_cash_unit_counts() -> Result<()> {
 
     let lcu = LogicalCashUnitList::new()
         .with_size(lcu_keep_len as u32)
-        .with_items(lcu_keep_list);
+        .with_items(&lcu_keep_list[..lcu_keep_len]);
 
     let pcu_keep: Vec<PhysicalCashUnit> = cu
         .physical_cash_unit_list()
@@ -217,7 +168,7 @@ pub fn reset_cash_unit_counts() -> Result<()> {
 
     let pcu = PhysicalCashUnitList::new()
         .with_size(pcu_keep_len as u32)
-        .with_items(pcu_keep_list);
+        .with_items(&pcu_keep_list[..pcu_keep_len]);
 
     update_cash_unit(0, &lcu, &pcu)
 }
@@ -239,14 +190,8 @@ pub fn reset_cash_unit_counts() -> Result<()> {
 ///   - for each item of denominateRequest->denomination.items from 0 to (denominateRequest->denomination.size - 1):
 ///     - denominateRequest->denomination.items[item].unit contains the number of a LCU from where banknotes must be distributed.
 ///     - denominateRequest->denomination.items[item].count gives the number of banknotes to distribute from the LCU.
-
 pub fn denominate(request: &DispenseRequest) -> Result<()> {
-    let mut req = bnr_sys::XfsDispenseRequest::from(request);
-
-    check_res(
-        unsafe { bnr_sys::bnr_Denominate(&mut req as *mut _) },
-        "denominate",
-    )
+    with_handle::<()>(|h| h.denominate(request))
 }
 
 /// Dispenses the amount requested by value or by bill list.
@@ -281,12 +226,7 @@ pub fn denominate(request: &DispenseRequest) -> Result<()> {
 ///
 /// Returns `Ok` If function call is successful. Otherwise, return is strictly negative and its absolute value contains the error code.
 pub fn dispense(request: &DispenseRequest) -> Result<()> {
-    let mut req = bnr_sys::XfsDispenseRequest::from(request);
-
-    check_res(
-        unsafe { bnr_sys::bnr_Dispense(&mut req as *mut _) },
-        "dispense",
-    )
+    with_handle::<()>(|h| h.dispense(request))
 }
 
 /// Activates the presentation of the cash.
@@ -299,7 +239,7 @@ pub fn dispense(request: &DispenseRequest) -> Result<()> {
 /// After #XFS_S_CDR_CASH_AVAILABLE status event, if no #XFS_S_CDR_CASH_TAKEN status event is received within a reasonable time period,
 /// the application should send a [cancel_waiting_cash_taken] to terminate the command, then send a [retract] to clear the bills from the outlet.
 pub fn present() -> Result<()> {
-    check_res(unsafe { bnr_sys::bnr_Present() }, "present")
+    with_handle::<()>(|h| h.present())
 }
 
 /// Asks the BNR to stop waiting for cash removal at the Bezel if any.
@@ -312,10 +252,7 @@ pub fn present() -> Result<()> {
 /// If this method is called after cash has been removed but before the #XFS_S_CDR_CASH_TAKEN status event has been returned to the caller,
 /// then no operation will take place and no error will be returned.
 pub fn cancel_waiting_cash_taken() -> Result<()> {
-    check_res(
-        unsafe { bnr_sys::bnr_CancelWaitingCashTaken() },
-        "cancel_waiting_cash_taken",
-    )
+    with_handle::<()>(|h| h.cancel_waiting_cash_taken())
 }
 
 /// This command allows the application to force cash that has been presented to be retracted.
@@ -329,5 +266,5 @@ pub fn cancel_waiting_cash_taken() -> Result<()> {
 /// **Note** An asynchronous method must not be called before the preceding one is terminated (i.e. OperationComplete event has been received); typically before calling [retract],
 /// the preceding command must be terminated by calling [cancel_waiting_cash_taken].
 pub fn retract() -> Result<()> {
-    check_res(unsafe { bnr_sys::bnr_Retract() }, "retract")
+    with_handle::<()>(|h| h.retract())
 }

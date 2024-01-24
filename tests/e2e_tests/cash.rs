@@ -1,4 +1,4 @@
-use bnr::{cash, init, Result};
+use bnr::{self, cash, init, Result};
 use std::{thread, time};
 
 use super::common;
@@ -95,7 +95,7 @@ fn test_empty() -> Result<()> {
 
     thread::sleep(time::Duration::from_secs(5));
 
-    cash::empty(&[0i8; 5], false)?;
+    cash::empty("", false)?;
 
     init::close()?;
 
@@ -129,8 +129,8 @@ fn test_configure_cash_unit() -> Result<()> {
 
     cash::configure_cash_unit(
         0,
-        &cash::LogicalCashUnitList::new(),
-        &cash::PhysicalCashUnitList::new(),
+        &bnr::LogicalCashUnitList::new(),
+        &bnr::PhysicalCashUnitList::new(),
     )?;
 
     init::close()?;
@@ -149,12 +149,10 @@ fn test_update_cash_unit() -> Result<()> {
 
     cash::update_cash_unit(
         0,
-        &cash::LogicalCashUnitList::new()
-            .with_size(1u32)
-            .with_items([cash::LogicalCashUnit::new(); cash::LCU_LIST_LEN]),
-        &cash::PhysicalCashUnitList::new()
-            .with_size(1u32)
-            .with_items([cash::PhysicalCashUnit::new(); cash::PCU_LIST_LEN]),
+        &bnr::LogicalCashUnitList::new()
+            .with_items(&[bnr::LogicalCashUnit::new()]),
+        &bnr::PhysicalCashUnitList::new()
+            .with_items(&[bnr::PhysicalCashUnit::new()]),
     )?;
 
     init::close()?;
@@ -187,7 +185,7 @@ fn test_denominate() -> Result<()> {
 
     thread::sleep(time::Duration::from_secs(5));
 
-    cash::denominate(&cash::DispenseRequest::new())?;
+    cash::denominate(&bnr::DispenseRequest::new())?;
 
     init::close()?;
 
@@ -203,7 +201,7 @@ fn test_dispense() -> Result<()> {
 
     thread::sleep(time::Duration::from_secs(5));
 
-    cash::dispense(&cash::DispenseRequest::new())?;
+    cash::dispense(&bnr::DispenseRequest::new())?;
 
     init::close()?;
 

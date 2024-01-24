@@ -1,57 +1,6 @@
-use std::ffi::c_void;
+use crate::{init_handle, deinit_handle, with_handle, DeviceHandle, Result};
 
-use crate::{check_res, Result};
-
-/// Function signature for the `Operation Complete` callback used by the C API.
-///
-/// Indicates that an operation completed on the device.
-///
-/// The function crosses the FFI boundary, and is inherently unsafe. Care should be taken to use as
-/// much safe Rust inside the callback as possible.
-///
-/// Casting the final `c_void` argument is the C way of achieving polymorphism. Special attention
-/// should be paid to handling this pointer carefully, including checking for null, and determining
-/// castable objects based on the other parameters.
-///
-/// The pointer is allocated by the C library, and the object it points to should be copied if sending
-/// to another function for further handling.
-///
-/// Ownership of the pointer remains with the C library.
-pub type OperationCompletedFn = unsafe extern "C" fn(i32, i32, i32, i32, *mut c_void);
-
-/// Function signature for the `Intermediate Occured` callback used by the C API.
-///
-/// Indicates an intermediate state transition occured during an ongoing transaction.
-///
-/// The function crosses the FFI boundary, and is inherently unsafe. Care should be taken to use as
-/// much safe Rust inside the callback as possible.
-///
-/// Casting the final `c_void` argument is the C way of achieving polymorphism. Special attention
-/// should be paid to handling this pointer carefully, including checking for null, and determining
-/// castable objects based on the other parameters.
-///
-/// The pointer is allocated by the C library, and the object it points to should be copied if sending
-/// to another function for further handling.
-///
-/// Ownership of the pointer remains with the C library.
-pub type IntermediateOccuredFn = unsafe extern "C" fn(i32, i32, i32, *mut c_void);
-
-/// Function signature for the `Status Occured` callback used by the C API.
-///
-/// Indicates a status event occured on the device.
-///
-/// The function crosses the FFI boundary, and is inherently unsafe. Care should be taken to use as
-/// much safe Rust inside the callback as possible.
-///
-/// Casting the final `c_void` argument is the C way of achieving polymorphism. Special attention
-/// should be paid to handling this pointer carefully, including checking for null, and determining
-/// castable objects based on the other parameters.
-///
-/// The pointer is allocated by the C library, and the object it points to should be copied if sending
-/// to another function for further handling.
-///
-/// Ownership of the pointer remains with the C library.
-pub type StatusOccuredFn = unsafe extern "C" fn(i32, i32, i32, *mut c_void);
+use bnr_xfs::{IntermediateOccurredFn, OperationCompletedFn, StatusOccurredFn};
 
 /// Sends the message to open the device.
 ///
@@ -63,37 +12,42 @@ pub type StatusOccuredFn = unsafe extern "C" fn(i32, i32, i32, *mut c_void);
 /// This function takes three callback functions as parameters to handle the different events the BNR can send.
 pub fn open(
     op_complete_callback: Option<OperationCompletedFn>,
-    intermediate_occured_callback: Option<IntermediateOccuredFn>,
-    status_occured_callback: Option<StatusOccuredFn>,
+    intermediate_occurred_callback: Option<IntermediateOccurredFn>,
+    status_occurred_callback: Option<StatusOccurredFn>,
 ) -> Result<()> {
-    check_res(
-        unsafe {
-            bnr_sys::bnr_Open(
-                op_complete_callback,
-                intermediate_occured_callback,
-                status_occured_callback,
-            )
-        },
-        "open",
-    )
+    let handle = DeviceHandle::open(
+        op_complete_callback,
+        intermediate_occurred_callback,
+        status_occurred_callback,
+    )?;
+
+    init_handle(handle)
 }
 
 /// Sends the message to reset the device.
 pub fn reset() -> Result<()> {
-    check_res(unsafe { bnr_sys::bnr_Reset() }, "reset")
+    with_handle::<()>(|h| h.reset())
 }
 
 /// Sends the message to cancel any currently active transactions/commands.
 pub fn cancel() -> Result<()> {
-    check_res(unsafe { bnr_sys::bnr_Cancel() }, "cancel")
+    with_handle::<()>(|h| h.cancel())
 }
 
 /// Stops secured communication session if started, ends the communication with the BNR and terminates the thread that has been started by a previous `open` call.
 pub fn close() -> Result<()> {
-    check_res(unsafe { bnr_sys::bnr_Close() }, "close")
+    with_handle::<()>(|h| h.close())
 }
 
 /// Reboots the BNR. This call puts the BNR in the same state than a power cycle (power off/on).
 pub fn reboot() -> Result<()> {
-    check_res(unsafe { bnr_sys::bnr_Reboot() }, "reboot")
+    with_handle::<()>(|h| h.reboot())
+}
+
+/// De-initializes the global [DeviceHandle] instance.
+///
+/// **NOTE** users are required to call either [DeviceHandle::open] or [open()] before further BNR
+/// device communication.
+pub fn destroy() -> Result<()> {
+    deinit_handle()
 }
