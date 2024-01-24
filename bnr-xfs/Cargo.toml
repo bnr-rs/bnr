@@ -30,9 +30,9 @@ version= "0.3"
 package = "time"
 features = ["formatting", "macros", "parsing"]
 
-[dependencies.serde-xml-rs]
+[dependencies.serde-xml]
 version = "0.6"
-git = "https://github.com/cr8t/serde-xml-rs"
+package = "serde-xml-rust"
 default-features = false
 
 [dependencies.serde]
