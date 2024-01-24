@@ -226,6 +226,19 @@ impl DeviceHandle {
         self.present_inner()
     }
 
+    /// Asks the BNR to stop waiting for cash removal at the Bezel if any.
+    ///
+    /// If it can do so, an OperationCompleteEvent is sent with the result field containing #XFS_E_CANCELLED to indicate that the operation was cancelled.
+    /// Otherwise, the current operation’s messages will be sent as usual.
+    ///
+    /// This method is meant to be called after the BNR has sent a #XFS_S_CDR_CASH_AVAILABLE status event, and before #XFS_S_CDR_CASH_TAKEN status event.
+    /// If this method is called outside these conditions, then no operation will take place and no error will be returned.
+    /// If this method is called after cash has been removed but before the #XFS_S_CDR_CASH_TAKEN status event has been returned to the caller,
+    /// then no operation will take place and no error will be returned.
+    pub fn cancel_waiting_cash_taken(&self) -> Result<()> {
+        self.cancel_waiting_cash_taken_inner()
+    }
+
     /// This command allows the application to force cash that has been presented to be retracted.
     ///
     /// Retracted bills will be moved to the intermediate stacker area and accounted in the Bundler LCU. The application can then present bills to the user, using [cash_in_rollback](Self::cash_in_rollback) or [present](Self::present)
