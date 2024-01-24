@@ -63,12 +63,12 @@ impl XfsMethodResponseStruct {
     }
 
     /// Gets a reference to the [XfsMethodResponseStruct] inner representation.
-    pub const fn as_inner(&self) -> &XfsMethodResponse {
+    pub const fn inner(&self) -> &XfsMethodResponse {
         &self.response
     }
 
     /// Gets a mutable reference to the [XfsMethodResponseStruct] inner representation.
-    pub fn as_inner_mut(&mut self) -> &mut XfsMethodResponse {
+    pub fn inner_mut(&mut self) -> &mut XfsMethodResponse {
         &mut self.response
     }
 
@@ -102,29 +102,36 @@ impl From<&XfsMethodResponseStruct> for XfsMethodResponse {
     }
 }
 
+impl fmt::Display for XfsMethodResponseStruct {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = self.inner();
+        write!(f, "{s}")
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use serde_xml_rs as xml;
-
     use super::*;
-    use crate::{xfs::value::XfsValue, Result};
+    use crate::{
+        xfs::{self, value::XfsValue},
+        Result,
+    };
 
     #[test]
     fn test_method_response_serde() -> Result<()> {
         let exp_xml = r#"<?xml version="1.0" encoding="UTF-8"?><methodResponse><fault><value><struct><member><name>faultCode</name><value><i4>6072</i4></value></member><member><name>faultString</name><value><string></string></value></member></struct></value></fault></methodResponse>"#;
         let res = XfsMethodResponseStruct::from(XfsMethodResponse::new_fault(6072, ""));
 
-        assert_eq!(xml::to_string(&res)?.as_str(), exp_xml);
-        assert_eq!(xml::from_str::<XfsMethodResponseStruct>(exp_xml)?, res);
+        assert_eq!(xfs::to_string(&res)?.as_str(), exp_xml);
+        assert_eq!(xfs::from_str::<XfsMethodResponseStruct>(exp_xml)?, res);
 
         let exp_xml = r#"<?xml version="1.0" encoding="UTF-8"?><methodResponse><params><param><value><i4>32</i4></value></param></params></methodResponse>"#;
-        let res =
-            XfsMethodResponseStruct::from(XfsMethodResponse::new_params([XfsParam::create_value(
-                XfsValue::Int4(32),
-            )]));
+        let res = XfsMethodResponseStruct::from(XfsMethodResponse::new_params([XfsParam::create(
+            XfsValue::new().with_i4(32),
+        )]));
 
-        assert_eq!(xml::to_string(&res)?.as_str(), exp_xml);
-        assert_eq!(xml::from_str::<XfsMethodResponseStruct>(exp_xml)?, res);
+        assert_eq!(xfs::to_string(&res)?.as_str(), exp_xml);
+        assert_eq!(xfs::from_str::<XfsMethodResponseStruct>(exp_xml)?, res);
 
         Ok(())
     }
@@ -138,8 +145,8 @@ mod tests {
         assert_eq!(fault.as_fault()?, &exp_fault);
         assert_eq!(fault.into_fault()?, exp_fault);
 
-        let params = XfsMethodResponse::new_params([XfsParam::create_value(XfsValue::Int4(32))]);
-        let exp_params = XfsParams::create([XfsParam::create_value(XfsValue::Int4(32))].into());
+        let params = XfsMethodResponse::new_params([XfsParam::create(XfsValue::new().with_i4(32))]);
+        let exp_params = XfsParams::create([XfsParam::create(XfsValue::new().with_i4(32))]);
 
         assert!(params.is_params());
         assert_eq!(params.as_params()?, &exp_params);
@@ -195,7 +202,21 @@ mod tests {
         </methodResponse>
         "#;
 
-        xml::from_str::<XfsMethodResponseStruct>(fuck_xml)?;
+        xfs::from_str::<XfsMethodResponseStruct>(fuck_xml)?;
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_null_param_value_serde() -> Result<()> {
+        let exp_xml = r#"<?xml version="1.0" encoding="UTF-8"?><methodResponse><params><param><value/></param></params></methodResponse>"#;
+        let exp_res =
+            XfsMethodResponseStruct::from(XfsMethodResponse::Params(XfsParams::create([
+                XfsParam::new(),
+            ])));
+
+        assert_eq!(xfs::to_string(&exp_res)?.as_str(), exp_xml);
+        assert_eq!(xfs::from_str::<XfsMethodResponseStruct>(exp_xml)?, exp_res);
 
         Ok(())
     }

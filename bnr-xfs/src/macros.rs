@@ -16,6 +16,7 @@ macro_rules! inner_enum {
                 }
 
                 #[doc = "Gets a reference to `" $ty "` as the variant `" $var "`'s inner type `" $var_ty "`."]
+                #[allow(unreachable_patterns)]
                 pub fn [<as_ $var:snake>](&self) -> $crate::Result<&$var_ty> {
                     use $crate::Error;
 
@@ -26,6 +27,7 @@ macro_rules! inner_enum {
                 }
 
                 #[doc = "Converts `" $ty "` into the variant `" $var "`'s inner type `" $var_ty "`."]
+                #[allow(unreachable_patterns)]
                 pub fn [<into_ $var:snake>](self) -> $crate::Result<$var_ty> {
                     use $crate::Error;
 

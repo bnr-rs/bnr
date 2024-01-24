@@ -27,6 +27,7 @@ dependencies = [
  "rusb",
  "serde",
  "serde-xml-rs",
+ "xml-rs",
 ]
 
 [[package]]
@@ -225,8 +226,7 @@ dependencies = [
 [[package]]
 name = "serde-xml-rs"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fb3aa78ecda1ebc9ec9847d5d3aba7d618823446a049ba2491940506da6e2782"
+source = "git+https://github.com/cr8t/serde-xml-rs?branch=main#55e275b6e251a1df27ad376b97a6fc3aae4aeac7"
 dependencies = [
  "log",
  "serde",

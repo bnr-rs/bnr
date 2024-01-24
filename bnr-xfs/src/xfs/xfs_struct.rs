@@ -1,15 +1,16 @@
 //! XFS `struct` types.
 
-use super::value::XfsValue;
 use std::fmt;
+
+use super::value::XfsValue;
 
 /// Represents an XFS `struct` containing an [XfsMember].
 #[repr(C)]
 #[derive(Clone, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
 #[serde(rename = "struct")]
 pub struct XfsStruct {
-    #[serde(rename = "$value")]
-    members: Vec<XfsMembers>,
+    #[serde(rename = "$value", default)]
+    members: Vec<ListMember>,
 }
 
 impl XfsStruct {
@@ -21,27 +22,29 @@ impl XfsStruct {
     }
 
     /// Creates a new [XfsStruct] with the provided [XfsMember].
-    pub const fn create(members: Vec<XfsMembers>) -> Self {
-        Self { members }
+    pub fn create<M: IntoIterator<Item = XfsMember>>(members: M) -> Self {
+        Self {
+            members: members.into_iter().map(ListMember::from).collect(),
+        }
     }
 
     /// Gets a reference to the list of [XfsMember].
-    pub fn members(&self) -> &[XfsMembers] {
+    pub fn members(&self) -> &[ListMember] {
         self.members.as_ref()
     }
 
     /// Gets a mutable reference to the list of [XfsMember].
-    pub fn members_mut(&mut self) -> &mut [XfsMembers] {
+    pub fn members_mut(&mut self) -> &mut [ListMember] {
         self.members.as_mut()
     }
 
     /// Sets the list of [XfsMember].
-    pub fn set_members<M: Into<Vec<XfsMembers>>>(&mut self, members: M) {
-        self.members = members.into();
+    pub fn set_members<M: IntoIterator<Item = XfsMember>>(&mut self, members: M) {
+        self.members = members.into_iter().map(ListMember::from).collect();
     }
 
     /// Builder function that sets the [XfsMember].
-    pub fn with_members<M: Into<Vec<XfsMembers>>>(mut self, members: M) -> Self {
+    pub fn with_members<M: IntoIterator<Item = XfsMember>>(mut self, members: M) -> Self {
         self.set_members(members);
         self
     }
@@ -57,6 +60,55 @@ impl fmt::Display for XfsStruct {
             write!(f, "{member}")?;
         }
         write!(f, "}}")
+    }
+}
+
+/// Wrapper for an [XfsStruct] value used in a collection.
+#[repr(C)]
+#[derive(Clone, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
+pub enum ListStruct {
+    #[serde(rename = "struct")]
+    Struct(XfsStruct),
+}
+
+impl ListStruct {
+    /// Creates a new [ListStruct].
+    pub const fn new() -> Self {
+        Self::Struct(XfsStruct::new())
+    }
+
+    /// Creates a new [ListStruct].
+    pub const fn create(xfs: XfsStruct) -> Self {
+        Self::Struct(xfs)
+    }
+
+    /// Destructures the [ListStruct] enum into its inner representation.
+    pub const fn inner(&self) -> &XfsStruct {
+        match self {
+            Self::Struct(s) => s,
+        }
+    }
+
+    /// Destructures the [ListStruct] enum into its mutable inner representation.
+    pub fn inner_mut(&mut self) -> &mut XfsStruct {
+        match self {
+            Self::Struct(s) => s,
+        }
+    }
+
+    /// Converts the [ListStruct] into the inner [XfsStruct].
+    pub fn into_inner(self) -> XfsStruct {
+        match self {
+            Self::Struct(s) => s,
+        }
+    }
+}
+
+impl fmt::Display for ListStruct {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Struct(s) => write!(f, "{s}"),
+        }
     }
 }
 
@@ -79,8 +131,11 @@ impl XfsMember {
     }
 
     /// Creates a new [XfsMember] with the provided parameters.
-    pub const fn create(name: String, value: XfsValue) -> Self {
-        Self { name, value }
+    pub fn create<S: Into<String>>(name: S, value: XfsValue) -> Self {
+        Self {
+            name: name.into(),
+            value,
+        }
     }
 
     /// Gets a reference to the [XfsMember] name.
@@ -128,28 +183,42 @@ impl fmt::Display for XfsMember {
 /// Wrapper for an [XfsMember] value used in a collection.
 #[repr(C)]
 #[derive(Clone, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
-pub enum XfsMembers {
+pub enum ListMember {
     #[serde(rename = "member")]
     Member(XfsMember),
 }
 
-impl XfsMembers {
+impl ListMember {
+    /// Creates a new [ListMember].
+    pub const fn new() -> Self {
+        Self::Member(XfsMember::new())
+    }
+
+    /// Creates a new [ListMember] from the provided [XfsMember].
+    pub const fn create(m: XfsMember) -> Self {
+        Self::Member(m)
+    }
+
+    /// Creates a new [ListMember] from the provided [XfsMember].
     pub const fn from_inner(m: XfsMember) -> Self {
         Self::Member(m)
     }
 
-    pub fn as_inner(&self) -> &XfsMember {
+    /// Gets a reference to the inner [XfsMember].
+    pub const fn inner(&self) -> &XfsMember {
         match self {
             Self::Member(m) => m,
         }
     }
 
-    pub fn as_inner_mut(&mut self) -> &mut XfsMember {
+    /// Gets a mutable reference to the inner [XfsMember].
+    pub fn inner_mut(&mut self) -> &mut XfsMember {
         match self {
             Self::Member(m) => m,
         }
     }
 
+    /// Converts the [ListMember] into an [XfsMmeber].
     pub fn into_inner(self) -> XfsMember {
         match self {
             Self::Member(m) => m,
@@ -157,31 +226,31 @@ impl XfsMembers {
     }
 }
 
-impl From<&XfsMember> for XfsMembers {
+impl From<&XfsMember> for ListMember {
     fn from(val: &XfsMember) -> Self {
         val.clone().into()
     }
 }
 
-impl From<XfsMember> for XfsMembers {
+impl From<XfsMember> for ListMember {
     fn from(val: XfsMember) -> Self {
         Self::from_inner(val)
     }
 }
 
-impl From<&XfsMembers> for XfsMember {
-    fn from(val: &XfsMembers) -> Self {
+impl From<&ListMember> for XfsMember {
+    fn from(val: &ListMember) -> Self {
         val.clone().into()
     }
 }
 
-impl From<XfsMembers> for XfsMember {
-    fn from(val: XfsMembers) -> Self {
+impl From<ListMember> for XfsMember {
+    fn from(val: ListMember) -> Self {
         val.into_inner()
     }
 }
 
-impl fmt::Display for XfsMembers {
+impl fmt::Display for ListMember {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Member(s) => write!(f, "{s}"),
@@ -189,116 +258,22 @@ impl fmt::Display for XfsMembers {
     }
 }
 
-/// Wrapper for an [XfsStruct] value used in a collection.
-#[repr(C)]
-#[derive(Clone, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
-pub enum XfsStructs {
-    #[serde(rename = "struct")]
-    Struct(XfsStruct),
-}
-
-impl XfsStructs {
-    /// Creates a new [XfsStructs].
-    pub const fn new() -> Self {
-        Self::Struct(XfsStruct::new())
-    }
-
-    /// Creates a new [XfsStructs].
-    pub const fn create(xfs: XfsStruct) -> Self {
-        Self::Struct(xfs)
-    }
-
-    /// Deconstructs the [XfsStructs] enum into its inner representation.
-    pub const fn as_inner(&self) -> &XfsStruct {
-        match self {
-            Self::Struct(s) => s,
-        }
-    }
-
-    /// Deconstructs the [XfsStructs] enum into its mutable inner representation.
-    pub fn as_inner_mut(&mut self) -> &mut XfsStruct {
-        match self {
-            Self::Struct(s) => s,
-        }
-    }
-}
-
-impl fmt::Display for XfsStructs {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Struct(s) => write!(f, "{s}"),
-        }
-    }
-}
-
-/// Represents an XFS `value` containing an [XfsStruct].
-///
-/// Separated from the [XfsValue] enum to avoid infinite size inference by the compiler.
-///
-/// **NOTE** indirect wrapper [XfsStructs] is an implementation detail needed for correct serialization.
-#[repr(C)]
-#[derive(Clone, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
-pub enum XfsValueStruct {
-    #[serde(rename = "value")]
-    Value(XfsStructs),
-}
-
-impl XfsValueStruct {
-    /// Creates a new [XfsValueStruct].
-    pub const fn new() -> Self {
-        Self::Value(XfsStructs::new())
-    }
-
-    /// Creates a new [XfsValueStruct] with the provided [XfsStruct].
-    pub const fn create(item: XfsStruct) -> Self {
-        Self::Value(XfsStructs::create(item))
-    }
-
-    /// Deconstructs the [XfsValueStruct] enum into its inner representation.
-    pub const fn as_inner(&self) -> &XfsStruct {
-        match self {
-            Self::Value(s) => s.as_inner(),
-        }
-    }
-
-    /// Deconstructs the [XfsValueStruct] enum into its mutable inner representation.
-    pub fn as_inner_mut(&mut self) -> &mut XfsStruct {
-        match self {
-            Self::Value(s) => s.as_inner_mut(),
-        }
-    }
-}
-
-impl fmt::Display for XfsValueStruct {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Value(v) => write!(f, "{v}"),
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
-    use serde_xml_rs as xml;
-
     use super::*;
-    use crate::Result;
+    use crate::{xfs, Result};
 
     #[test]
     fn test_xfs_value_struct_serde() -> Result<()> {
-        let exp_xml = r#"<?xml version="1.0" encoding="utf-8"?><value><struct><member><name>test</name><value><i4>16</i4></value></member></struct></value>"#;
+        let exp_xml = r#"<?xml version="1.0" encoding="UTF-8"?><value><struct><member><name>test</name><value><i4>16</i4></value></member></struct></value>"#;
 
-        let exp_struct = XfsValueStruct::create(XfsStruct::create(
-            [XfsMember::create("test".into(), XfsValue::Int4(16)).into()].into(),
-        ));
+        let exp_struct = XfsValue::new().with_xfs_struct(XfsStruct::create([XfsMember::create(
+            "test",
+            XfsValue::new().with_i4(16),
+        )]));
 
-        /*
-        let xml_str = xml::to_string(&exp_struct)?;
-
-        assert_eq!(xml_str.as_str(), exp_xml);
-        */
-
-        assert_eq!(xml::from_str::<XfsValueStruct>(exp_xml)?, exp_struct);
+        assert_eq!(xfs::to_string(&exp_struct)?.as_str(), exp_xml);
+        assert_eq!(xfs::from_str::<XfsValue>(exp_xml)?, exp_struct);
 
         Ok(())
     }

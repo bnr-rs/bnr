@@ -16,6 +16,8 @@ fn test_reset() -> Result<()> {
     let _lock = common::init();
 
     let handle = DeviceHandle::open(None, None, None)?;
+    handle.close()?;
+    handle.get_date_time()?;
     handle.reset()?;
 
     Ok(())

@@ -1,7 +1,5 @@
 use std::time;
 
-use serde_xml_rs as xml;
-
 use crate::{Error, Result};
 
 mod inner;
@@ -101,7 +99,7 @@ impl DeviceHandle {
         self.reboot_inner()
     }
 
-    /// Gets the ISO 8601 formatted date-time from the device. 
+    /// Gets the ISO 8601 formatted date-time from the device.
     pub fn get_date_time(&self) -> Result<String> {
         self.get_date_time_inner()
     }

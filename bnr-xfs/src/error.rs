@@ -34,6 +34,12 @@ impl From<std::array::TryFromSliceError> for Error {
     }
 }
 
+impl From<std::string::FromUtf8Error> for Error {
+    fn from(err: std::string::FromUtf8Error) -> Self {
+        Self::Parsing(format!("{err}"))
+    }
+}
+
 impl<T> From<std::sync::PoisonError<T>> for Error {
     fn from(err: std::sync::PoisonError<T>) -> Self {
         Self::Io(format!("{err}"))

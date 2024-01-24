@@ -237,20 +237,18 @@ impl fmt::Display for XfsMethodName {
 
 #[cfg(test)]
 mod tests {
-    use serde_xml_rs as xml;
-
     use super::*;
-    use crate::Result;
+    use crate::{xfs, Result};
 
     #[test]
     fn test_method_call_serde() -> Result<()> {
-        let exp_xml = r#"<?xml version="1.0" encoding="UTF-8"?><methodCall><methodName></methodName><params /></methodCall>"#;
-        let xml_str = xml::to_string(&XfsMethodCall::new())?;
+        let exp_xml = r#"<?xml version="1.0" encoding="UTF-8"?><methodCall><methodName></methodName><params/></methodCall>"#;
+        let xml_str = xfs::to_string(&XfsMethodCall::new())?;
 
         assert_eq!(xml_str.as_str(), exp_xml);
 
-        let exp_xml = r#"<?xml version="1.0" encoding="UTF-8"?><methodCall><methodName>module.getidentification</methodName><params /></methodCall>"#;
-        let xml_str = xml::to_string(&XfsMethodCall::from(XfsMethodName::GetIdentification))?;
+        let exp_xml = r#"<?xml version="1.0" encoding="UTF-8"?><methodCall><methodName>module.getidentification</methodName><params/></methodCall>"#;
+        let xml_str = xfs::to_string(&XfsMethodCall::from(XfsMethodName::GetIdentification))?;
 
         assert_eq!(xml_str.as_str(), exp_xml);
 
