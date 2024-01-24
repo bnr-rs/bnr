@@ -25,7 +25,8 @@ use crate::xfs::{
 
 const INIT_COUNT: u64 = 1;
 static CALL_COUNTER: AtomicU64 = AtomicU64::new(INIT_COUNT);
-const TIMEOUT: u64 = 500;
+const TIMEOUT: u64 = 5000;
+const CALLBACK_TIMEOUT: u64 = 0;
 
 /// Class identifier of the `MainModule`.
 pub const MAIN_MODULE_CLASS: i64 = 0xE0000;
@@ -135,7 +136,7 @@ impl DeviceHandle {
             .unwrap_or(STATUS_OCCURRED_FN_NOP);
 
         std::thread::spawn(move || -> Result<()> {
-            let timeout = std::time::Duration::from_millis(TIMEOUT);
+            let timeout = std::time::Duration::from_millis(CALLBACK_TIMEOUT);
 
             loop {
                 if let Ok(msg) = Self::read_callback_call(&usb, timeout) {
@@ -304,7 +305,7 @@ impl DeviceHandle {
                     }
                 }
 
-                std::thread::sleep(std::time::Duration::from_millis(1500));
+                std::thread::sleep(std::time::Duration::from_millis(256));
             }
         });
 
