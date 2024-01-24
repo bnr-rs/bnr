@@ -34,11 +34,11 @@ impl DeviceStatus {
     /// Creates a new [DeviceStatus] from the provided parameter.
     pub const fn create(val: u32) -> Self {
         match val {
-            ds if ds == DEVICE_STATUS_CHANGED => Self::Changed,
-            ds if ds == HARDWARE_ERROR => Self::HardwareError,
-            ds if ds == USER_ERROR => Self::UserError,
-            ds if ds == OFF_LINE => Self::Offline,
-            ds if ds == ON_LINE => Self::Online,
+            DEVICE_STATUS_CHANGED => Self::Changed,
+            HARDWARE_ERROR => Self::HardwareError,
+            USER_ERROR => Self::UserError,
+            OFF_LINE => Self::Offline,
+            ON_LINE => Self::Online,
             _ => Self::HardwareError,
         }
     }

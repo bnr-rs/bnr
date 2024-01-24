@@ -31,10 +31,10 @@ impl TransportStatus {
     /// Creates a new [TransportStatus] from the provided parameter.
     pub const fn create(val: u32) -> Self {
         match val {
-            ds if ds == TRANSPORT_CHANGED => Self::Changed,
-            ds if ds == TRANSPORT_OK => Self::Ok,
-            ds if ds == TRANSPORT_INOP => Self::Inoperable,
-            ds if ds == TRANSPORT_UNKNOWN => Self::Unknown,
+            TRANSPORT_CHANGED => Self::Changed,
+            TRANSPORT_OK => Self::Ok,
+            TRANSPORT_INOP => Self::Inoperable,
+            TRANSPORT_UNKNOWN => Self::Unknown,
             _ => Self::Unknown,
         }
     }
@@ -70,7 +70,7 @@ impl From<&TransportStatus> for &'static str {
 
 impl fmt::Display for TransportStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", <&str>::from(self))
+        write!(f, r#""{}""#, <&str>::from(self))
     }
 }
 

@@ -31,12 +31,12 @@ impl MixNumber {
     /// Creates a new [MixNumber] from the provided parameter.
     pub const fn create(val: u32) -> Self {
         match val {
-            v if v == ALGORITHM => Self::Algorithm,
-            v if v == TABLE => Self::Table,
-            v if v == DENOM => Self::Denom,
-            v if v == MIN_BILLS => Self::MinBills,
-            v if v == ALGORITHM_BASE => Self::AlgorithmBase,
-            v if v == OPTIMUM_CHANGE => Self::OptimumChange,
+            ALGORITHM => Self::Algorithm,
+            TABLE => Self::Table,
+            DENOM => Self::Denom,
+            MIN_BILLS => Self::MinBills,
+            ALGORITHM_BASE => Self::AlgorithmBase,
+            OPTIMUM_CHANGE => Self::OptimumChange,
             _ => Self::Algorithm,
         }
     }

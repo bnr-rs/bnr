@@ -28,9 +28,9 @@ impl SafeDoorStatus {
     /// Creates a new [SafeDoorStatus] from the provided parameter.
     pub const fn create(val: u32) -> Self {
         match val {
-            ds if ds == SD_OPEN => Self::Open,
-            ds if ds == SD_LOCKED => Self::Locked,
-            ds if ds == SD_UNKNOWN => Self::Unknown,
+            SD_OPEN => Self::Open,
+            SD_LOCKED => Self::Locked,
+            SD_UNKNOWN => Self::Unknown,
             _ => Self::Unknown,
         }
     }
@@ -63,7 +63,7 @@ impl From<&SafeDoorStatus> for &'static str {
 
 impl fmt::Display for SafeDoorStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", <&str>::from(self))
+        write!(f, r#""{}""#, <&str>::from(self))
     }
 }
 

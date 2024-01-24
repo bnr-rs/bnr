@@ -1,23 +1,26 @@
 use std::fmt;
 
-use crate::xfs::{value::XfsValue, xfs_struct::XfsMember};
-use crate::{Error, Result};
+use crate::impl_xfs_enum;
+
+const ANTI_FISH_NORMAL: u32 = 0;
+const ANTI_FISH_HIGH: u32 = 1;
+const ANTI_FISH_SPECIAL: u32 = 2;
 
 /// Defines the sensitivity level of string detection at Inlet.
 ///
 /// See [Capabilities].
 #[repr(u32)]
-#[derive(Clone, Copy, Debug, Default, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
 pub enum AntiFishingLevel {
     /// Normal sensitivity (default).
     #[default]
-    Normal = 0,
+    Normal = ANTI_FISH_NORMAL,
     /// High sensitivity.
-    High,
+    High = ANTI_FISH_HIGH,
     /// Special sensitivity.
     ///
     /// Special mode for use in applications where rain water blows into the BNR bezel, please @ref CONTACT “contact” CPI technical support for details.
-    Special,
+    Special = ANTI_FISH_SPECIAL,
 }
 
 impl AntiFishingLevel {
@@ -26,62 +29,14 @@ impl AntiFishingLevel {
         Self::Normal
     }
 
-    /// Gets the [XfsMember] name for [AntiFishingLevel].
-    pub const fn xfs_name() -> &'static str {
-        "antiFishingLevel"
-    }
-}
-
-impl From<u32> for AntiFishingLevel {
-    fn from(val: u32) -> Self {
+    /// Creates a new [AntiFishingLevel] from the provided parameter.
+    pub const fn create(val: u32) -> Self {
         match val {
-            0 => Self::Normal,
-            1 => Self::High,
-            2 => Self::Special,
+            ANTI_FISH_NORMAL => Self::Normal,
+            ANTI_FISH_HIGH => Self::High,
+            ANTI_FISH_SPECIAL => Self::Special,
             _ => Self::Normal,
         }
-    }
-}
-
-impl From<&u32> for AntiFishingLevel {
-    fn from(val: &u32) -> Self {
-        (*val).into()
-    }
-}
-
-impl From<i32> for AntiFishingLevel {
-    fn from(val: i32) -> Self {
-        (val as u32).into()
-    }
-}
-
-impl From<&i32> for AntiFishingLevel {
-    fn from(val: &i32) -> Self {
-        (*val).into()
-    }
-}
-
-impl From<AntiFishingLevel> for u32 {
-    fn from(val: AntiFishingLevel) -> Self {
-        val as u32
-    }
-}
-
-impl From<&AntiFishingLevel> for u32 {
-    fn from(val: &AntiFishingLevel) -> Self {
-        (*val).into()
-    }
-}
-
-impl From<AntiFishingLevel> for i32 {
-    fn from(val: AntiFishingLevel) -> Self {
-        val as i32
-    }
-}
-
-impl From<&AntiFishingLevel> for i32 {
-    fn from(val: &AntiFishingLevel) -> Self {
-        (*val).into()
     }
 }
 
@@ -101,54 +56,10 @@ impl From<AntiFishingLevel> for &'static str {
     }
 }
 
-impl From<&AntiFishingLevel> for XfsValue {
-    fn from(val: &AntiFishingLevel) -> Self {
-        Self::new().with_i4(val.into())
-    }
-}
-
-impl From<AntiFishingLevel> for XfsValue {
-    fn from(val: AntiFishingLevel) -> Self {
-        (&val).into()
-    }
-}
-
-impl From<&AntiFishingLevel> for XfsMember {
-    fn from(val: &AntiFishingLevel) -> Self {
-        XfsMember::create(AntiFishingLevel::xfs_name(), val.into())
-    }
-}
-
-impl From<AntiFishingLevel> for XfsMember {
-    fn from(val: AntiFishingLevel) -> Self {
-        (&val).into()
-    }
-}
-
-impl TryFrom<&XfsMember> for AntiFishingLevel {
-    type Error = Error;
-
-    fn try_from(val: &XfsMember) -> Result<Self> {
-        if val.name() == Self::xfs_name() && val.value().i4().is_some() {
-            Ok(val.value().i4().unwrap_or(&0i32).into())
-        } else {
-            Err(Error::Xfs(format!(
-                "Expected AntiFishingLevel XfsMember, have: {val}"
-            )))
-        }
-    }
-}
-
-impl TryFrom<XfsMember> for AntiFishingLevel {
-    type Error = Error;
-
-    fn try_from(val: XfsMember) -> Result<Self> {
-        (&val).try_into()
-    }
-}
-
 impl fmt::Display for AntiFishingLevel {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, r#""{}""#, <&str>::from(self))
     }
 }
+
+impl_xfs_enum!(AntiFishingLevel, "antiFishingLevel");

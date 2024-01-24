@@ -1,7 +1,6 @@
 use std::fmt;
 
-use crate::cash_unit::Size;
-use crate::{impl_xfs_array, impl_xfs_i4, impl_xfs_struct};
+use crate::{impl_xfs_array, impl_xfs_i4, impl_xfs_struct, Size};
 
 use super::CurrencyCode;
 

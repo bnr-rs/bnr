@@ -19,18 +19,19 @@ impl CdrPosition {
     pub const fn new() -> Self {
         Self::Bottom
     }
+
     /// Creates a new [CdrPosition] from the provided parameter.
     pub const fn create(val: u32) -> Self {
         match val {
-            ds if ds == CDR_POS_BOTTOM => Self::Bottom,
-            ds if ds == CDR_POS_TOP => Self::Top,
+            CDR_POS_BOTTOM => Self::Bottom,
+            CDR_POS_TOP => Self::Top,
             _ => Self::Bottom,
         }
     }
 }
 
-impl From<CdrPosition> for &'static str {
-    fn from(val: CdrPosition) -> Self {
+impl From<&CdrPosition> for &'static str {
+    fn from(val: &CdrPosition) -> Self {
         match val {
             CdrPosition::Bottom => "bottom",
             CdrPosition::Top => "top",
@@ -38,9 +39,9 @@ impl From<CdrPosition> for &'static str {
     }
 }
 
-impl From<&CdrPosition> for &'static str {
-    fn from(val: &CdrPosition) -> Self {
-        (*val).into()
+impl From<CdrPosition> for &'static str {
+    fn from(val: CdrPosition) -> Self {
+        (&val).into()
     }
 }
 

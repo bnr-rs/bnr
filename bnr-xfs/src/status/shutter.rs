@@ -31,10 +31,10 @@ impl ShutterStatus {
     /// Creates a new [ShutterStatus] from the provided parameter.
     pub const fn create(val: u32) -> Self {
         match val {
-            ds if ds == SHT_CLOSED => Self::Closed,
-            ds if ds == SHT_NOT_SUPPORTED => Self::NotSupported,
-            ds if ds == SHT_OPEN => Self::Open,
-            ds if ds == SHT_UNKNOWN => Self::Unknown,
+            SHT_CLOSED => Self::Closed,
+            SHT_NOT_SUPPORTED => Self::NotSupported,
+            SHT_OPEN => Self::Open,
+            SHT_UNKNOWN => Self::Unknown,
             _ => Self::Unknown,
         }
     }
@@ -69,7 +69,7 @@ impl From<&ShutterStatus> for &'static str {
 
 impl fmt::Display for ShutterStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", <&str>::from(self))
+        write!(f, r#""{}""#, <&str>::from(self))
     }
 }
 

@@ -1,11 +1,6 @@
 use std::{cmp, fmt};
 
-use crate::xfs::{
-    array::XfsArray,
-    value::XfsValue,
-    xfs_struct::{XfsMember, XfsStruct},
-};
-use crate::{Error, Result};
+use crate::{MaxSize, Size};
 
 use super::{CdrPosition, ContentStatus, HardwareStatus, ShutterStatus};
 
@@ -29,11 +24,6 @@ impl PositionStatus {
             shutter_status: ShutterStatus::new(),
         }
     }
-
-    /// Gets the [XfsMember] name.
-    pub const fn xfs_name() -> &'static str {
-        "positionStatus"
-    }
 }
 
 impl From<PositionStatus> for HardwareStatus {
@@ -46,168 +36,155 @@ impl From<PositionStatus> for HardwareStatus {
     }
 }
 
-impl From<&PositionStatus> for XfsStruct {
-    fn from(val: &PositionStatus) -> Self {
-        Self::create([
-            val.position.into(),
-            val.content_status.into(),
-            val.shutter_status.into(),
-        ])
-    }
-}
-
-impl From<PositionStatus> for XfsStruct {
-    fn from(val: PositionStatus) -> Self {
-        (&val).into()
-    }
-}
-
-impl TryFrom<&XfsStruct> for PositionStatus {
-    type Error = Error;
-
-    fn try_from(val: &XfsStruct) -> Result<Self> {
-        let members = val.members();
-
-        let position: CdrPosition = members
-            .iter()
-            .map(|m| m.inner())
-            .find(|m| m.name() == CdrPosition::xfs_name() && m.value().i4().is_some())
-            .ok_or(Error::Xfs(r#"PositionStatus missing "position""#.into()))?
-            .try_into()?;
-
-        let content_status: ContentStatus = members
-            .iter()
-            .map(|m| m.inner())
-            .find(|m| m.name() == ContentStatus::xfs_name() && m.value().i4().is_some())
-            .ok_or(Error::Xfs(
-                r#"PositionStatus missing "contentStatus""#.into(),
-            ))?
-            .try_into()?;
-
-        let shutter_status: ShutterStatus = members
-            .iter()
-            .map(|m| m.inner())
-            .find(|m| m.name() == ShutterStatus::xfs_name() && m.value().i4().is_some())
-            .ok_or(Error::Xfs(
-                r#"PositionStatus missing "shutterStatus""#.into(),
-            ))?
-            .try_into()?;
-
-        Ok(Self {
-            position,
-            content_status,
-            shutter_status,
-        })
-    }
-}
-
-impl TryFrom<XfsStruct> for PositionStatus {
-    type Error = Error;
-
-    fn try_from(val: XfsStruct) -> Result<Self> {
-        (&val).try_into()
-    }
-}
-
-impl From<&PositionStatus> for XfsValue {
-    fn from(val: &PositionStatus) -> Self {
-        Self::new().with_xfs_struct(val.into())
-    }
-}
-
-impl From<PositionStatus> for XfsValue {
-    fn from(val: PositionStatus) -> Self {
-        (&val).into()
-    }
-}
-
-impl TryFrom<&XfsValue> for PositionStatus {
-    type Error = Error;
-
-    fn try_from(val: &XfsValue) -> Result<Self> {
-        val.xfs_struct()
-            .ok_or(Error::Xfs(format!(
-                "Expected PositionStatus XfsValue, have: {val}"
-            )))?
-            .try_into()
-    }
-}
-
-impl TryFrom<XfsValue> for PositionStatus {
-    type Error = Error;
-
-    fn try_from(val: XfsValue) -> Result<Self> {
-        (&val).try_into()
-    }
-}
-
-impl From<&PositionStatus> for XfsMember {
-    fn from(val: &PositionStatus) -> Self {
-        Self::create(PositionStatus::xfs_name(), val.into())
-    }
-}
-
-impl From<PositionStatus> for XfsMember {
-    fn from(val: PositionStatus) -> Self {
-        (&val).into()
-    }
-}
-
-impl TryFrom<&XfsMember> for PositionStatus {
-    type Error = Error;
-
-    fn try_from(val: &XfsMember) -> Result<Self> {
-        match (val.name(), val.value().xfs_struct()) {
-            (n, Some(xfs)) if n == Self::xfs_name() => xfs.try_into(),
-            _ => Err(Error::Xfs(format!(
-                "Expected PositionStatus XfsMember, have: {val}"
-            ))),
-        }
-    }
-}
-
-impl TryFrom<XfsMember> for PositionStatus {
-    type Error = Error;
-
-    fn try_from(val: XfsMember) -> Result<Self> {
-        (&val).try_into()
-    }
-}
-
 impl fmt::Display for PositionStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, r#"{{"position": "{}", "#, self.position)?;
-        write!(f, r#""content_status": "{}", "#, self.content_status)?;
-        write!(f, r#""shutter_status": "{}"}}"#, self.shutter_status)
+        write!(f, "{{")?;
+        write!(f, r#""position": {}, "#, self.position)?;
+        write!(f, r#""content_status": {}, "#, self.content_status)?;
+        write!(f, r#""shutter_status": {}"#, self.shutter_status)?;
+        write!(f, "}}")
     }
 }
+
+impl_xfs_struct!(
+    PositionStatus,
+    "positionStatus",
+    [
+        position: CdrPosition,
+        content_status: ContentStatus,
+        shutter_status: ShutterStatus
+    ]
+);
+
+/// List of CDR stacker status by position.
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
+pub struct PositionStatusItems {
+    size: Size,
+    items: [PositionStatus; POS_STATUS_LIST_LEN],
+}
+
+impl PositionStatusItems {
+    /// Creates a new [PositionStatusItems].
+    pub const fn new() -> Self {
+        Self {
+            size: Size::new(),
+            items: [PositionStatus::new(); POS_STATUS_LIST_LEN],
+        }
+    }
+
+    /// Creates a new [PositionStatusItems] from the provided parameter.
+    pub const fn create(items: [PositionStatus; POS_STATUS_LIST_LEN]) -> Self {
+        Self {
+            size: Size::create(POS_STATUS_LIST_LEN as u32),
+            items,
+        }
+    }
+
+    /// Gets the max size.
+    pub const fn max_size() -> usize {
+        POS_STATUS_LIST_LEN
+    }
+
+    /// Gets the size.
+    pub const fn size(&self) -> u32 {
+        self.size.inner()
+    }
+
+    /// Sets the size.
+    pub fn set_size(&mut self, size: u32) {
+        if size as usize <= Self::max_size() {
+            self.size.set_inner(size);
+        }
+    }
+
+    /// Builder function that sets the size.
+    pub fn with_size(mut self, size: u32) -> Self {
+        self.set_size(size);
+        self
+    }
+
+    /// Gets a reference to the list of [PositionStatus] items.
+    pub fn items(&self) -> &[PositionStatus] {
+        let len = self.size() as usize;
+        if len <= Self::max_size() {
+            self.items[..len].as_ref()
+        } else {
+            self.items.as_ref()
+        }
+    }
+
+    /// Gets a mutable reference to the list of [PositionStatus] items.
+    pub fn items_mut(&mut self) -> &mut [PositionStatus] {
+        let len = self.size() as usize;
+        if len <= Self::max_size() {
+            self.items[..len].as_mut()
+        } else {
+            self.items.as_mut()
+        }
+    }
+
+    /// Sets the list of [PositionStatus] items.
+    pub fn set_items(&mut self, items: &[PositionStatus]) {
+        let len = cmp::min(items.len(), Self::max_size());
+        self.items[..len].copy_from_slice(&items[..len]);
+    }
+
+    /// Builder function that sets the list of [PositionStatus] items.
+    pub fn with_items(mut self, items: &[PositionStatus]) -> Self {
+        self.set_items(items);
+        self
+    }
+}
+
+impl fmt::Display for PositionStatusItems {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "[")?;
+
+        for (i, item) in self.items().iter().enumerate() {
+            if i != 0 {
+                write!(f, ", ")?;
+            }
+            write!(f, "{item}")?;
+        }
+
+        write!(f, "]")
+    }
+}
+
+impl_xfs_array!(PositionStatusItems, "items");
 
 /// List of CDR stacker status by position.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
 pub struct CdrPositionStatusList {
-    max_size: u32,
-    size: u32,
-    pub items: [PositionStatus; POS_STATUS_LIST_LEN],
+    max_size: MaxSize,
+    size: Size,
+    items: PositionStatusItems,
 }
 
 impl CdrPositionStatusList {
-    /// Creates a new [XfsCdrPositionStatusList].
+    /// Creates a new [CdrPositionStatusList].
     pub const fn new() -> Self {
         Self {
-            max_size: POS_STATUS_LIST_LEN as u32,
-            size: 0,
-            items: [PositionStatus::new(); POS_STATUS_LIST_LEN],
+            max_size: MaxSize::create(POS_STATUS_LIST_LEN as u32),
+            size: Size::new(),
+            items: PositionStatusItems::new(),
         }
     }
 
-    pub const fn xfs_name() -> &'static str {
-        "positionStatusList"
+    /// Creates a new [XfsCdrPositionStatusList] from the provided parameter.
+    pub const fn create(items: [PositionStatus; POS_STATUS_LIST_LEN]) -> Self {
+        Self {
+            max_size: MaxSize::create(POS_STATUS_LIST_LEN as u32),
+            size: Size::create(POS_STATUS_LIST_LEN as u32),
+            items: PositionStatusItems::create(items),
+        }
     }
 
     /// Gets the populated size of the [PositionStatus] list.
     pub const fn size(&self) -> usize {
-        self.size as usize
+        self.size.inner() as usize
     }
 
     /// Sets the populated size of the [PositionStatus] list.
@@ -215,7 +192,8 @@ impl CdrPositionStatusList {
     /// **NOTE** `size` must be less-than-or-equal to `POS_STATUS_LIST_LEN`.
     pub fn set_size(&mut self, size: usize) {
         if size <= POS_STATUS_LIST_LEN {
-            self.size = size as u32;
+            self.size.set_inner(size as u32);
+            self.items.set_size(size as u32);
         }
     }
 
@@ -229,16 +207,15 @@ impl CdrPositionStatusList {
 
     /// Gets the [PositionStatus] list.
     pub fn items(&self) -> &[PositionStatus] {
-        &self.items[..self.size()]
+        self.items.items()
     }
 
     /// Sets the [PositionStatus] list.
     ///
     /// **NOTE** sets at most `POS_STATUS_LIST_LEN` items.
     pub fn set_items(&mut self, items: &[PositionStatus]) {
-        let len = cmp::min(items.len(), POS_STATUS_LIST_LEN);
-        self.size = len as u32;
-        self.items[..len].copy_from_slice(&items[..len]);
+        self.items.set_items(items);
+        self.size.set_inner(self.items.size());
     }
 
     /// Builder function that sets the [PositionStatus] list.
@@ -252,115 +229,7 @@ impl CdrPositionStatusList {
 
 impl From<CdrPositionStatusList> for HardwareStatus {
     fn from(val: CdrPositionStatusList) -> Self {
-        val.items.map(Self::from).into()
-    }
-}
-
-impl From<&CdrPositionStatusList> for XfsArray {
-    fn from(val: &CdrPositionStatusList) -> Self {
-        Self::create(val.items().iter().map(XfsValue::from))
-    }
-}
-
-impl From<CdrPositionStatusList> for XfsArray {
-    fn from(val: CdrPositionStatusList) -> Self {
-        (&val).into()
-    }
-}
-
-impl TryFrom<&XfsArray> for CdrPositionStatusList {
-    type Error = Error;
-
-    fn try_from(val: &XfsArray) -> Result<Self> {
-        let data = val.data();
-        let len = cmp::min(data.len(), POS_STATUS_LIST_LEN);
-
-        let max_size = POS_STATUS_LIST_LEN as u32;
-        let size = len as u32;
-        let mut items = [PositionStatus::new(); POS_STATUS_LIST_LEN];
-
-        for (dst, src) in items[..len].iter_mut().zip(data[..len].iter()) {
-            *dst = src.inner().try_into()?;
-        }
-
-        Ok(Self {
-            max_size,
-            size,
-            items,
-        })
-    }
-}
-
-impl TryFrom<XfsArray> for CdrPositionStatusList {
-    type Error = Error;
-
-    fn try_from(val: XfsArray) -> Result<Self> {
-        (&val).try_into()
-    }
-}
-
-impl From<&CdrPositionStatusList> for XfsValue {
-    fn from(val: &CdrPositionStatusList) -> Self {
-        Self::new().with_array(val.into())
-    }
-}
-
-impl From<CdrPositionStatusList> for XfsValue {
-    fn from(val: CdrPositionStatusList) -> Self {
-        (&val).into()
-    }
-}
-
-impl TryFrom<&XfsValue> for CdrPositionStatusList {
-    type Error = Error;
-
-    fn try_from(val: &XfsValue) -> Result<Self> {
-        val.array()
-            .ok_or(Error::Xfs(format!(
-                "Expected CdrPositionStatusList XfsValue, have: {val}"
-            )))?
-            .try_into()
-    }
-}
-
-impl TryFrom<XfsValue> for CdrPositionStatusList {
-    type Error = Error;
-
-    fn try_from(val: XfsValue) -> Result<Self> {
-        (&val).try_into()
-    }
-}
-
-impl From<&CdrPositionStatusList> for XfsMember {
-    fn from(val: &CdrPositionStatusList) -> Self {
-        Self::create(CdrPositionStatusList::xfs_name(), val.into())
-    }
-}
-
-impl From<CdrPositionStatusList> for XfsMember {
-    fn from(val: CdrPositionStatusList) -> Self {
-        (&val).into()
-    }
-}
-
-impl TryFrom<&XfsMember> for CdrPositionStatusList {
-    type Error = Error;
-
-    fn try_from(val: &XfsMember) -> Result<Self> {
-        match (val.name(), val.value().array()) {
-            (n, Some(xfs)) if n == Self::xfs_name() => xfs.try_into(),
-            _ => Err(Error::Xfs(format!(
-                "Expected CdrPositionStatusList XfsMember, have: {val}"
-            ))),
-        }
-    }
-}
-
-impl TryFrom<XfsMember> for CdrPositionStatusList {
-    type Error = Error;
-
-    fn try_from(val: XfsMember) -> Result<Self> {
-        (&val).try_into()
+        val.items.items.map(Self::from).into()
     }
 }
 
@@ -368,18 +237,17 @@ impl fmt::Display for CdrPositionStatusList {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            r#""{{"max_size": {}, "size": {}"#,
-            self.max_size, self.size
-        )?;
-        write!(f, r#", "items": ["#)?;
-
-        for (i, item) in self.items.iter().enumerate() {
-            if i != 0 {
-                write!(f, ", ")?;
-            }
-            write!(f, "{item}")?;
-        }
-
-        write!(f, "]}}")
+            r#""{{"max_size": {}, "size": {}, "items": {}}}"#,
+            self.max_size, self.size, self.items
+        )
     }
 }
+
+impl_xfs_struct!(
+    CdrPositionStatusList,
+    "positionStatusList",
+    [
+        size: Size,
+        items: PositionStatusItems
+    ]
+);

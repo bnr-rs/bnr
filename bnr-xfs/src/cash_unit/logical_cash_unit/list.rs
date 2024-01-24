@@ -1,7 +1,6 @@
 use std::{cmp, fmt};
 
-use crate::cash_unit::{MaxSize, Size};
-use crate::{arrays, impl_xfs_array, impl_xfs_struct};
+use crate::{arrays, impl_xfs_array, impl_xfs_struct, MaxSize, Size};
 
 use super::*;
 

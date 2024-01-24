@@ -46,15 +46,15 @@ impl DispenserStatus {
     /// Creates a new [DispenserStatus] from the provided parameter.
     pub const fn create(val: u32) -> Self {
         match val {
-            ds if ds == CASH_UNIT_CHANGED => Self::Changed,
-            ds if ds == CASH_UNIT_CONFIG_CHANGED => Self::ConfigChanged,
-            ds if ds == CASH_UNIT_THRESHOLD => Self::Threshold,
-            ds if ds == CASH_UNIT_OK => Self::Ok,
-            ds if ds == CASH_UNIT_STATE => Self::State,
-            ds if ds == CASH_UNIT_STOP => Self::Stop,
-            ds if ds == CASH_UNIT_UNKNOWN => Self::Unknown,
-            ds if ds == CASH_TAKEN => Self::CashTaken,
-            ds if ds == CASH_AVAILABLE => Self::CashAvailable,
+            CASH_UNIT_CHANGED => Self::Changed,
+            CASH_UNIT_CONFIG_CHANGED => Self::ConfigChanged,
+            CASH_UNIT_THRESHOLD => Self::Threshold,
+            CASH_UNIT_OK => Self::Ok,
+            CASH_UNIT_STATE => Self::State,
+            CASH_UNIT_STOP => Self::Stop,
+            CASH_UNIT_UNKNOWN => Self::Unknown,
+            CASH_TAKEN => Self::CashTaken,
+            CASH_AVAILABLE => Self::CashAvailable,
             _ => Self::Unknown,
         }
     }

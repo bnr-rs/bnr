@@ -25,8 +25,8 @@ impl ContentStatus {
     /// Creates a new [ContentStatus] from the provided parameter.
     pub const fn create(val: u32) -> Self {
         match val {
-            ds if ds == CT_EMPTY => Self::Empty,
-            ds if ds == CT_NOT_EMPTY => Self::NotEmpty,
+            CT_EMPTY => Self::Empty,
+            CT_NOT_EMPTY => Self::NotEmpty,
             _ => Self::Empty,
         }
     }
@@ -57,7 +57,7 @@ impl From<ContentStatus> for &'static str {
 
 impl fmt::Display for ContentStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", <&str>::from(self))
+        write!(f, r#""{}""#, <&str>::from(self))
     }
 }
 

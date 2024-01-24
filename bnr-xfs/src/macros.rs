@@ -73,6 +73,54 @@ macro_rules! impl_xfs_enum {
     };
 }
 
+/// Creates a new XFS `i4` type.
+#[macro_export]
+macro_rules! create_xfs_i4 {
+    ($ty:ident, $name:expr, $doc:expr) => {
+        ::paste::paste! {
+            #[doc = $doc]
+            #[repr(C)]
+            #[derive(Clone, Copy, Debug, Default, PartialEq, ::serde::Deserialize, ::serde::Serialize)]
+            pub struct $ty(u32);
+
+            impl $ty {
+                #[doc = "Creates a new `" $ty "`."]
+                pub const fn new() -> Self {
+                    Self(0)
+                }
+
+                #[doc = "Creates a new `" $ty "` from the provided parameter."]
+                pub const fn create(val: u32) -> Self {
+                    Self(val)
+                }
+
+                #[doc = "Gets the inner representation of `" $ty "`."]
+                pub const fn inner(&self) -> u32 {
+                    self.0
+                }
+
+                #[doc = "Sets the inner representation of `" $ty "`."]
+                pub fn set_inner(&mut self, val: u32) {
+                    self.0 = val;
+                }
+
+                #[doc = "Converts into the inner representation of `" $ty "`."]
+                pub fn into_inner(self) -> u32 {
+                    self.0
+                }
+            }
+
+            $crate::impl_xfs_i4!($ty, $name);
+
+            impl ::std::fmt::Display for $ty {
+                fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+                    write!(f, "{}", self.inner())
+                }
+            }
+        }
+    }
+}
+
 /// Common functionality for XFS `i4` types.
 #[macro_export]
 macro_rules! impl_xfs_i4 {
@@ -329,6 +377,54 @@ macro_rules! impl_xfs_int {
             }
         }
     };
+}
+
+/// Creates a new XFS boolean type.
+#[macro_export]
+macro_rules! create_xfs_bool {
+    ($ty:ident, $name:expr, $doc:expr) => {
+        ::paste::paste! {
+            #[doc = $doc]
+            #[repr(C)]
+            #[derive(Clone, Copy, Debug, Default, PartialEq, ::serde::Deserialize, ::serde::Serialize)]
+            pub struct $ty(bool);
+
+            impl $ty {
+                #[doc = "Creates a new `" $ty "`."]
+                pub const fn new() -> Self {
+                    Self(false)
+                }
+
+                #[doc = "Creates a new `" $ty "` from the provided parameter."]
+                pub const fn create(val: bool) -> Self {
+                    Self(val)
+                }
+
+                #[doc = "Gets the inner representation of `" $ty "`."]
+                pub const fn inner(&self) -> bool {
+                    self.0
+                }
+
+                #[doc = "Sets the inner representation of `" $ty "`."]
+                pub fn set_inner(&mut self, val: bool) {
+                    self.0 = val;
+                }
+
+                #[doc = "Converts into the inner representation of `" $ty "`."]
+                pub fn into_inner(self) -> bool {
+                    self.0
+                }
+            }
+
+            $crate::impl_xfs_bool!($ty, $name);
+
+            impl ::std::fmt::Display for $ty {
+                fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+                    write!(f, "{}", self.inner())
+                }
+            }
+        }
+    }
 }
 
 /// Common functionality for XFS `boolean` types.
@@ -625,7 +721,7 @@ macro_rules! impl_xfs_array {
                 // Dynamic-length types initialize to zero length, and would require pushing items from `data`.
                 // Currently, all types converting to/from XfsArray are fixed-length.
                 let len = ::std::cmp::min($ty::max_size(), data.len());
-                for (dst, src) in res.items_mut()[..len]
+                for (dst, src) in res.items[..len]
                     .iter_mut()
                     .zip(data[..len].iter().map(|m| m.inner()))
                 {

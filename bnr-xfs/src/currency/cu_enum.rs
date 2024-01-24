@@ -49,10 +49,10 @@ impl CuKind {
     /// Creates a new [CuType] from the provided parameter.
     pub const fn create(val: u32) -> Self {
         match val {
-            v if v == LCU_NA => Self::NotAvailable,
-            v if v == LCU_DEPOSIT => Self::Deposit,
-            v if v == LCU_DISPENSE => Self::Dispense,
-            v if v == LCU_RECYCLE => Self::Recycle,
+            LCU_NA => Self::NotAvailable,
+            LCU_DEPOSIT => Self::Deposit,
+            LCU_DISPENSE => Self::Dispense,
+            LCU_RECYCLE => Self::Recycle,
             _ => Self::NotAvailable,
         }
     }
@@ -102,9 +102,9 @@ impl CuType {
     /// Creates a new [CuType] from the provided parameter.
     pub const fn create(val: u32) -> Self {
         match val {
-            v if v == LCU_NA => Self::NotAvailable,
-            v if v == LCU_BILL_CASSETTE => Self::BillCassette,
-            v if v == LCU_REJECT_CASSETTE => Self::RejectCassette,
+            LCU_NA => Self::NotAvailable,
+            LCU_BILL_CASSETTE => Self::BillCassette,
+            LCU_REJECT_CASSETTE => Self::RejectCassette,
             _ => Self::NotAvailable,
         }
     }
@@ -176,32 +176,32 @@ impl LCU {
     /// Creates a new [LCU] from the provided parameter.
     pub const fn create(val: u32) -> Self {
         match val {
-            v if v == LCU_DISPENSE => Self::Dispense,
-            v if v == LCU_DEPOSIT => Self::Deposit,
-            v if v == LCU_RECYCLE => Self::Recycle,
-            v if v == LCU_NA => Self::NA,
-            v if v == LCU_BAIT_TRAP => Self::BaitTrap,
-            v if v == LCU_REJECT_CASSETTE => Self::RejectCassette,
-            v if v == LCU_OVERFLOW_CASSETTE => Self::OverflowCassette,
-            v if v == LCU_BILL_CASSETTE => Self::BillCassette,
-            v if v == LCU_COIN_CYLINDER => Self::CoinCylinder,
-            v if v == LCU_COIN_DISPENSER => Self::CoinDispenser,
-            v if v == LCU_RETRACT_CASSETTE => Self::RetractCassette,
-            v if v == LCU_COUPON => Self::Coupon,
-            v if v == LCU_DOCUMENT => Self::Document,
-            v if v == LCU_ESCROW => Self::Escrow,
-            v if v == LCU_UNKNOWN => Self::Unknown,
-            v if v == LCU_OK => Self::Ok,
-            v if v == LCU_FULL => Self::Full,
-            v if v == LCU_HIGH => Self::High,
-            v if v == LCU_LOW => Self::Low,
-            v if v == LCU_EMPTY => Self::Empty,
-            v if v == LCU_INOP => Self::Inoperable,
-            v if v == LCU_MISSING => Self::Missing,
-            v if v == LCU_NO_VALUE => Self::NoValue,
-            v if v == LCU_NO_REF => Self::NoRef,
-            v if v == LCU_NOT_DISPENSABLE => Self::NotDispensable,
-            v if v == LCU_CURRENCY_CASSETTE => Self::CurrencyCassette,
+            LCU_DISPENSE => Self::Dispense,
+            LCU_DEPOSIT => Self::Deposit,
+            LCU_RECYCLE => Self::Recycle,
+            LCU_NA => Self::NA,
+            LCU_BAIT_TRAP => Self::BaitTrap,
+            LCU_REJECT_CASSETTE => Self::RejectCassette,
+            LCU_OVERFLOW_CASSETTE => Self::OverflowCassette,
+            LCU_BILL_CASSETTE => Self::BillCassette,
+            LCU_COIN_CYLINDER => Self::CoinCylinder,
+            LCU_COIN_DISPENSER => Self::CoinDispenser,
+            LCU_RETRACT_CASSETTE => Self::RetractCassette,
+            LCU_COUPON => Self::Coupon,
+            LCU_DOCUMENT => Self::Document,
+            LCU_ESCROW => Self::Escrow,
+            LCU_UNKNOWN => Self::Unknown,
+            LCU_OK => Self::Ok,
+            LCU_FULL => Self::Full,
+            LCU_HIGH => Self::High,
+            LCU_LOW => Self::Low,
+            LCU_EMPTY => Self::Empty,
+            LCU_INOP => Self::Inoperable,
+            LCU_MISSING => Self::Missing,
+            LCU_NO_VALUE => Self::NoValue,
+            LCU_NO_REF => Self::NoRef,
+            LCU_NOT_DISPENSABLE => Self::NotDispensable,
+            LCU_CURRENCY_CASSETTE => Self::CurrencyCassette,
             _ => Self::Unknown,
         }
     }

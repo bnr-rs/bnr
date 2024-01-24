@@ -1,5 +1,7 @@
 use std::fmt;
 
+use crate::impl_xfs_enum;
+
 const THRESHOLD_STAT_OK: u32 = 0;
 const THRESHOLD_STAT_FULL: u32 = 1;
 const THRESHOLD_STAT_HIGH: u32 = 2;
@@ -49,13 +51,13 @@ impl ThresholdStatus {
     /// Creates a new [ThresholdStatus] from the provided parameter.
     pub const fn create(val: u32) -> Self {
         match val {
-            v if v == THRESHOLD_STAT_OK => Self::Ok,
-            v if v == THRESHOLD_STAT_FULL => Self::Full,
-            v if v == THRESHOLD_STAT_HIGH => Self::High,
-            v if v == THRESHOLD_STAT_LOW => Self::Low,
-            v if v == THRESHOLD_STAT_EMPTY => Self::Empty,
-            v if v == THRESHOLD_STAT_UNKNOWN => Self::Unknown,
-            v if v == THRESHOLD_STAT_NOT_SUPPORTED => Self::NotSupported,
+            THRESHOLD_STAT_OK => Self::Ok,
+            THRESHOLD_STAT_FULL => Self::Full,
+            THRESHOLD_STAT_HIGH => Self::High,
+            THRESHOLD_STAT_LOW => Self::Low,
+            THRESHOLD_STAT_EMPTY => Self::Empty,
+            THRESHOLD_STAT_UNKNOWN => Self::Unknown,
+            THRESHOLD_STAT_NOT_SUPPORTED => Self::NotSupported,
             _ => Self::Unknown,
         }
     }
@@ -87,4 +89,4 @@ impl fmt::Display for ThresholdStatus {
     }
 }
 
-crate::impl_xfs_enum!(ThresholdStatus, "thresholdStatus");
+impl_xfs_enum!(ThresholdStatus, "thresholdStatus");

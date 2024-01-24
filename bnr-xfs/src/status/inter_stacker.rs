@@ -9,7 +9,7 @@ pub const CDR_IS_UNKNOWN: u32 = 6187;
 /// Represents intermediate stacker status values.
 #[repr(u32)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
-pub enum InterStackerStatus {
+pub enum IntermediateStackerStatus {
     /// Indicates the stacker is empty
     Empty = CDR_IS_EMPTY,
     /// Indicates the stacker is not empty
@@ -19,13 +19,13 @@ pub enum InterStackerStatus {
     Unknown = CDR_IS_UNKNOWN,
 }
 
-impl InterStackerStatus {
-    /// Creates a new [InterStackerStatus].
+impl IntermediateStackerStatus {
+    /// Creates a new [IntermediateStackerStatus].
     pub const fn new() -> Self {
         Self::Unknown
     }
 
-    /// Creates a new [InterStackerStatus] from the provided parameter.
+    /// Creates a new [IntermediateStackerStatus] from the provided parameter.
     pub const fn create(val: u32) -> Self {
         match val {
             ds if ds == CDR_IS_EMPTY => Self::Empty,
@@ -36,35 +36,37 @@ impl InterStackerStatus {
     }
 }
 
-impl From<InterStackerStatus> for HardwareStatus {
-    fn from(val: InterStackerStatus) -> Self {
+impl From<IntermediateStackerStatus> for HardwareStatus {
+    fn from(val: IntermediateStackerStatus) -> Self {
         match val {
-            InterStackerStatus::Empty | InterStackerStatus::NotEmpty => Self::Notification,
-            InterStackerStatus::Unknown => Self::Warning,
+            IntermediateStackerStatus::Empty | IntermediateStackerStatus::NotEmpty => {
+                Self::Notification
+            }
+            IntermediateStackerStatus::Unknown => Self::Warning,
         }
     }
 }
 
-impl From<InterStackerStatus> for &'static str {
-    fn from(val: InterStackerStatus) -> Self {
+impl From<IntermediateStackerStatus> for &'static str {
+    fn from(val: IntermediateStackerStatus) -> Self {
         match val {
-            InterStackerStatus::Empty => "empty",
-            InterStackerStatus::NotEmpty => "not empty",
-            InterStackerStatus::Unknown => "unknown",
+            IntermediateStackerStatus::Empty => "empty",
+            IntermediateStackerStatus::NotEmpty => "not empty",
+            IntermediateStackerStatus::Unknown => "unknown",
         }
     }
 }
 
-impl From<&InterStackerStatus> for &'static str {
-    fn from(val: &InterStackerStatus) -> Self {
+impl From<&IntermediateStackerStatus> for &'static str {
+    fn from(val: &IntermediateStackerStatus) -> Self {
         (*val).into()
     }
 }
 
-impl fmt::Display for InterStackerStatus {
+impl fmt::Display for IntermediateStackerStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", <&str>::from(self))
     }
 }
 
-impl_xfs_enum!(InterStackerStatus, "intermediateStackerStatus");
+impl_xfs_enum!(IntermediateStackerStatus, "intermediateStackerStatus");

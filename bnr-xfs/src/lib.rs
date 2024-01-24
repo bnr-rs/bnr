@@ -19,3 +19,6 @@ pub use device_handle::*;
 pub use dispense::*;
 pub use error::*;
 pub use status::*;
+
+create_xfs_i4!(Size, "size", "Represents the size of a list.");
+create_xfs_i4!(MaxSize, "maxSize", "Represents the maximum size of a list.");

@@ -1,90 +1,22 @@
 use std::fmt;
 
-use crate::{impl_xfs_i4, impl_xfs_struct};
+use crate::{create_xfs_i4, impl_xfs_struct};
 
-/// Represents the identification ID for a particular callback operation.
-///
-/// This uniquely identifies the specific call that was made.
-#[repr(C)]
-#[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
-pub struct IdentificationId(u32);
+create_xfs_i4!(
+    IdentificationId,
+    "identificationId",
+    r#"Represents the identification ID for a particular callback operation.
 
-impl IdentificationId {
-    /// Creates a new [IdentificationId].
-    pub const fn new() -> Self {
-        Self(0)
-    }
+This uniquely identifies the specific call that was made."#
+);
 
-    /// Creates a new [IdentificationId] from the provided parameter.
-    pub const fn create(val: u32) -> Self {
-        Self(val)
-    }
+create_xfs_i4!(
+    OperationId,
+    "operationId",
+    r#"Represents the operation ID for a particular callback operation.
 
-    /// Gets the inner representation of the [IdentificationId].
-    pub const fn inner(&self) -> u32 {
-        self.0
-    }
-
-    /// Sets the inner representation of the [IdentificationId].
-    pub fn set_inner(&mut self, val: u32) {
-        self.0 = val;
-    }
-
-    /// Converts into the inner representation of the [IdentificationId].
-    pub fn into_inner(self) -> u32 {
-        self.0
-    }
-}
-
-impl_xfs_i4!(IdentificationId, "identificationId");
-
-impl fmt::Display for IdentificationId {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.inner())
-    }
-}
-
-/// Represents the operation ID for a particular callback operation.
-///
-/// This uniquely identifies the specific operation method of a call that was made.
-#[repr(C)]
-#[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
-pub struct OperationId(u32);
-
-impl OperationId {
-    /// Creates a new [OperationId].
-    pub const fn new() -> Self {
-        Self(0)
-    }
-
-    /// Creates a new [OperationId] from the provided parameter.
-    pub const fn create(val: u32) -> Self {
-        Self(val)
-    }
-
-    /// Gets the inner representation of the [OperationId].
-    pub const fn inner(&self) -> u32 {
-        self.0
-    }
-
-    /// Sets the inner representation of the [OperationId].
-    pub fn set_inner(&mut self, val: u32) {
-        self.0 = val;
-    }
-
-    /// Converts into the inner representation of the [OperationId].
-    pub fn into_inner(self) -> u32 {
-        self.0
-    }
-}
-
-impl_xfs_i4!(OperationId, "operationId");
-
-impl fmt::Display for OperationId {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.inner())
-    }
-}
+This uniquely identifies the specific operation method of a call that was made."#
+);
 
 /// Represents a response to a callback call made by the device.
 #[repr(C)]
@@ -144,8 +76,6 @@ impl CallbackResponse {
     }
 }
 
-impl_xfs_struct!(CallbackResponse, "callbackResponse", [id: IdentificationId, op_id: OperationId]);
-
 impl fmt::Display for CallbackResponse {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{{")?;
@@ -154,3 +84,5 @@ impl fmt::Display for CallbackResponse {
         write!(f, "}}")
     }
 }
+
+impl_xfs_struct!(CallbackResponse, "callbackResponse", [id: IdentificationId, op_id: OperationId]);

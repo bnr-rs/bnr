@@ -2,10 +2,8 @@
 
 use std::fmt;
 
-use crate::xfs::{
-    method_response::XfsMethodResponse, params::XfsParam, value::XfsValue, xfs_struct::XfsStruct,
-};
-use crate::{Error, Result};
+use crate::xfs::{method_response::XfsMethodResponse, params::XfsParam};
+use crate::{impl_xfs_struct, Error, Result};
 
 mod content;
 mod device;
@@ -38,7 +36,7 @@ pub use transport::*;
 pub struct CdrStatus {
     pub device_status: DeviceStatus,
     pub dispenser_status: DispenserStatus,
-    pub intermediate_stacker_status: InterStackerStatus,
+    pub intermediate_stacker_status: IntermediateStackerStatus,
     pub safe_door_status: SafeDoorStatus,
     pub shutter_status: ShutterStatus,
     pub transport_status: TransportStatus,
@@ -51,7 +49,7 @@ impl CdrStatus {
         Self {
             device_status: DeviceStatus::new(),
             dispenser_status: DispenserStatus::new(),
-            intermediate_stacker_status: InterStackerStatus::new(),
+            intermediate_stacker_status: IntermediateStackerStatus::new(),
             safe_door_status: SafeDoorStatus::new(),
             shutter_status: ShutterStatus::new(),
             transport_status: TransportStatus::new(),
@@ -75,136 +73,19 @@ impl From<CdrStatus> for HardwareStatus {
     }
 }
 
-impl From<&CdrStatus> for XfsStruct {
-    fn from(val: &CdrStatus) -> Self {
-        Self::create([
-            val.device_status.into(),
-            val.dispenser_status.into(),
-            val.intermediate_stacker_status.into(),
-            val.safe_door_status.into(),
-            val.shutter_status.into(),
-            val.transport_status.into(),
-            val.position_status_list.into(),
-        ])
-    }
-}
-
-impl From<CdrStatus> for XfsStruct {
-    fn from(val: CdrStatus) -> Self {
-        (&val).into()
-    }
-}
-
-impl TryFrom<&XfsStruct> for CdrStatus {
-    type Error = Error;
-
-    fn try_from(val: &XfsStruct) -> Result<Self> {
-        let members = val.members();
-
-        let device_status: DeviceStatus = members
-            .iter()
-            .map(|m| m.inner())
-            .find(|m| m.name() == DeviceStatus::xfs_name() && m.value().i4().is_some())
-            .ok_or(Error::Xfs(r#"CdrStatus missing "deviceStatus""#.into()))?
-            .try_into()?;
-
-        let dispenser_status: DispenserStatus = members
-            .iter()
-            .map(|m| m.inner())
-            .find(|m| m.name() == DispenserStatus::xfs_name() && m.value().i4().is_some())
-            .ok_or(Error::Xfs(r#"CdrStatus missing "dispenserStatus""#.into()))?
-            .try_into()?;
-
-        let intermediate_stacker_status: InterStackerStatus = members
-            .iter()
-            .map(|m| m.inner())
-            .find(|m| m.name() == InterStackerStatus::xfs_name() && m.value().i4().is_some())
-            .ok_or(Error::Xfs(
-                r#"CdrStatus missing "intermediateStackerStatus""#.into(),
-            ))?
-            .try_into()?;
-
-        let safe_door_status: SafeDoorStatus = members
-            .iter()
-            .map(|m| m.inner())
-            .find(|m| m.name() == SafeDoorStatus::xfs_name() && m.value().i4().is_some())
-            .ok_or(Error::Xfs(r#"CdrStatus missing "safeDoorStatus""#.into()))?
-            .try_into()?;
-
-        let shutter_status: ShutterStatus = members
-            .iter()
-            .map(|m| m.inner())
-            .find(|m| m.name() == ShutterStatus::xfs_name() && m.value().i4().is_some())
-            .ok_or(Error::Xfs(r#"CdrStatus missing "shutterStatus""#.into()))?
-            .try_into()?;
-
-        let transport_status: TransportStatus = members
-            .iter()
-            .map(|m| m.inner())
-            .find(|m| m.name() == TransportStatus::xfs_name() && m.value().i4().is_some())
-            .ok_or(Error::Xfs(r#"CdrStatus missing "transportStatus""#.into()))?
-            .try_into()?;
-
-        let position_status_list: CdrPositionStatusList = members
-            .iter()
-            .map(|m| m.inner())
-            .find(|m| m.name() == CdrPositionStatusList::xfs_name() && m.value().array().is_some())
-            .ok_or(Error::Xfs(
-                r#"CdrStatus missing "positionStatusList""#.into(),
-            ))?
-            .try_into()?;
-
-        Ok(Self {
-            device_status,
-            dispenser_status,
-            intermediate_stacker_status,
-            safe_door_status,
-            shutter_status,
-            transport_status,
-            position_status_list,
-        })
-    }
-}
-
-impl TryFrom<XfsStruct> for CdrStatus {
-    type Error = Error;
-
-    fn try_from(val: XfsStruct) -> Result<Self> {
-        (&val).try_into()
-    }
-}
-
-impl From<&CdrStatus> for XfsValue {
-    fn from(val: &CdrStatus) -> Self {
-        Self::new().with_xfs_struct(val.into())
-    }
-}
-
-impl From<CdrStatus> for XfsValue {
-    fn from(val: CdrStatus) -> Self {
-        (&val).into()
-    }
-}
-
-impl TryFrom<&XfsValue> for CdrStatus {
-    type Error = Error;
-
-    fn try_from(val: &XfsValue) -> Result<Self> {
-        val.xfs_struct()
-            .ok_or(Error::Xfs(format!(
-                "Expected CdrStatus XfsValue, have: {val}"
-            )))?
-            .try_into()
-    }
-}
-
-impl TryFrom<XfsValue> for CdrStatus {
-    type Error = Error;
-
-    fn try_from(val: XfsValue) -> Result<Self> {
-        (&val).try_into()
-    }
-}
+impl_xfs_struct!(
+    CdrStatus,
+    "status",
+    [
+        device_status: DeviceStatus,
+        dispenser_status: DispenserStatus,
+        intermediate_stacker_status: IntermediateStackerStatus,
+        safe_door_status: SafeDoorStatus,
+        shutter_status: ShutterStatus,
+        transport_status: TransportStatus,
+        position_status_list: CdrPositionStatusList
+    ]
+);
 
 impl From<&CdrStatus> for XfsParam {
     fn from(val: &CdrStatus) -> Self {

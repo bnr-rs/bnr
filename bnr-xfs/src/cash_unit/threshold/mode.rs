@@ -1,5 +1,7 @@
 use std::fmt;
 
+use crate::impl_xfs_enum;
+
 const THRESHOLD_SENSOR: u32 = 0;
 const THRESHOLD_COUNT: u32 = 1;
 
@@ -23,8 +25,8 @@ impl ThresholdMode {
     /// Creates a new [ThresholdMode] from the provided parameter.
     pub const fn create(val: u32) -> Self {
         match val {
-            v if v == THRESHOLD_SENSOR => Self::Sensor,
-            v if v == THRESHOLD_COUNT => Self::Count,
+            THRESHOLD_SENSOR => Self::Sensor,
+            THRESHOLD_COUNT => Self::Count,
             _ => Self::Sensor,
         }
     }
@@ -51,4 +53,4 @@ impl fmt::Display for ThresholdMode {
     }
 }
 
-crate::impl_xfs_enum!(ThresholdMode, "thresholdMode");
+impl_xfs_enum!(ThresholdMode, "thresholdMode");
