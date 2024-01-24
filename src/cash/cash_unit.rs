@@ -1105,8 +1105,8 @@ impl From<PhysicalCashUnitList> for bnr_sys::PhysicalCashUnitList {
 impl fmt::Display for PhysicalCashUnitList {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{{")?;
-        write!(f, r#""max_size":{}"#, self.max_size)?;
-        write!(f, r#""size":{}"#, self.size)?;
+        write!(f, r#""max_size":{},"#, self.max_size)?;
+        write!(f, r#""size":{},"#, self.size)?;
 
         write!(f, r#""items":["#)?;
         let item_len = self.items().len();

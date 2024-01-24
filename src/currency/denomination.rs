@@ -123,7 +123,7 @@ impl From<&LCU> for &'static str {
 
 impl fmt::Display for LCU {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", <&str>::from(self))
+        write!(f, r#""{}""#, <&str>::from(self))
     }
 }
 
