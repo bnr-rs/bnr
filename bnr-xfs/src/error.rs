@@ -1,5 +1,7 @@
 use std::fmt;
 
+use time as datetime;
+
 /// Convenience alias for a `Result` type for the crate.
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -55,6 +57,12 @@ impl From<datetime::Error> for Error {
 
 impl From<datetime::error::Format> for Error {
     fn from(err: datetime::error::Format) -> Self {
+        Self::DateTime(format!("{err}"))
+    }
+}
+
+impl From<datetime::error::Parse> for Error {
+    fn from(err: datetime::error::Parse) -> Self {
         Self::DateTime(format!("{err}"))
     }
 }

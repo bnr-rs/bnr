@@ -1,6 +1,6 @@
-use std::time;
+use time as datetime;
 
-use crate::{Error, Result};
+use crate::{xfs::method_response::XfsMethodResponse, Error, Result};
 
 mod inner;
 
@@ -100,7 +100,7 @@ impl DeviceHandle {
     }
 
     /// Gets the ISO 8601 formatted date-time from the device.
-    pub fn get_date_time(&self) -> Result<String> {
+    pub fn get_date_time(&self) -> Result<datetime::OffsetDateTime> {
         self.get_date_time_inner()
     }
 
@@ -120,6 +120,11 @@ impl DeviceHandle {
     /// The default device time will reset to `2001-01-01 00:00:00`.
     pub fn set_current_date_time(&self) -> Result<()> {
         self.set_date_time_inner(datetime::OffsetDateTime::now_utc())
+    }
+
+    /// Gets the current status of the BNR device.
+    pub fn get_status(&self) -> Result<XfsMethodResponse> {
+        self.get_status_inner()
     }
 
     /// Gets a reference to the [UsbDeviceHandle].

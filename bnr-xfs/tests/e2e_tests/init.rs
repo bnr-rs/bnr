@@ -64,7 +64,7 @@ fn test_get_date_time() -> Result<()> {
 
     let date = handle.get_date_time()?;
 
-    assert!(!date.is_empty());
+    log::debug!("DateTime: {date}");
 
     Ok(())
 }
@@ -79,7 +79,7 @@ fn test_set_date_time() -> Result<()> {
 
     let date = handle.get_date_time()?;
 
-    assert!(!date.is_empty());
+    log::debug!("DateTime: {date}");
 
     handle.set_current_date_time()?;
 

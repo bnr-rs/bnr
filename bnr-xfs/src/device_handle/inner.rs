@@ -1,3 +1,9 @@
+use datetime::format_description::well_known::{
+    iso8601::{Config, TimePrecision},
+    Iso8601,
+};
+use time as datetime;
+
 use super::*;
 use crate::xfs::{
     self,
@@ -24,7 +30,7 @@ impl DeviceHandle {
             )],
         );
 
-        let timeout = time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(50);
 
         let mut ret = [0u8; 4];
         let read = usb.read_control(0x80, 0x6, 0x03 << 8, 0, &mut ret, timeout)?;
@@ -72,7 +78,7 @@ impl DeviceHandle {
 
     pub(crate) fn reset_inner(&self) -> Result<()> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::Reset);
-        let timeout = time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(50);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -85,7 +91,7 @@ impl DeviceHandle {
 
     pub(crate) fn cancel_inner(&self) -> Result<()> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::Cancel);
-        let timeout = time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(50);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -102,7 +108,7 @@ impl DeviceHandle {
 
     pub(crate) fn close_inner(&self) -> Result<()> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::StopSession);
-        let timeout = time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(50);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -119,7 +125,7 @@ impl DeviceHandle {
 
     pub(crate) fn reboot_inner(&self) -> Result<()> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::Reboot);
-        let timeout = time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(50);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -134,9 +140,9 @@ impl DeviceHandle {
         }
     }
 
-    pub(crate) fn get_date_time_inner(&self) -> Result<String> {
+    pub(crate) fn get_date_time_inner(&self) -> Result<datetime::OffsetDateTime> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::GetDateTime);
-        let timeout = time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(50);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -144,32 +150,57 @@ impl DeviceHandle {
         let res = Self::read_response(usb, call.name()?, timeout)?;
         let params = res.into_params()?;
 
-        match params
+        let date_res = params
             .params()
             .iter()
             .find(|p| p.inner().value().date_time().is_some())
-        {
-            Some(p) => Ok(p
-                .inner()
-                .value()
-                .date_time()
-                .ok_or(Error::Xfs("null param value".into()))?
-                .into()),
-            None => Err(Error::Xfs("expected DateTime param, none found".into())),
+            .ok_or(Error::Xfs("expected DateTime param, none found".into()))?;
+
+        let date_str = date_res
+            .inner()
+            .value()
+            .date_time()
+            .ok_or(Error::Xfs("null param value".into()))?;
+
+        if date_str.len() < 17 {
+            Err(Error::DateTime(format!(
+                "invalid ISO-8601 DateTime, too short: {date_str}"
+            )))
+        } else {
+            let mut date_string = date_str.to_string();
+
+            date_string.insert(6, '-');
+            date_string.insert(4, '-');
+
+            date_string += "+00:00";
+
+            log::debug!("Formatted DateTime: {date_string}");
+
+            Ok(datetime::OffsetDateTime::parse(
+                date_string.as_str(),
+                &Iso8601::DATE_TIME,
+            )?)
         }
     }
 
     pub(crate) fn set_date_time_inner(&self, date_time: datetime::OffsetDateTime) -> Result<()> {
-        let iso_8601 =
-            date_time.format(&datetime::format_description::well_known::Iso8601::DATE_TIME)?;
+        let date_fmt = Iso8601::<
+            {
+                Config::DEFAULT
+                    .set_time_precision(TimePrecision::Second {
+                        decimal_digits: None,
+                    })
+                    .encode()
+            },
+        >;
 
         let call = XfsMethodCall::new()
             .with_name(XfsMethodName::SetDateTime)
             .with_params(XfsParams::create([XfsParam::create(
-                XfsValue::new().with_date_time(iso_8601),
+                XfsValue::new().with_date_time(date_time.format(&date_fmt)?),
             )]));
 
-        let timeout = time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(50);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -179,11 +210,22 @@ impl DeviceHandle {
         Ok(())
     }
 
+    pub(crate) fn get_status_inner(&self) -> Result<XfsMethodResponse> {
+        let call = XfsMethodCall::new().with_name(XfsMethodName::GetStatus);
+
+        let timeout = std::time::Duration::from_millis(50);
+        let usb = self.usb();
+
+        Self::write_call(usb, &call, timeout)?;
+
+        Self::read_response(usb, call.name()?, timeout)
+    }
+
     /// Writes an [XfsMethodCall] to the BNR device.
     pub fn write_call(
         usb: &UsbDeviceHandle,
         call: &XfsMethodCall,
-        timeout: time::Duration,
+        timeout: std::time::Duration,
     ) -> Result<()> {
         match usb.write_bulk(BNR_CALL_EP, xfs::to_string(call)?.as_bytes(), timeout) {
             Ok(_) => Ok(()),
@@ -200,7 +242,7 @@ impl DeviceHandle {
     pub fn read_response(
         usb: &UsbDeviceHandle,
         method: XfsMethodName,
-        timeout: time::Duration,
+        timeout: std::time::Duration,
     ) -> Result<XfsMethodResponse> {
         // Responses can be very large, so read from the endpoint in 4K chunks.
         let mut res_buf = [0u8; 4096];
