@@ -63,7 +63,7 @@ impl XfsParam {
 
     /// Creates a new [XfsParam] with the provided [XfsValues].
     pub fn create(value: XfsValue) -> Self {
-        Self { value: value }
+        Self { value }
     }
 
     /// Gets a reference to the [XfsValue].

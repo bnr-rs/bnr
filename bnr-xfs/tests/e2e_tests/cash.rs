@@ -194,3 +194,25 @@ fn test_retract() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+fn test_query_cash_unit() -> Result<()> {
+    let _lock = common::init();
+
+    let handle = DeviceHandle::open(None, None, None)?;
+
+    handle.close()?;
+
+    let date = handle.get_date_time()?;
+    if date.year() == 2001 {
+        handle.set_current_date_time()?;
+    }
+
+    let cu = handle.query_cash_unit()?;
+
+    log::debug!("CashUnit: {cu}");
+
+    handle.reset()?;
+
+    Ok(())
+}

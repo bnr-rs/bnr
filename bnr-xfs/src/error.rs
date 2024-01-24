@@ -43,6 +43,12 @@ impl From<std::string::FromUtf8Error> for Error {
     }
 }
 
+impl From<std::str::Utf8Error> for Error {
+    fn from(err: std::str::Utf8Error) -> Self {
+        Self::Parsing(format!("{err}"))
+    }
+}
+
 impl<T> From<std::sync::PoisonError<T>> for Error {
     fn from(err: std::sync::PoisonError<T>) -> Self {
         Self::Io(format!("{err}"))

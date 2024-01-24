@@ -30,10 +30,9 @@ impl DeviceStatus {
     pub const fn new() -> Self {
         Self::Online
     }
-}
 
-impl From<u32> for DeviceStatus {
-    fn from(val: u32) -> Self {
+    /// Creates a new [DeviceStatus] from the provided parameter.
+    pub const fn create(val: u32) -> Self {
         match val {
             ds if ds == DEVICE_STATUS_CHANGED => Self::Changed,
             ds if ds == HARDWARE_ERROR => Self::HardwareError,

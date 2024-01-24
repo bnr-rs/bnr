@@ -2,14 +2,18 @@
 
 use std::fmt;
 
-pub use currency_iso4217::Currency as CurrencyCode;
+use crate::impl_xfs_struct;
 
 mod cash_type;
+mod code;
 mod denomination;
+mod exponent;
 mod mix;
 
 pub use cash_type::*;
+pub use code::*;
 pub use denomination::*;
+pub use exponent::*;
 pub use mix::*;
 
 /// Represents a currency set used in the CDR.
@@ -17,7 +21,7 @@ pub use mix::*;
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Currency {
     currency_code: CurrencyCode,
-    exponent: i32,
+    exponent: Exponent,
 }
 
 impl Currency {
@@ -25,7 +29,7 @@ impl Currency {
     pub const fn new() -> Self {
         Self {
             currency_code: CurrencyCode::new(),
-            exponent: 0,
+            exponent: Exponent::new(),
         }
     }
 
@@ -39,7 +43,7 @@ impl Currency {
     /// Used to get the real value of a denomination by raising 10 to the exponent, and multiplying
     /// by the denomination amount.
     pub fn exponent(&self) -> i32 {
-        self.exponent
+        self.exponent.inner()
     }
 
     /// Converts a standard value to a MDU value.
@@ -49,11 +53,11 @@ impl Currency {
     /// ```no_run
     /// # use bnr_xfs::{Currency, CurrencyCode};
     /// let value = 10;
-    /// let currency = Currency::from(CurrencyCode::USD);
+    /// let currency = Currency::from(CurrencyCode::from("USD"));
     /// assert_eq!(currency.to_mdu_value(value), 1000);
     /// ```
     pub fn to_mdu_value(&self, value: u32) -> u32 {
-        (value as f32 * 10f32.powf(self.exponent.abs() as f32)) as u32
+        (value as f32 * 10f32.powf(self.exponent.inner().abs() as f32)) as u32
     }
 
     /// Converts a MDU value to a standard value.
@@ -63,28 +67,17 @@ impl Currency {
     /// ```no_run
     /// # use bnr_xfs::{Currency, CurrencyCode};
     /// let mdu_value = 1000;
-    /// let currency = Currency::from(CurrencyCode::USD);
+    /// let currency = Currency::from(CurrencyCode::from("USD"));
     /// assert_eq!(currency.from_mdu_value(mdu_value), 10);
     /// ```
     pub fn from_mdu_value(&self, value: u32) -> u32 {
-        (value as f32 * 10f32.powf(self.exponent as f32)) as u32
+        (value as f32 * 10f32.powf(self.exponent.inner() as f32)) as u32
     }
 }
 
 impl From<CurrencyCode> for Currency {
     fn from(val: CurrencyCode) -> Self {
-        let exponent = match val {
-            CurrencyCode::AUD
-            | CurrencyCode::CAD
-            | CurrencyCode::CHF
-            | CurrencyCode::EUR
-            | CurrencyCode::GBP
-            | CurrencyCode::USD => -2,
-            CurrencyCode::JPY | CurrencyCode::MXN => -1,
-            CurrencyCode::AMD => 0,
-            // FIXME: fill out with more actual values
-            _ => 1,
-        };
+        let exponent: Exponent = val.into();
 
         Self {
             currency_code: val,
@@ -102,3 +95,5 @@ impl fmt::Display for Currency {
         )
     }
 }
+
+impl_xfs_struct!(Currency, "currency", [currency_code: CurrencyCode, exponent: Exponent]);

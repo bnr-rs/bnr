@@ -19,10 +19,8 @@ impl CdrPosition {
     pub const fn new() -> Self {
         Self::Bottom
     }
-}
-
-impl From<u32> for CdrPosition {
-    fn from(val: u32) -> Self {
+    /// Creates a new [CdrPosition] from the provided parameter.
+    pub const fn create(val: u32) -> Self {
         match val {
             ds if ds == CDR_POS_BOTTOM => Self::Bottom,
             ds if ds == CDR_POS_TOP => Self::Top,

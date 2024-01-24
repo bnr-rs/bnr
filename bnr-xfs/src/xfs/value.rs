@@ -176,7 +176,7 @@ impl XfsValue {
 
     /// Sets the `struct` field.
     pub fn set_xfs_struct(&mut self, xfs_struct: XfsStruct) {
-        self.xfs_struct = Some(xfs_struct.into());
+        self.xfs_struct = Some(xfs_struct);
     }
 
     /// Unsets the `struct` field.
@@ -218,7 +218,7 @@ impl XfsValue {
 
     /// Sets the `array` field.
     pub fn set_array(&mut self, xfs_array: XfsArray) {
-        self.array = Some(xfs_array.into());
+        self.array = Some(xfs_array);
     }
 
     /// Unsets the `array` field.

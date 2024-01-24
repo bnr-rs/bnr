@@ -21,10 +21,9 @@ impl ContentStatus {
     pub const fn new() -> Self {
         Self::Empty
     }
-}
 
-impl From<u32> for ContentStatus {
-    fn from(val: u32) -> Self {
+    /// Creates a new [ContentStatus] from the provided parameter.
+    pub const fn create(val: u32) -> Self {
         match val {
             ds if ds == CT_EMPTY => Self::Empty,
             ds if ds == CT_NOT_EMPTY => Self::NotEmpty,

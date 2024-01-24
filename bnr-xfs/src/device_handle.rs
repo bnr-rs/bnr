@@ -1,6 +1,7 @@
 use time as datetime;
 
 use crate::capabilities::Capabilities;
+use crate::cash_unit::CashUnit;
 use crate::currency::CurrencyCode;
 use crate::status::CdrStatus;
 use crate::{Error, Result};
@@ -254,8 +255,31 @@ impl DeviceHandle {
         self.retract_inner()
     }
 
+    /// Gets the complete state of all physical and logical cash units in the BNR.
+    ///
+    /// Returns the [CashUnit] struct with details about the [PhysicalCashUnit]s and
+    /// [LogicalCashUnit]s on the BNR device.
+    pub fn query_cash_unit(&self) -> Result<CashUnit> {
+        self.query_cash_unit_inner()
+    }
+
     /// Gets a reference to the [UsbDeviceHandle].
     pub const fn usb(&self) -> &UsbDeviceHandle {
         &self.usb
+    }
+
+    /// Gets the callback function for operation completed events.
+    pub fn op_completed_callback(&self) -> Option<OperationCompletedFn> {
+        self.op_completed_callback
+    }
+
+    /// Gets the callback function for intermediate events.
+    pub fn intermediate_occurred_callback(&self) -> Option<IntermediateOccurredFn> {
+        self.intermediate_occurred_callback
+    }
+
+    /// Gets the callback function for status events.
+    pub fn status_occurred_callback(&self) -> Option<StatusOccurredFn> {
+        self.status_occurred_callback
     }
 }

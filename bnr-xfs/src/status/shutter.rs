@@ -27,10 +27,9 @@ impl ShutterStatus {
     pub const fn new() -> Self {
         Self::Unknown
     }
-}
 
-impl From<u32> for ShutterStatus {
-    fn from(val: u32) -> Self {
+    /// Creates a new [ShutterStatus] from the provided parameter.
+    pub const fn create(val: u32) -> Self {
         match val {
             ds if ds == SHT_CLOSED => Self::Closed,
             ds if ds == SHT_NOT_SUPPORTED => Self::NotSupported,

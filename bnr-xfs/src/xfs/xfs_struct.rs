@@ -2,6 +2,8 @@
 
 use std::fmt;
 
+use crate::{Error, Result};
+
 use super::value::XfsValue;
 
 /// Represents an XFS `struct` containing an [XfsMember].
@@ -47,6 +49,15 @@ impl XfsStruct {
     pub fn with_members<M: IntoIterator<Item = XfsMember>>(mut self, members: M) -> Self {
         self.set_members(members);
         self
+    }
+
+    /// Searches for an [XfsMember] with a matching `name`.
+    pub fn find_member(&self, name: &str) -> Result<&XfsMember> {
+        self.members
+            .iter()
+            .map(|m| m.inner())
+            .find(|m| m.name() == name)
+            .ok_or(Error::Xfs(format!(r#"Missing member "{name}""#)))
     }
 }
 

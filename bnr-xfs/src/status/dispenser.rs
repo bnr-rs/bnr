@@ -42,10 +42,9 @@ impl DispenserStatus {
     pub const fn new() -> Self {
         Self::Unknown
     }
-}
 
-impl From<u32> for DispenserStatus {
-    fn from(val: u32) -> Self {
+    /// Creates a new [DispenserStatus] from the provided parameter.
+    pub const fn create(val: u32) -> Self {
         match val {
             ds if ds == CASH_UNIT_CHANGED => Self::Changed,
             ds if ds == CASH_UNIT_CONFIG_CHANGED => Self::ConfigChanged,

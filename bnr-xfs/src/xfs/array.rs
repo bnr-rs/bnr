@@ -12,17 +12,21 @@ pub struct XfsData {
 }
 
 impl XfsData {
+    /// Creates a new [XfsData].
     pub const fn new() -> Self {
         Self { value: Vec::new() }
     }
 
+    /// Creates a new [XfsData] from the provided parameter.
     pub fn create<D: IntoIterator<Item = XfsValue>>(data: D) -> Self {
         Self {
             value: data.into_iter().map(ListValue::from).collect(),
         }
     }
+}
 
-    pub fn as_ref(&self) -> &[ListValue] {
+impl AsRef<[ListValue]> for XfsData {
+    fn as_ref(&self) -> &[ListValue] {
         self.value.as_ref()
     }
 }

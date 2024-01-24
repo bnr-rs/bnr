@@ -1,4 +1,6 @@
+pub(crate) mod arrays;
 mod capabilities;
+mod cash_unit;
 mod currency;
 mod device_handle;
 mod error;
@@ -8,6 +10,7 @@ mod status;
 pub mod xfs;
 
 pub use capabilities::*;
+pub use cash_unit::*;
 pub use currency::*;
 pub use device_handle::*;
 pub use error::*;

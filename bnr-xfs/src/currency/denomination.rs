@@ -1,5 +1,7 @@
 use std::fmt;
 
+use crate::impl_xfs_enum;
+
 pub const DENOM_ITEM_LEN: usize = 20;
 
 pub const LCU_DISPENSE: u32 = 6016;
@@ -28,6 +30,111 @@ pub const LCU_NO_VALUE: u32 = 6038;
 pub const LCU_NO_REF: u32 = 6039;
 pub const LCU_NOT_DISPENSABLE: u32 = 6040;
 pub const LCU_CURRENCY_CASSETTE: u32 = 6059;
+
+/// Specifies, if cash unit can dispense, deposit cash or both.
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
+pub enum CuKind {
+    #[default]
+    NotAvailable = LCU_NA,
+    Deposit = LCU_DEPOSIT,
+    Dispense = LCU_DISPENSE,
+    Recycle = LCU_RECYCLE,
+}
+
+impl CuKind {
+    /// Creates a new [CuType].
+    pub const fn new() -> Self {
+        Self::NotAvailable
+    }
+
+    /// Creates a new [CuType] from the provided parameter.
+    pub const fn create(val: u32) -> Self {
+        match val {
+            v if v == LCU_NA => Self::NotAvailable,
+            v if v == LCU_DEPOSIT => Self::Deposit,
+            v if v == LCU_DISPENSE => Self::Dispense,
+            v if v == LCU_RECYCLE => Self::Recycle,
+            _ => Self::NotAvailable,
+        }
+    }
+}
+
+impl From<&CuKind> for &'static str {
+    fn from(val: &CuKind) -> Self {
+        match val {
+            CuKind::NotAvailable => "N/A",
+            CuKind::Deposit => "deposit",
+            CuKind::Dispense => "dispense",
+            CuKind::Recycle => "recycle",
+        }
+    }
+}
+
+impl From<CuKind> for &'static str {
+    fn from(val: CuKind) -> Self {
+        (&val).into()
+    }
+}
+
+impl fmt::Display for CuKind {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, r#""{}""#, <&str>::from(self))
+    }
+}
+
+impl_xfs_enum!(CuKind, "cuKind");
+
+/// Type of cash unit.
+#[repr(u32)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
+pub enum CuType {
+    #[default]
+    NotAvailable = LCU_NA,
+    BillCassette = LCU_BILL_CASSETTE,
+    RejectCassette = LCU_REJECT_CASSETTE,
+}
+
+impl CuType {
+    /// Creates a new [CuType].
+    pub const fn new() -> Self {
+        Self::NotAvailable
+    }
+
+    /// Creates a new [CuType] from the provided parameter.
+    pub const fn create(val: u32) -> Self {
+        match val {
+            v if v == LCU_NA => Self::NotAvailable,
+            v if v == LCU_BILL_CASSETTE => Self::BillCassette,
+            v if v == LCU_REJECT_CASSETTE => Self::RejectCassette,
+            _ => Self::NotAvailable,
+        }
+    }
+}
+
+impl From<&CuType> for &'static str {
+    fn from(val: &CuType) -> Self {
+        match val {
+            CuType::NotAvailable => "N/A",
+            CuType::RejectCassette => "reject cassette",
+            CuType::BillCassette => "bill cassette",
+        }
+    }
+}
+
+impl From<CuType> for &'static str {
+    fn from(val: CuType) -> Self {
+        (&val).into()
+    }
+}
+
+impl fmt::Display for CuType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, r#""{}""#, <&str>::from(self))
+    }
+}
+
+impl_xfs_enum!(CuType, "cuType");
 
 /// Represents the logical cash unit in the CDR.
 #[repr(u32)]
@@ -67,10 +174,9 @@ impl LCU {
     pub const fn new() -> Self {
         Self::Unknown
     }
-}
 
-impl From<u32> for LCU {
-    fn from(val: u32) -> Self {
+    /// Creates a new [LCU] from the provided parameter.
+    pub const fn create(val: u32) -> Self {
         match val {
             v if v == LCU_DISPENSE => Self::Dispense,
             v if v == LCU_DEPOSIT => Self::Deposit,
@@ -100,12 +206,6 @@ impl From<u32> for LCU {
             v if v == LCU_CURRENCY_CASSETTE => Self::CurrencyCassette,
             _ => Self::Unknown,
         }
-    }
-}
-
-impl From<LCU> for u32 {
-    fn from(val: LCU) -> Self {
-        val as u32
     }
 }
 
@@ -153,6 +253,8 @@ impl fmt::Display for LCU {
         write!(f, r#""{}""#, <&str>::from(self))
     }
 }
+
+impl_xfs_enum!(LCU, "lcu");
 
 /// This structure handles a list of [DenominationItem]s.
 #[repr(C)]

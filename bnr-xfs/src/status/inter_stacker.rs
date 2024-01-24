@@ -24,10 +24,9 @@ impl InterStackerStatus {
     pub const fn new() -> Self {
         Self::Unknown
     }
-}
 
-impl From<u32> for InterStackerStatus {
-    fn from(val: u32) -> Self {
+    /// Creates a new [InterStackerStatus] from the provided parameter.
+    pub const fn create(val: u32) -> Self {
         match val {
             ds if ds == CDR_IS_EMPTY => Self::Empty,
             ds if ds == CDR_IS_NOT_EMPTY => Self::NotEmpty,

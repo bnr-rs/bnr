@@ -24,10 +24,9 @@ impl SafeDoorStatus {
     pub const fn new() -> Self {
         Self::Unknown
     }
-}
 
-impl From<u32> for SafeDoorStatus {
-    fn from(val: u32) -> Self {
+    /// Creates a new [SafeDoorStatus] from the provided parameter.
+    pub const fn create(val: u32) -> Self {
         match val {
             ds if ds == SD_OPEN => Self::Open,
             ds if ds == SD_LOCKED => Self::Locked,

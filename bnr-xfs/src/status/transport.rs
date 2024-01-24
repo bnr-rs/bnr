@@ -27,10 +27,9 @@ impl TransportStatus {
     pub const fn new() -> Self {
         Self::Unknown
     }
-}
 
-impl From<u32> for TransportStatus {
-    fn from(val: u32) -> Self {
+    /// Creates a new [TransportStatus] from the provided parameter.
+    pub const fn create(val: u32) -> Self {
         match val {
             ds if ds == TRANSPORT_CHANGED => Self::Changed,
             ds if ds == TRANSPORT_OK => Self::Ok,

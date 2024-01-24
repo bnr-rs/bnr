@@ -492,6 +492,22 @@ impl DeviceHandle {
         Ok(())
     }
 
+    pub(crate) fn query_cash_unit_inner(&self) -> Result<CashUnit> {
+        increment_call_counter();
+        let count = XfsParam::create(XfsValue::new().with_base64(call_counter_base64()));
+
+        let call = XfsMethodCall::new()
+            .with_name(XfsMethodName::QueryCashUnit)
+            .with_params(XfsParams::create([count]));
+
+        let timeout = std::time::Duration::from_millis(50);
+        let usb = self.usb();
+
+        Self::write_call(usb, &call, timeout)?;
+
+        Self::read_response(usb, call.name()?, timeout)?.try_into()
+    }
+
     /// Writes an [XfsMethodCall] to the BNR device.
     pub fn write_call(
         usb: &UsbDeviceHandle,
@@ -562,7 +578,7 @@ impl DeviceHandle {
             },
             Err(err) => {
                 log::warn!("Error parsing {method} response: {err}");
-                Err(err.into())
+                Err(err)
             }
         }
     }
