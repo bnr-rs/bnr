@@ -263,9 +263,8 @@ dependencies = [
 [[package]]
 name = "serde-xml-rs"
 version = "0.6.0"
-source = "git+https://github.com/cr8t/serde-xml-rs?branch=main#003f29115aa9d765db78b6bdf5bc0815529f1b60"
+source = "git+https://github.com/cr8t/serde-xml-rs#d126862a83dc4cc8a033accade1314139f5a0c6c"
 dependencies = [
- "log",
  "serde",
  "thiserror",
  "xml-rs",

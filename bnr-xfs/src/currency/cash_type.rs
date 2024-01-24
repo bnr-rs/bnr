@@ -207,4 +207,4 @@ impl fmt::Display for CashTypeList {
     }
 }
 
-impl_xfs_array!(CashTypeList, "cashTypes");
+impl_xfs_array!(CashTypeList, "secondaryCashTypes");

@@ -726,14 +726,10 @@ macro_rules! impl_xfs_array {
                     .zip(data[..len].iter().map(|m| m.inner()))
                     .enumerate()
                 {
-                    *dst = match src.try_into() {
-                        Ok(d) => d,
-                        Err(err) => {
-                            return Err($crate::Error::Xfs(format!(
-                                "Failed to convert item[{i}]: {err}"
-                            )))
-                        }
-                    };
+                    match src.try_into() {
+                        Ok(d) => *dst = d,
+                        Err(err) => log::warn!("Failed to convert item[{i}]: {err}"),
+                    }
                 }
 
                 res.set_size(len as u32);

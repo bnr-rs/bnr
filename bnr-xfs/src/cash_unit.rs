@@ -157,3 +157,20 @@ impl TryFrom<XfsMethodResponse> for CashUnit {
         (&val).try_into()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::xfs;
+
+    #[test]
+    fn test_parse_cash_unit() -> Result<()> {
+        let unit_xml = include_bytes!("../tests/xml/query-cash-unit.xml");
+        let unit_xml_str = std::str::from_utf8(unit_xml.as_ref())?;
+
+        let res = xfs::from_str::<xfs::method_response::XfsMethodResponseStruct>(unit_xml_str)?;
+        let _cash_unit = CashUnit::try_from(res.inner())?;
+
+        Ok(())
+    }
+}

@@ -81,7 +81,7 @@ impl fmt::Display for CuKind {
     }
 }
 
-impl_xfs_enum!(CuKind, "cuKind");
+impl_xfs_enum!(CuKind, "kind");
 
 /// Type of cash unit.
 #[repr(u32)]
@@ -132,7 +132,7 @@ impl fmt::Display for CuType {
     }
 }
 
-impl_xfs_enum!(CuType, "cuType");
+impl_xfs_enum!(CuType, "type");
 
 /// Represents the logical cash unit in the CDR.
 #[repr(u32)]
