@@ -41,6 +41,34 @@ impl Currency {
     pub fn exponent(&self) -> i32 {
         self.exponent
     }
+
+    /// Converts a standard value to a MDU value.
+    ///
+    /// Example:
+    ///
+    /// ```no_run
+    /// # use bnr::currency::{Currency, CurrencyCode};
+    /// let value = 10;
+    /// let currency = Currency::from(CurrencyCode::USD);
+    /// assert_eq!(currency.to_mdu_value(value), 1000);
+    /// ```
+    pub fn to_mdu_value(&self, value: u32) -> u32 {
+        (value as f32 * 10f32.powf(self.exponent.abs() as f32)) as u32
+    }
+
+    /// Converts a MDU value to a standard value.
+    ///
+    /// Example:
+    ///
+    /// ```no_run
+    /// # use bnr::currency::{Currency, CurrencyCode};
+    /// let mdu_value = 1000;
+    /// let currency = Currency::from(CurrencyCode::USD);
+    /// assert_eq!(currency.from_mdu_value(mdu_value), 10);
+    /// ```
+    pub fn from_mdu_value(&self, value: u32) -> u32 {
+        (value as f32 * 10f32.powf(self.exponent as f32)) as u32
+    }
 }
 
 impl From<CurrencyCode> for Currency {

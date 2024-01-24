@@ -260,7 +260,7 @@ impl fmt::Display for Denomination {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            r#""denomination": {{"size": {}, "amount": {}, "cashbox": {}, "items": ["#,
+            r#"{{"size": {}, "amount": {}, "cashbox": {}, "items": ["#,
             self.size, self.amount, self.cashbox
         )?;
 
@@ -282,7 +282,7 @@ impl fmt::Display for Denomination {
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct DenominationItem {
     /// Logical Cash Unit number
-    unit: LCU,
+    unit: u32,
     /// Bill count
     count: u32,
 }
@@ -290,17 +290,46 @@ pub struct DenominationItem {
 impl DenominationItem {
     /// Creates a new [DenominationItem].
     pub const fn new() -> Self {
-        Self {
-            unit: LCU::new(),
-            count: 0,
-        }
+        Self { unit: 0, count: 0 }
+    }
+
+    /// Gets the [LogicalCashUnit] number.
+    pub const fn unit(&self) -> u32 {
+        self.unit
+    }
+
+    /// Sets the [LogicalCashUnit] number.
+    pub fn set_unit(&mut self, unit: u32) {
+        self.unit = unit;
+    }
+
+    /// Builder function that sets the [LogicalCashUnit] number.
+    pub fn with_unit(mut self, unit: u32) -> Self {
+        self.set_unit(unit);
+        self
+    }
+
+    /// Gets the count of [DenominationItem] notes.
+    pub const fn count(&self) -> u32 {
+        self.count
+    }
+
+    /// Sets the count of [DenominationItem] notes.
+    pub fn set_count(&mut self, count: u32) {
+        self.count = count;
+    }
+
+    /// Builder function that sets the count of [DenominationItem] notes.
+    pub fn with_count(mut self, count: u32) -> Self {
+        self.set_count(count);
+        self
     }
 }
 
 impl From<&DenominationItem> for bnr_sys::XfsDenominationItem {
     fn from(val: &DenominationItem) -> Self {
         Self {
-            unit: val.unit.into(),
+            unit: val.unit,
             count: val.count,
         }
     }
@@ -315,7 +344,7 @@ impl From<DenominationItem> for bnr_sys::XfsDenominationItem {
 impl From<&bnr_sys::XfsDenominationItem> for DenominationItem {
     fn from(val: &bnr_sys::XfsDenominationItem) -> Self {
         Self {
-            unit: val.unit.into(),
+            unit: val.unit,
             count: val.count,
         }
     }
@@ -329,10 +358,6 @@ impl From<bnr_sys::XfsDenominationItem> for DenominationItem {
 
 impl fmt::Display for DenominationItem {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            r#""denomination_item": {{"unit": "{}", "count": {}}}"#,
-            self.unit, self.count
-        )
+        write!(f, r#"{{"unit":{},"count":{}}}"#, self.unit, self.count)
     }
 }
