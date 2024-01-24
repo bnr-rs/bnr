@@ -1,4 +1,4 @@
-use crate::{init_handle, deinit_handle, with_handle, DeviceHandle, Result};
+use crate::{deinit_handle, init_handle, with_handle, DeviceHandle, Result};
 
 use bnr_xfs::{IntermediateOccurredFn, OperationCompletedFn, StatusOccurredFn};
 

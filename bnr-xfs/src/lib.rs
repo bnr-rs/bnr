@@ -6,6 +6,7 @@ mod currency;
 mod device_handle;
 mod dispense;
 mod error;
+mod intermediate_event;
 #[macro_use]
 mod macros;
 mod status;
@@ -18,6 +19,7 @@ pub use currency::*;
 pub use device_handle::*;
 pub use dispense::*;
 pub use error::*;
+pub use intermediate_event::*;
 pub use status::*;
 
 create_xfs_i4!(Size, "size", "Represents the size of a list.");

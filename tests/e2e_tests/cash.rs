@@ -149,10 +149,8 @@ fn test_update_cash_unit() -> Result<()> {
 
     cash::update_cash_unit(
         0,
-        &bnr::LogicalCashUnitList::new()
-            .with_items(&[bnr::LogicalCashUnit::new()]),
-        &bnr::PhysicalCashUnitList::new()
-            .with_items(&[bnr::PhysicalCashUnit::new()]),
+        &bnr::LogicalCashUnitList::new().with_items(&[bnr::LogicalCashUnit::new()]),
+        &bnr::PhysicalCashUnitList::new().with_items(&[bnr::PhysicalCashUnit::new()]),
     )?;
 
     init::close()?;

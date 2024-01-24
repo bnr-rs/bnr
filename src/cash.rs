@@ -1,6 +1,9 @@
 //! Functions for cash-related operations.
 
-use bnr_xfs::{CurrencyCode, CashUnit, DispenseRequest, LogicalCashUnit, LogicalCashUnitList, PhysicalCashUnit, PhysicalCashUnitList, LCU_LIST_LEN, PCU_LIST_LEN};
+use bnr_xfs::{
+    CashUnit, CurrencyCode, DispenseRequest, LogicalCashUnit, LogicalCashUnitList,
+    PhysicalCashUnit, PhysicalCashUnitList, LCU_LIST_LEN, PCU_LIST_LEN,
+};
 
 use crate::{with_handle, Result};
 

@@ -55,5 +55,7 @@ pub(crate) fn lock_handle() -> Result<MutexGuard<'static, Option<DeviceHandle>>>
 /// Locks the global [DeviceHandle] instance, and calls the provided callback.
 pub fn with_handle<T>(f: impl Fn(&DeviceHandle) -> Result<T>) -> Result<T> {
     let handle = lock_handle()?;
-    f(handle.as_ref().ok_or(Error::Usb("Uninitialized device handle".into()))?)
+    f(handle
+        .as_ref()
+        .ok_or(Error::Usb("Uninitialized device handle".into()))?)
 }
