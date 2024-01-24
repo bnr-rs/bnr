@@ -1,3 +1,5 @@
+use std::fmt;
+
 use super::HardwareStatus;
 
 /// Represents CDR dispenser status values.
@@ -70,5 +72,33 @@ impl From<DispenserStatus> for HardwareStatus {
                 Self::Warning
             }
         }
+    }
+}
+
+impl From<DispenserStatus> for &'static str {
+    fn from(val: DispenserStatus) -> Self {
+        match val {
+            DispenserStatus::Changed => "changed",
+            DispenserStatus::ConfigurationChanged => "configuration changed",
+            DispenserStatus::Threshold => "threshold",
+            DispenserStatus::CashAvailable => "cash available",
+            DispenserStatus::CashTaken => "cash taken",
+            DispenserStatus::State => "state",
+            DispenserStatus::Stop => "stop",
+            DispenserStatus::Unknown => "unknown",
+            DispenserStatus::Ok => "OK",
+        }
+    }
+}
+
+impl From<&DispenserStatus> for &'static str {
+    fn from(val: &DispenserStatus) -> Self {
+        (*val).into()
+    }
+}
+
+impl fmt::Display for DispenserStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", <&str>::from(self))
     }
 }

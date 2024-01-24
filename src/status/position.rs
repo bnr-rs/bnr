@@ -1,3 +1,7 @@
+use std::fmt;
+
+use crate::{CB, OB};
+
 use super::{ContentStatus, HardwareStatus, ShutterStatus};
 
 /// Status of a CDR stacker.
@@ -49,6 +53,15 @@ impl From<PositionStatus> for HardwareStatus {
     }
 }
 
+impl fmt::Display for PositionStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "\"position_status\": {OB}")?;
+        write!(f, "\"position\": \"{}\", ", self.position)?;
+        write!(f, "\"content_status\": \"{}\", ", self.content_status)?;
+        write!(f, "\"shutter_status\": \"{}\"{CB}", self.shutter_status)
+    }
+}
+
 /// List of CDR stacker status by position.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
@@ -95,6 +108,29 @@ impl From<CdrPositionStatusList> for HardwareStatus {
     }
 }
 
+impl fmt::Display for CdrPositionStatusList {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "\"cdr_position_status_list\": {OB}")?;
+        write!(
+            f,
+            "\"max_size\": {}, \"size\": {}",
+            self.max_size, self.size
+        )?;
+        write!(f, "\"items\": [")?;
+
+        let items_len = self.items.len();
+        for (i, item) in self.items.iter().enumerate() {
+            write!(f, "{item}")?;
+
+            if i != items_len - 1 {
+                write!(f, ", ")?;
+            }
+        }
+
+        write!(f, "]{CB}")
+    }
+}
+
 /// Represents a CDR position
 #[repr(u32)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
@@ -126,5 +162,26 @@ impl From<u32> for CdrPosition {
 impl From<CdrPosition> for u32 {
     fn from(val: CdrPosition) -> Self {
         val as u32
+    }
+}
+
+impl From<CdrPosition> for &'static str {
+    fn from(val: CdrPosition) -> Self {
+        match val {
+            CdrPosition::Bottom => "bottom",
+            CdrPosition::Top => "top",
+        }
+    }
+}
+
+impl From<&CdrPosition> for &'static str {
+    fn from(val: &CdrPosition) -> Self {
+        (*val).into()
+    }
+}
+
+impl fmt::Display for CdrPosition {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", <&str>::from(self))
     }
 }

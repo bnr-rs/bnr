@@ -1,3 +1,5 @@
+use std::fmt;
+
 use super::HardwareStatus;
 
 /// Represents transport status values.
@@ -47,5 +49,28 @@ impl From<TransportStatus> for HardwareStatus {
             TransportStatus::Unknown => Self::Warning,
             TransportStatus::Inoperable => Self::Error,
         }
+    }
+}
+
+impl From<TransportStatus> for &'static str {
+    fn from(val: TransportStatus) -> Self {
+        match val {
+            TransportStatus::Ok => "OK",
+            TransportStatus::Changed => "changed",
+            TransportStatus::Unknown => "unknown",
+            TransportStatus::Inoperable => "inoperable",
+        }
+    }
+}
+
+impl From<&TransportStatus> for &'static str {
+    fn from(val: &TransportStatus) -> Self {
+        (*val).into()
+    }
+}
+
+impl fmt::Display for TransportStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", <&str>::from(self))
     }
 }

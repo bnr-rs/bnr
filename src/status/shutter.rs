@@ -1,3 +1,5 @@
+use std::fmt;
+
 use super::HardwareStatus;
 
 /// Represents shutter status values.
@@ -49,5 +51,28 @@ impl From<ShutterStatus> for HardwareStatus {
             ShutterStatus::NotSupported => Self::Missing,
             ShutterStatus::Unknown => Self::Warning,
         }
+    }
+}
+
+impl From<ShutterStatus> for &'static str {
+    fn from(val: ShutterStatus) -> Self {
+        match val {
+            ShutterStatus::Closed => "closed",
+            ShutterStatus::Open => "open",
+            ShutterStatus::NotSupported => "not supported",
+            ShutterStatus::Unknown => "unknown",
+        }
+    }
+}
+
+impl From<&ShutterStatus> for &'static str {
+    fn from(val: &ShutterStatus) -> Self {
+        (*val).into()
+    }
+}
+
+impl fmt::Display for ShutterStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", <&str>::from(self))
     }
 }

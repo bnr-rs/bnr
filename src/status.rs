@@ -1,6 +1,8 @@
 //! Types and functions for handling system status events.
 
-use crate::{check_res, Result};
+use std::fmt;
+
+use crate::{check_res, Result, CB, OB};
 
 mod content;
 mod device;
@@ -100,6 +102,27 @@ impl From<CdrStatus> for HardwareStatus {
             HardwareStatus::from(val.position_status_list),
         ]
         .into()
+    }
+}
+
+impl fmt::Display for CdrStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "\"status\": {OB}")?;
+        write!(f, "\"device_status\": \"{}\", ", self.device_status)?;
+        write!(f, "\"dispenser_status\": \"{}\", ", self.dispenser_status)?;
+        write!(
+            f,
+            "\"intermediate_stacker_status\": \"{}\", ",
+            self.intermediate_stacker_status
+        )?;
+        write!(f, "\"safe_door_status\": \"{}\", ", self.safe_door_status)?;
+        write!(f, "\"shutter_status\": \"{}\", ", self.shutter_status)?;
+        write!(f, "\"transport_status\": \"{}\", ", self.transport_status)?;
+        write!(
+            f,
+            "\"position_status_list\": {}{CB}",
+            self.position_status_list
+        )
     }
 }
 

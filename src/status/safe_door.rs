@@ -1,3 +1,5 @@
+use std::fmt;
+
 use super::HardwareStatus;
 
 /// Represents safe door status values.
@@ -43,5 +45,27 @@ impl From<SafeDoorStatus> for HardwareStatus {
             SafeDoorStatus::Locked | SafeDoorStatus::Open => Self::Notification,
             SafeDoorStatus::Unknown => Self::Warning,
         }
+    }
+}
+
+impl From<SafeDoorStatus> for &'static str {
+    fn from(val: SafeDoorStatus) -> Self {
+        match val {
+            SafeDoorStatus::Locked => "locked",
+            SafeDoorStatus::Open => "open",
+            SafeDoorStatus::Unknown => "unknown",
+        }
+    }
+}
+
+impl From<&SafeDoorStatus> for &'static str {
+    fn from(val: &SafeDoorStatus) -> Self {
+        (*val).into()
+    }
+}
+
+impl fmt::Display for SafeDoorStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", <&str>::from(self))
     }
 }

@@ -1,3 +1,5 @@
+use std::fmt;
+
 use super::HardwareStatus;
 
 /// Represents CDR device status values.
@@ -51,5 +53,29 @@ impl From<DeviceStatus> for HardwareStatus {
             DeviceStatus::Offline => Self::Missing,
             DeviceStatus::HardwareError | DeviceStatus::UserError => Self::Error,
         }
+    }
+}
+
+impl From<DeviceStatus> for &'static str {
+    fn from(val: DeviceStatus) -> Self {
+        match val {
+            DeviceStatus::HardwareError => "hardware error",
+            DeviceStatus::Offline => "offline",
+            DeviceStatus::Online => "online",
+            DeviceStatus::UserError => "user error",
+            DeviceStatus::Changed => "changed",
+        }
+    }
+}
+
+impl From<&DeviceStatus> for &'static str {
+    fn from(val: &DeviceStatus) -> Self {
+        (*val).into()
+    }
+}
+
+impl fmt::Display for DeviceStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", <&str>::from(self))
     }
 }

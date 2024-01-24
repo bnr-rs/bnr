@@ -1,3 +1,5 @@
+use std::fmt;
+
 use super::HardwareStatus;
 
 /// Represents content status values.
@@ -39,5 +41,26 @@ impl From<ContentStatus> for HardwareStatus {
         match val {
             ContentStatus::Empty | ContentStatus::NotEmpty => Self::Notification,
         }
+    }
+}
+
+impl From<ContentStatus> for &'static str {
+    fn from(val: ContentStatus) -> Self {
+        match val {
+            ContentStatus::Empty => "empty",
+            ContentStatus::NotEmpty => "not empty",
+        }
+    }
+}
+
+impl From<&ContentStatus> for &'static str {
+    fn from(val: &ContentStatus) -> Self {
+        (*val).into()
+    }
+}
+
+impl fmt::Display for ContentStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", <&str>::from(self))
     }
 }

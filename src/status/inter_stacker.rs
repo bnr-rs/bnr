@@ -1,3 +1,5 @@
+use std::fmt;
+
 use super::HardwareStatus;
 
 /// Represents intermediate stacker status values.
@@ -43,5 +45,27 @@ impl From<InterStackerStatus> for HardwareStatus {
             InterStackerStatus::Empty | InterStackerStatus::NotEmpty => Self::Notification,
             InterStackerStatus::Unknown => Self::Warning,
         }
+    }
+}
+
+impl From<InterStackerStatus> for &'static str {
+    fn from(val: InterStackerStatus) -> Self {
+        match val {
+            InterStackerStatus::Empty => "empty",
+            InterStackerStatus::NotEmpty => "not empty",
+            InterStackerStatus::Unknown => "unknown",
+        }
+    }
+}
+
+impl From<&InterStackerStatus> for &'static str {
+    fn from(val: &InterStackerStatus) -> Self {
+        (*val).into()
+    }
+}
+
+impl fmt::Display for InterStackerStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", <&str>::from(self))
     }
 }

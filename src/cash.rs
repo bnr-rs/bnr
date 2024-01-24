@@ -1,5 +1,9 @@
 use crate::{check_res, currency::CurrencyCode, Result};
 
+mod order;
+
+pub use order::*;
+
 /// Sends the initial message to start a `CashIn` transaction, and begin accepting notes.
 pub fn cash_in_start() -> Result<()> {
     check_res(unsafe { bnr_sys::bnr_CashInStart() }, "cash_in_start")
