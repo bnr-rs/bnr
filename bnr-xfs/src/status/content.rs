@@ -33,12 +33,6 @@ impl From<u32> for ContentStatus {
     }
 }
 
-impl From<ContentStatus> for u32 {
-    fn from(val: ContentStatus) -> Self {
-        val as u32
-    }
-}
-
 impl From<ContentStatus> for HardwareStatus {
     fn from(val: ContentStatus) -> Self {
         match val {
@@ -47,8 +41,8 @@ impl From<ContentStatus> for HardwareStatus {
     }
 }
 
-impl From<ContentStatus> for &'static str {
-    fn from(val: ContentStatus) -> Self {
+impl From<&ContentStatus> for &'static str {
+    fn from(val: &ContentStatus) -> Self {
         match val {
             ContentStatus::Empty => "empty",
             ContentStatus::NotEmpty => "not empty",
@@ -56,9 +50,9 @@ impl From<ContentStatus> for &'static str {
     }
 }
 
-impl From<&ContentStatus> for &'static str {
-    fn from(val: &ContentStatus) -> Self {
-        (*val).into()
+impl From<ContentStatus> for &'static str {
+    fn from(val: ContentStatus) -> Self {
+        (&val).into()
     }
 }
 
@@ -67,3 +61,5 @@ impl fmt::Display for ContentStatus {
         write!(f, "{}", <&str>::from(self))
     }
 }
+
+impl_xfs_enum!(ContentStatus, "contentStatus");

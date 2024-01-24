@@ -36,3 +36,8 @@ pub fn from_str<'de, T: serde::Deserialize<'de>>(xml_str: &'de str) -> Result<T>
 
     Ok(T::deserialize(&mut de)?)
 }
+
+/// Trait for common functionality for XFS enum types.
+pub trait XfsEnum {
+    fn xfs_name() -> &'static str;
+}

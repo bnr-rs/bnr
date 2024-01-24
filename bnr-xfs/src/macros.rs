@@ -52,3 +52,105 @@ macro_rules! impl_default {
         }
     };
 }
+
+/// Implements traits common to XFS enum types.
+#[macro_export]
+macro_rules! impl_xfs_enum {
+    ($ty:ident, $name:expr) => {
+        impl $ty {
+            /// Gets the [XfsMember](crate::xfs::xfs_struct::XfsMember) name.
+            pub const fn xfs_name() -> &'static str {
+                $name
+            }
+        }
+
+        impl From<&u32> for $ty {
+            fn from(val: &u32) -> Self {
+                (*val).into()
+            }
+        }
+
+        impl From<$ty> for u32 {
+            fn from(val: $ty) -> Self {
+                val as u32
+            }
+        }
+
+        impl From<&$ty> for u32 {
+            fn from(val: &$ty) -> Self {
+                (*val).into()
+            }
+        }
+
+        impl From<i32> for $ty {
+            fn from(val: i32) -> Self {
+                (val as u32).into()
+            }
+        }
+
+        impl From<&i32> for $ty {
+            fn from(val: &i32) -> Self {
+                (*val).into()
+            }
+        }
+
+        impl From<$ty> for i32 {
+            fn from(val: $ty) -> Self {
+                val as i32
+            }
+        }
+
+        impl From<&$ty> for i32 {
+            fn from(val: &$ty) -> Self {
+                (*val).into()
+            }
+        }
+
+        impl From<&$ty> for $crate::xfs::value::XfsValue {
+            fn from(val: &$ty) -> Self {
+                Self::new().with_i4(val.into())
+            }
+        }
+
+        impl From<$ty> for $crate::xfs::value::XfsValue {
+            fn from(val: $ty) -> Self {
+                (&val).into()
+            }
+        }
+
+        impl From<&$ty> for $crate::xfs::xfs_struct::XfsMember {
+            fn from(val: &$ty) -> Self {
+                $crate::xfs::xfs_struct::XfsMember::create($ty::xfs_name(), val.into())
+            }
+        }
+
+        impl From<$ty> for $crate::xfs::xfs_struct::XfsMember {
+            fn from(val: $ty) -> Self {
+                (&val).into()
+            }
+        }
+
+        impl TryFrom<&$crate::xfs::xfs_struct::XfsMember> for $ty {
+            type Error = $crate::Error;
+
+            fn try_from(val: &$crate::xfs::xfs_struct::XfsMember) -> $crate::Result<Self> {
+                if val.name() == Self::xfs_name() && val.value().i4().is_some() {
+                    Ok(val.value().i4().unwrap_or(&0i32).into())
+                } else {
+                    let name = $ty::xfs_name();
+                    Err($crate::Error::Xfs(format!(
+                        "Expected {name} XfsMember, have: {val}"
+                    )))
+                }
+            }
+        }
+
+        impl TryFrom<$crate::xfs::xfs_struct::XfsMember> for $ty {
+            type Error = $crate::Error;
+
+            fn try_from(val: $crate::xfs::xfs_struct::XfsMember) -> $crate::Result<Self> {
+                (&val).try_into()
+            }
+        }
+    };
+}

@@ -5,7 +5,6 @@ use datetime::format_description::well_known::{
 use time as datetime;
 
 use super::*;
-use crate::capabilities::Capabilities;
 use crate::xfs::{
     self,
     method_call::{XfsMethodCall, XfsMethodName},
@@ -211,7 +210,7 @@ impl DeviceHandle {
         Ok(())
     }
 
-    pub(crate) fn get_status_inner(&self) -> Result<XfsMethodResponse> {
+    pub(crate) fn get_status_inner(&self) -> Result<CdrStatus> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::GetStatus);
 
         let timeout = std::time::Duration::from_millis(50);
@@ -219,7 +218,7 @@ impl DeviceHandle {
 
         Self::write_call(usb, &call, timeout)?;
 
-        Self::read_response(usb, call.name()?, timeout)
+        Self::read_response(usb, call.name()?, timeout)?.try_into()
     }
 
     pub(crate) fn park_inner(&self) -> Result<()> {

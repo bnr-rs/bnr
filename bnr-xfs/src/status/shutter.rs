@@ -41,12 +41,6 @@ impl From<u32> for ShutterStatus {
     }
 }
 
-impl From<ShutterStatus> for u32 {
-    fn from(val: ShutterStatus) -> Self {
-        val as u32
-    }
-}
-
 impl From<ShutterStatus> for HardwareStatus {
     fn from(val: ShutterStatus) -> Self {
         match val {
@@ -79,3 +73,5 @@ impl fmt::Display for ShutterStatus {
         write!(f, "{}", <&str>::from(self))
     }
 }
+
+impl_xfs_enum!(ShutterStatus, "shutterStatus");

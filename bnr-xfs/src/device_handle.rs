@@ -1,7 +1,7 @@
 use time as datetime;
 
 use crate::capabilities::Capabilities;
-use crate::xfs::method_response::XfsMethodResponse;
+use crate::status::CdrStatus;
 use crate::{Error, Result};
 
 mod inner;
@@ -125,7 +125,7 @@ impl DeviceHandle {
     }
 
     /// Gets the current status of the BNR device.
-    pub fn get_status(&self) -> Result<XfsMethodResponse> {
+    pub fn get_status(&self) -> Result<CdrStatus> {
         self.get_status_inner()
     }
 
