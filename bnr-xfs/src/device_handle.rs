@@ -1,4 +1,7 @@
-use std::sync::{atomic::{AtomicBool, Ordering}, Arc};
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    mpsc, Arc,
+};
 
 use time as datetime;
 
@@ -7,6 +10,7 @@ use crate::cash_unit::{CashUnit, LogicalCashUnitList, PhysicalCashUnitList};
 use crate::currency::{CashOrder, CurrencyCode};
 use crate::dispense::DispenseRequest;
 use crate::status::CdrStatus;
+use crate::xfs;
 use crate::{Error, Result};
 
 mod inner;
@@ -92,6 +96,7 @@ pub struct DeviceHandle {
     intermediate_occurred_callback: Option<IntermediateOccurredFn>,
     status_occurred_callback: Option<StatusOccurredFn>,
     async_active: Arc<AtomicBool>,
+    response_rx: mpsc::Receiver<xfs::method_call::XfsMethodCall>,
 }
 
 impl DeviceHandle {
@@ -114,7 +119,16 @@ impl DeviceHandle {
         self.stop_background_listener();
         self.usb = Arc::new(Self::find_usb()?);
         self.stop_listener.store(false, Ordering::SeqCst);
-        self.start_background_listener(Arc::clone(&self.stop_listener), Arc::clone(&self.async_active))?;
+        let (response_tx, response_rx) = mpsc::channel();
+
+        self.start_background_listener(
+            response_tx,
+            Arc::clone(&self.stop_listener),
+            Arc::clone(&self.async_active),
+        )?;
+
+        self.response_rx = response_rx;
+
         Ok(())
     }
 

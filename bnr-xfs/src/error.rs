@@ -1,4 +1,5 @@
 use std::fmt;
+use std::sync::mpsc;
 
 mod bnr_error;
 mod usb_error;
@@ -91,6 +92,12 @@ impl From<datetime::error::Parse> for Error {
 impl From<serde_json::Error> for Error {
     fn from(err: serde_json::Error) -> Self {
         Self::Json(format!("{err}"))
+    }
+}
+
+impl<E> From<mpsc::SendError<E>> for Error {
+    fn from(err: mpsc::SendError<E>) -> Self {
+        Self::Io(format!("mpsc send error: {err}"))
     }
 }
 

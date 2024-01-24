@@ -82,17 +82,17 @@ impl XfsMethodCall {
             matches!(
                 name,
                 XfsMethodName::CashIn
-                | XfsMethodName::CashInStart
-                | XfsMethodName::CashInRollback
-                | XfsMethodName::CashInEnd
-                | XfsMethodName::Empty
-                | XfsMethodName::Eject
-                | XfsMethodName::Reset
-                | XfsMethodName::Park
-                | XfsMethodName::Denominate
-                | XfsMethodName::Dispense
-                | XfsMethodName::Present
-                | XfsMethodName::Retract
+                    | XfsMethodName::CashInStart
+                    | XfsMethodName::CashInRollback
+                    | XfsMethodName::CashInEnd
+                    | XfsMethodName::Empty
+                    | XfsMethodName::Eject
+                    | XfsMethodName::Reset
+                    | XfsMethodName::Park
+                    | XfsMethodName::Denominate
+                    | XfsMethodName::Dispense
+                    | XfsMethodName::Present
+                    | XfsMethodName::Retract
             )
         } else {
             false

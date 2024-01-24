@@ -1,6 +1,6 @@
 use std::sync::{
     atomic::{AtomicU64, Ordering},
-    Arc,
+    mpsc, Arc,
 };
 
 use base64::Engine;
@@ -97,6 +97,8 @@ impl DeviceHandle {
             }
         }
 
+        let (response_tx, response_rx) = mpsc::channel();
+
         let ret = Self {
             usb: Arc::new(usb),
             stop_listener: Arc::new(AtomicBool::new(false)),
@@ -104,9 +106,14 @@ impl DeviceHandle {
             intermediate_occurred_callback,
             status_occurred_callback,
             async_active: Arc::new(AtomicBool::new(false)),
+            response_rx,
         };
 
-        ret.start_background_listener(Arc::clone(&ret.stop_listener), Arc::clone(&ret.async_active))?;
+        ret.start_background_listener(
+            response_tx,
+            Arc::clone(&ret.stop_listener),
+            Arc::clone(&ret.async_active),
+        )?;
 
         let usb = ret.usb();
 
@@ -143,6 +150,7 @@ impl DeviceHandle {
 
     pub(crate) fn start_background_listener(
         &self,
+        response_tx: mpsc::Sender<XfsMethodCall>,
         stop: Arc<AtomicBool>,
         async_active: Arc<AtomicBool>,
     ) -> Result<()> {
@@ -163,184 +171,10 @@ impl DeviceHandle {
 
             while !stop.load(Ordering::Relaxed) {
                 if let Ok(msg) = Self::read_callback_call(&usb, timeout) {
-                    let res = match msg.name() {
-                        Ok(XfsMethodName::OperationCompleteOccurred) => {
-                            let mut params_iter =
-                                msg.params().params().iter().map(|m| m.inner().value());
-
-                            let id = params_iter
-                                .next()
-                                .cloned()
-                                .unwrap_or(XfsValue::new().with_i4(0))
-                                .i4()
-                                .cloned()
-                                .unwrap_or(0);
-
-                            let op_id: OperationId = params_iter
-                                .next()
-                                .cloned()
-                                .unwrap_or(XfsValue::new().with_i4(0))
-                                .try_into()?;
-
-                            let ret = params_iter
-                                .next()
-                                .cloned()
-                                .unwrap_or(XfsValue::new().with_i4(0))
-                                .i4()
-                                .cloned()
-                                .unwrap_or(0);
-
-                            let stat = params_iter
-                                .next()
-                                .cloned()
-                                .unwrap_or(XfsValue::new().with_i4(0))
-                                .i4()
-                                .cloned()
-                                .unwrap_or(0);
-
-                            if let Some(xfs) = params_iter.next() {
-                                match xfs.xfs_struct() {
-                                    Some(xfs)
-                                        if xfs.find_member(Currency::xfs_name()).is_ok()
-                                            && xfs
-                                                .find_member(Denomination::xfs_name())
-                                                .is_ok() =>
-                                    {
-                                        let mut cash_order = CashOrder::try_from(xfs)?;
-                                        op_complete(id, op_id.into(), ret, stat, &mut cash_order);
-                                    }
-                                    _ => op_complete(id, op_id.into(), ret, stat, &mut ()),
-                                }
-                            } else {
-                                op_complete(id, op_id.into(), ret, stat, &mut ());
-                            }
-
-                            async_active.store(false, Ordering::SeqCst);
-
-                            Some(XfsMethodResponse::new_params([XfsParam::create(
-                                CallbackOperationResponse::create(id, op_id.into()).into(),
-                            )]))
-                        }
-                        Ok(XfsMethodName::IntermediateOccurred) => {
-                            let mut params_iter =
-                                msg.params().params().iter().map(|m| m.inner().value());
-
-                            let id = params_iter
-                                .next()
-                                .cloned()
-                                .unwrap_or(XfsValue::new().with_i4(0))
-                                .i4()
-                                .cloned()
-                                .unwrap_or(0);
-
-                            let op_id: OperationId = params_iter
-                                .next()
-                                .cloned()
-                                .unwrap_or(XfsValue::new().with_i4(0))
-                                .try_into()?;
-
-                            let ret = params_iter
-                                .next()
-                                .cloned()
-                                .unwrap_or(XfsValue::new().with_i4(0))
-                                .i4()
-                                .cloned()
-                                .unwrap_or(0);
-
-                            if let Some(xfs) = params_iter.next() {
-                                match xfs.xfs_struct() {
-                                    Some(xfs)
-                                        if xfs.find_member(Currency::xfs_name()).is_ok()
-                                            && xfs
-                                                .find_member(Denomination::xfs_name())
-                                                .is_ok() =>
-                                    {
-                                        let mut cash_order = CashOrder::try_from(xfs)?;
-                                        intermediate_occurred(
-                                            id,
-                                            op_id.into(),
-                                            ret,
-                                            &mut cash_order,
-                                        );
-                                    }
-                                    _ => intermediate_occurred(id, op_id.into(), ret, &mut ()),
-                                }
-                            } else {
-                                intermediate_occurred(id, op_id.into(), ret, &mut ());
-                            }
-
-                            async_active.store(false, Ordering::SeqCst);
-
-                            Some(XfsMethodResponse::new_params([XfsParam::create(
-                                CallbackIntermediateResponse::create(id, op_id.into()).into(),
-                            )]))
-                        }
-                        Ok(XfsMethodName::StatusOccurred) => {
-                            let mut params_iter =
-                                msg.params().params().iter().map(|m| m.inner().value());
-
-                            let id = params_iter
-                                .next()
-                                .cloned()
-                                .unwrap_or(XfsValue::new().with_i4(0))
-                                .i4()
-                                .cloned()
-                                .unwrap_or(0);
-
-                            let op_id: OperationId = params_iter
-                                .next()
-                                .cloned()
-                                .unwrap_or(XfsValue::new().with_i4(0))
-                                .try_into()?;
-
-                            let ret = params_iter
-                                .next()
-                                .cloned()
-                                .unwrap_or(XfsValue::new().with_i4(0))
-                                .i4()
-                                .cloned()
-                                .unwrap_or(0);
-
-                            if let Some(xfs) = params_iter.next() {
-                                match xfs.xfs_struct() {
-                                    Some(xfs)
-                                        if xfs.find_member(Currency::xfs_name()).is_ok()
-                                            && xfs
-                                                .find_member(Denomination::xfs_name())
-                                                .is_ok() =>
-                                    {
-                                        let mut cash_order = CashOrder::try_from(xfs)?;
-                                        status_occurred(id, op_id.into(), ret, &mut cash_order);
-                                    }
-                                    _ => status_occurred(id, op_id.into(), ret, &mut ()),
-                                }
-                            } else {
-                                status_occurred(id, op_id.into(), ret, &mut ());
-                            }
-
-                            async_active.store(false, Ordering::SeqCst);
-
-                            Some(XfsMethodResponse::new_params([XfsParam::create(
-                                CallbackStatusResponse::create(id, ret).into(),
-                            )]))
-                        }
-                        Err(_err) if msg.name_str().is_empty() => {
-                            log::trace!("No callback call");
-                            None
-                        }
-                        _stat => {
-                            let name = msg.name_str();
-                            log::warn!("Received unknown device-sent message, {name}: {msg:?}");
-                            None
-                        }
-                    };
-
-                    if let Some(res) = res.as_ref() {
-                        Self::write_callback_response(&usb, res, msg.name()?, timeout)?;
-                    }
+                    response_tx.send(msg)?;
+                } else {
+                    std::thread::sleep(std::time::Duration::from_millis(256));
                 }
-
-                std::thread::sleep(std::time::Duration::from_millis(256));
             }
 
             Ok(())
@@ -869,9 +703,7 @@ impl DeviceHandle {
             async_active.store(true, Ordering::SeqCst);
         }
         match usb.write_bulk(BNR_CALL_EP, xfs::to_string(call)?.as_bytes(), timeout) {
-            Ok(_) => {
-                Ok(())
-            }
+            Ok(_) => Ok(()),
             Err(err) => {
                 let method = call.name()?;
                 let err_msg = format!("Error writing {method} message: {err}");
