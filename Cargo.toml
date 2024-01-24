@@ -17,6 +17,11 @@ features = ["derive"]
 path = "./bnr-xfs"
 version = "0.1"
 
+[dependencies.time]
+version= "0.3"
+package = "time"
+features = ["formatting", "macros", "parsing"]
+
 [features]
 e2e-tests = []
 test-reboot = []

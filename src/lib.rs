@@ -14,6 +14,7 @@
 //! applications already using the MEI/CPI libraries.
 
 pub extern crate bnr_xfs;
+pub extern crate time;
 
 pub use bnr_xfs::*;
 
