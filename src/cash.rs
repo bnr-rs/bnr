@@ -108,6 +108,33 @@ pub fn query_cash_unit() -> Result<CashUnit> {
     Ok(cu.into())
 }
 
+/// BNR_CASH_OPERATIONS Determines if the amount requested by value or by bill list, is available for dispense.
+///
+/// From the MEI/CPI documentation:
+///
+/// Three methods are possible:
+///
+/// - denominateRequest->mixNumber is #XFS_C_CDR_MXA_MIN_BILLS: The BNR chooses the banknotes to be distributed in order to obtain the total amount using the minimum number of banknotes. Two parameters must be correctly set:
+///   - denominateRequest->denomination.amount has to be expressed in MDUs
+///   - denominateRequest->currency.currencyCode is a string. See this page for a full list of the existing ISO currency codes: http://www.iso.org/iso/home/standards/currency_codes.htm
+/// - denominateRequest->mixNumber is #BNRXFS_C_CDR_MXA_OPTIMUM_CHANGE: The BNR chooses the banknotes to be distributed in order to obtain the total amount in a way that slows down cashbox filling. As long as the low denomination Recyclers are not near to full, change is determined like with the MinBills algorithm. But when a Recycler becomes nearly full (5/6 of Full threshold), this algorithm will try to put more of this denomination in the change so that the Recycler doesn’t become full and this denomination doesn’t start to be cashed. Two parameters must be correctly set:
+///    - denominateRequest->denomination.amount has to be expressed in MDUs
+///    - denominateRequest->currency.currencyCode is a string. See this page for a full list of the existing ISO currency codes: http://www.iso.org/iso/home/standards/currency_codes.htm
+/// - denominateRequest->mixNumber is #XFS_C_CDR_MIX_DENOM: The user chooses through a list of Logical Cash Units the banknotes to be distributed by the BNR in order to obtain the total amount. The following parameters must be correctly set:
+///   - denominateRequest->denomination.size gives the size of the items array
+///   - for each item of denominateRequest->denomination.items from 0 to (denominateRequest->denomination.size - 1):
+///     - denominateRequest->denomination.items[item].unit contains the number of a LCU from where banknotes must be distributed.
+///     - denominateRequest->denomination.items[item].count gives the number of banknotes to distribute from the LCU.
+
+pub fn denominate(request: &DispenseRequest) -> Result<()> {
+    let mut req = bnr_sys::XfsDispenseRequest::from(request);
+
+    check_res(
+        unsafe { bnr_sys::bnr_Denominate(&mut req as *mut _) },
+        "denominate",
+    )
+}
+
 /// Dispenses the amount requested by value or by bill list.
 ///
 /// From the MEI/CPI documentation:
