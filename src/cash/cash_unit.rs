@@ -15,6 +15,61 @@ pub type UnitId = [i8; UNIT_ID_LEN];
 pub const PCU_NAME_LEN: usize = 5;
 pub type PcuName = [i8; PCU_NAME_LEN];
 
+/// Finds a [PhysicalCashUnit] item referenced by the [LogicalCashUnit].
+///
+/// Returns an optional reference to the [PhysicalCashUnit].
+pub fn pcu_for_lcu<'p>(
+    lcu_id: UnitId,
+    lcu: &LogicalCashUnitList,
+    pcu: &'p PhysicalCashUnitList,
+) -> Option<&'p PhysicalCashUnit> {
+    lcu.items()
+        .iter()
+        .find(|l| l.unit_id == lcu_id)
+        .and_then(|l| {
+            pcu.items()
+                .iter()
+                .find(|p| p.unit_id == l.physical_cash_unit)
+        })
+}
+
+/// Finds [PhysicalCashUnit] items referenced by the [LogicalCashUnit].
+///
+/// Returns an optional mutable reference to the [PhysicalCashUnit].
+pub fn pcu_for_lcu_mut<'p>(
+    lcu_id: UnitId,
+    lcu: &LogicalCashUnitList,
+    pcu: &'p mut PhysicalCashUnitList,
+) -> Option<&'p mut PhysicalCashUnit> {
+    lcu.items()
+        .iter()
+        .find(|l| l.unit_id == lcu_id)
+        .and_then(|l| {
+            pcu.items_mut()
+                .iter_mut()
+                .find(|p| p.unit_id == l.physical_cash_unit)
+        })
+}
+
+/// Sets the [PhysicalCashUnit] pointer in the FFI
+/// [LogicalCashUnitList](bnr_sys::LogicalCashUnitList).
+///
+/// **SAFETY WARNING**: User must ensure not to let the [CashUnit] drop or otherwise invalidate [PhysicalCashUnitList]
+/// item references while the `lcu_sys` parameter is in use. For example, do not sort or change the
+/// items in the list, do not delete items from the list, etc. This function is safe, but the safety
+/// of future use of the `physicalCashUnit` pointer is dependent on the previous constraint.
+pub fn set_pcu_for_lcu(
+    lcu_sys: &mut bnr_sys::LogicalCashUnitList,
+    lcu_list: &LogicalCashUnitList,
+    pcu_list: &PhysicalCashUnitList,
+) {
+    for lcu in lcu_sys.items.iter_mut() {
+        if let Some(pcu) = pcu_for_lcu(lcu.unitId, lcu_list, pcu_list) {
+            lcu.physicalCashUnit = pcu as *const _ as *mut _;
+        }
+    }
+}
+
 /// Represents a cash unit in a BNR device.
 ///
 /// Describes the entire set of [LogicalCashUnit]s and [PhysicalCashUnit]s present on a device.
@@ -40,32 +95,22 @@ impl CashUnit {
     ///
     /// Returns an optional reference to the [PhysicalCashUnit].
     pub fn pcu_for_lcu(&self, lcu_id: UnitId) -> Option<&PhysicalCashUnit> {
-        self.logical_cash_unit_list
-            .items()
-            .iter()
-            .find(|l| l.unit_id == lcu_id)
-            .and_then(|l| {
-                self.physical_cash_unit_list
-                    .items()
-                    .iter()
-                    .find(|p| p.unit_id == l.physical_cash_unit)
-            })
+        pcu_for_lcu(
+            lcu_id,
+            &self.logical_cash_unit_list,
+            &self.physical_cash_unit_list,
+        )
     }
 
     /// Gets the [PhysicalCashUnit] backing a [LogicalCashUnit].
     ///
     /// Returns an optional mutable reference to the [PhysicalCashUnit].
     pub fn pcu_for_lcu_mut(&mut self, lcu_id: UnitId) -> Option<&mut PhysicalCashUnit> {
-        self.logical_cash_unit_list
-            .items()
-            .iter()
-            .find(|l| l.unit_id == lcu_id)
-            .and_then(|l| {
-                self.physical_cash_unit_list
-                    .items_mut()
-                    .iter_mut()
-                    .find(|p| p.unit_id == l.physical_cash_unit)
-            })
+        pcu_for_lcu_mut(
+            lcu_id,
+            &self.logical_cash_unit_list,
+            &mut self.physical_cash_unit_list,
+        )
     }
 
     /// Gets a reference to the [LogicalCashUnitList].
@@ -106,11 +151,11 @@ impl From<&CashUnit> for bnr_sys::XfsCashUnit {
         let mut logical_cash_unit_list =
             bnr_sys::LogicalCashUnitList::from(val.logical_cash_unit_list);
 
-        for lcu in logical_cash_unit_list.items.iter_mut() {
-            if let Some(pcu) = val.pcu_for_lcu(lcu.unitId) {
-                lcu.physicalCashUnit = pcu as *const _ as *mut _;
-            }
-        }
+        set_pcu_for_lcu(
+            &mut logical_cash_unit_list,
+            val.logical_cash_unit_list(),
+            val.physical_cash_unit_list(),
+        );
 
         Self {
             transportCount: val.transport_count,
