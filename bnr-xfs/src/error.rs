@@ -29,8 +29,8 @@ pub enum Error {
     BnrUsb(UsbError),
 }
 
-impl From<serde_xml_rs::Error> for Error {
-    fn from(err: serde_xml_rs::Error) -> Self {
+impl From<serde_xml::Error> for Error {
+    fn from(err: serde_xml::Error) -> Self {
         Self::Serde(format!("{err}"))
     }
 }

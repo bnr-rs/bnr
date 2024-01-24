@@ -22,7 +22,7 @@ pub fn to_string<S: serde::Serialize>(s: S) -> Result<String> {
         xml::EmitterConfig::new().pad_self_closing(false),
     );
 
-    let mut ser = serde_xml_rs::Serializer::new_from_writer(event_writer);
+    let mut ser = serde_xml::Serializer::new_from_writer(event_writer);
     s.serialize(&mut ser)?;
 
     Ok(String::from_utf8(sink)?)
@@ -38,14 +38,14 @@ pub fn to_iso_string<S: serde::Serialize>(s: S) -> Result<String> {
     );
 
     let mut ser =
-        serde_xml_rs::Serializer::new_from_writer(event_writer).with_encoding("ISO-8859-1");
+        serde_xml::Serializer::new_from_writer(event_writer).with_encoding("ISO-8859-1");
     s.serialize(&mut ser)?;
 
     Ok(String::from_utf8(sink)?)
 }
 
 pub fn from_str<'de, T: serde::Deserialize<'de>>(xml_str: &'de str) -> Result<T> {
-    let mut de = serde_xml_rs::Deserializer::new(xml::EventReader::new_with_config(
+    let mut de = serde_xml::Deserializer::new(xml::EventReader::new_with_config(
         xml_str.as_bytes(),
         xml::ParserConfig::new()
             .trim_whitespace(true)
