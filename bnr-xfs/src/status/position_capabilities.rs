@@ -1,11 +1,7 @@
 use std::{cmp, fmt};
 
-use crate::xfs::{
-    method_response::XfsMethodResponse,
-    params::{XfsParam, XfsParams},
-};
 use crate::{
-    create_xfs_bool, create_xfs_i4, impl_xfs_array, impl_xfs_struct, Error, MaxSize, Result,
+    create_xfs_bool, create_xfs_i4, impl_xfs_array, impl_xfs_struct,
     ShutterCmd, Size,
 };
 
@@ -118,13 +114,13 @@ impl_xfs_struct!(
 /// List of position capabilties.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
-pub struct CdrPositionCapabilitiesItems {
+pub struct CdrPositionCapabilitiesList {
     size: Size,
     items: [CdrPositionCapabilities; CDR_POS_CAP_LIST_LEN],
 }
 
-impl CdrPositionCapabilitiesItems {
-    /// Creates a new [CdrPositionCapabilitiesItems].
+impl CdrPositionCapabilitiesList {
+    /// Creates a new [CdrPositionCapabilitiesList].
     pub const fn new() -> Self {
         Self {
             size: Size::new(),
@@ -132,7 +128,7 @@ impl CdrPositionCapabilitiesItems {
         }
     }
 
-    /// Creates a new [CdrPositionCapabilitiesItems] from the provided parameter.
+    /// Creates a new [CdrPositionCapabilitiesList] from the provided parameter.
     pub const fn create(items: [CdrPositionCapabilities; CDR_POS_CAP_LIST_LEN]) -> Self {
         Self {
             size: Size::create(CDR_POS_CAP_LIST_LEN as u32),
@@ -191,7 +187,7 @@ impl CdrPositionCapabilitiesItems {
     }
 }
 
-impl fmt::Display for CdrPositionCapabilitiesItems {
+impl fmt::Display for CdrPositionCapabilitiesList {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "[")?;
 
@@ -207,183 +203,7 @@ impl fmt::Display for CdrPositionCapabilitiesItems {
     }
 }
 
-impl_xfs_array!(CdrPositionCapabilitiesItems, "items");
-
-/// List of position capabilties.
-///
-/// One for each position supported by the device.
-///
-/// See [Capabilities](crate::capabilities::Capabilities).
-#[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
-pub struct CdrPositionCapabilitiesList {
-    max_size: MaxSize,
-    size: Size,
-    items: CdrPositionCapabilitiesItems,
-}
-
-impl CdrPositionCapabilitiesList {
-    /// Creates a new [CdrPositionCapabilitiesList].
-    pub const fn new() -> Self {
-        Self {
-            max_size: MaxSize::create(CDR_POS_CAP_LIST_LEN as u32),
-            size: Size::new(),
-            items: CdrPositionCapabilitiesItems::new(),
-        }
-    }
-
-    /// Gets the maximum capacity of the [CdrPositionCapabilitiesList].
-    pub const fn capacity() -> usize {
-        CDR_POS_CAP_LIST_LEN
-    }
-
-    /// Gets the maximum size of the list.
-    pub const fn max_size(&self) -> u32 {
-        self.max_size.inner()
-    }
-
-    /// Gets the size of the list.
-    pub const fn size(&self) -> u32 {
-        self.size.inner()
-    }
-
-    /// Sets the size of the list.
-    ///
-    /// No-op if the size is invalid (> [CDR_POS_CAP_LIST_LEN]).
-    pub fn set_size(&mut self, size: u32) {
-        if (size as usize) <= CDR_POS_CAP_LIST_LEN {
-            self.size.set_inner(size);
-            self.items.set_size(size);
-        }
-    }
-
-    /// Builder function that sets the size of the list.
-    ///
-    /// No-op if the size is invalid (> [CDR_POS_CAP_LIST_LEN]).
-    pub fn with_size(mut self, size: u32) -> Self {
-        self.set_size(size);
-        self
-    }
-
-    /// Gets a reference to the [CdrPositionCapabilities] list items.
-    pub fn items(&self) -> &[CdrPositionCapabilities] {
-        self.items.items()
-    }
-
-    /// Sets the [CdrPositionCapabilities] list items.
-    ///
-    /// Only sets up to [max_size](CDR_POS_CAP_LIST_LEN) items.
-    pub fn set_items(&mut self, items: &[CdrPositionCapabilities]) {
-        self.items.set_items(items);
-        self.size.set_inner(self.items.size());
-    }
-
-    /// Builder function that sets the [CdrPositionCapabilities] list items.
-    ///
-    /// Only sets up to [max_size](CDR_POS_CAP_LIST_LEN) items.
-    pub fn with_items(mut self, items: &[CdrPositionCapabilities]) -> Self {
-        self.set_items(items);
-        self
-    }
-}
-
-impl Default for CdrPositionCapabilitiesList {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl From<&CdrPositionCapabilitiesList> for XfsParam {
-    fn from(val: &CdrPositionCapabilitiesList) -> Self {
-        Self::create(val.into())
-    }
-}
-
-impl From<CdrPositionCapabilitiesList> for XfsParam {
-    fn from(val: CdrPositionCapabilitiesList) -> Self {
-        (&val).into()
-    }
-}
-
-impl TryFrom<&XfsParam> for CdrPositionCapabilitiesList {
-    type Error = Error;
-
-    fn try_from(val: &XfsParam) -> Result<Self> {
-        val.value()
-            .xfs_struct()
-            .ok_or(Error::Xfs(format!(
-                "Expected CdrPositionCapabilitiesList XfsParam, have: {val}"
-            )))?
-            .find_member(CdrPositionCapabilitiesList::xfs_name())?
-            .try_into()
-    }
-}
-
-impl TryFrom<XfsParam> for CdrPositionCapabilitiesList {
-    type Error = Error;
-
-    fn try_from(val: XfsParam) -> Result<Self> {
-        (&val).try_into()
-    }
-}
-
-impl TryFrom<&XfsParams> for CdrPositionCapabilitiesList {
-    type Error = Error;
-
-    fn try_from(val: &XfsParams) -> Result<Self> {
-        val.params()
-            .iter()
-            .find(|p| p.inner().value().xfs_struct().is_some())
-            .ok_or(Error::Xfs(format!(
-                "Expected CdrPositionCapabilitiesList XfsParams, have: {val}"
-            )))?
-            .inner()
-            .try_into()
-    }
-}
-
-impl TryFrom<XfsParams> for CdrPositionCapabilitiesList {
-    type Error = Error;
-
-    fn try_from(val: XfsParams) -> Result<Self> {
-        (&val).try_into()
-    }
-}
-
-impl TryFrom<&XfsMethodResponse> for CdrPositionCapabilitiesList {
-    type Error = Error;
-
-    fn try_from(val: &XfsMethodResponse) -> Result<Self> {
-        val.as_params()?.try_into()
-    }
-}
-
-impl TryFrom<XfsMethodResponse> for CdrPositionCapabilitiesList {
-    type Error = Error;
-
-    fn try_from(val: XfsMethodResponse) -> Result<Self> {
-        (&val).try_into()
-    }
-}
-
-impl fmt::Display for CdrPositionCapabilitiesList {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{{")?;
-        write!(f, r#""max_size":{},"#, self.max_size)?;
-        write!(f, r#""size":{},"#, self.size)?;
-        write!(f, r#""items": {}"#, self.items)?;
-        write!(f, "}}")
-    }
-}
-
-impl_xfs_struct!(
-    CdrPositionCapabilitiesList,
-    "positionCapabilitiesList",
-    [
-        size: Size,
-        items: CdrPositionCapabilitiesItems
-    ]
-);
+impl_xfs_array!(CdrPositionCapabilitiesList, "positionCapabilitiesList");
 
 #[cfg(test)]
 mod tests {
@@ -393,40 +213,34 @@ mod tests {
         value::XfsValue,
         xfs_struct::{XfsMember, XfsStruct},
     };
+    use crate::Result;
 
     #[test]
     fn test_cdr_position_capabitilities_xfs() -> Result<()> {
         let exp_xfs = XfsMember::create(
             CdrPositionCapabilitiesList::xfs_name(),
-            XfsValue::new().with_xfs_struct(XfsStruct::create([
-                XfsMember::create(Size::xfs_name(), Size::create(1).into()),
-                XfsMember::create(
-                    CdrPositionCapabilitiesItems::xfs_name(),
-                    XfsValue::new().with_array(XfsArray::create([XfsValue::new()
-                        .with_xfs_struct(XfsStruct::create([
-                            XfsMember::create("position", XfsValue::new().with_i4(1)),
-                            XfsMember::create(
-                                "contentStatusSupported",
-                                XfsValue::new().with_boolean(1),
-                            ),
-                            XfsMember::create(
-                                "shutterStatusSupported",
-                                XfsValue::new().with_boolean(0),
-                            ),
-                            XfsMember::create("shutterCmd", XfsValue::new().with_boolean(0)),
-                            XfsMember::create("maxItems", XfsValue::new().with_i4(1)),
-                            XfsMember::create("input", XfsValue::new().with_boolean(1)),
-                            XfsMember::create("output", XfsValue::new().with_boolean(0)),
-                            XfsMember::create("rollback", XfsValue::new().with_boolean(0)),
-                            XfsMember::create("refusal", XfsValue::new().with_boolean(1)),
-                        ]))])),
-                ),
-            ])),
+            XfsValue::new().with_array(XfsArray::create([XfsValue::new()
+                .with_xfs_struct(XfsStruct::create([
+                    XfsMember::create("position", XfsValue::new().with_i4(1)),
+                    XfsMember::create(
+                        "contentStatusSupported",
+                        XfsValue::new().with_boolean(1),
+                    ),
+                    XfsMember::create(
+                        "shutterStatusSupported",
+                        XfsValue::new().with_boolean(0),
+                    ),
+                    XfsMember::create("shutterCmd", XfsValue::new().with_boolean(0)),
+                    XfsMember::create("maxItems", XfsValue::new().with_i4(1)),
+                    XfsMember::create("input", XfsValue::new().with_boolean(1)),
+                    XfsMember::create("output", XfsValue::new().with_boolean(0)),
+                    XfsMember::create("rollback", XfsValue::new().with_boolean(0)),
+                    XfsMember::create("refusal", XfsValue::new().with_boolean(1)),
+                ]))])),
         );
         let exp_cap_list = CdrPositionCapabilitiesList {
-            max_size: MaxSize::create(2),
             size: Size::create(1),
-            items: CdrPositionCapabilitiesItems::new().with_items(&[CdrPositionCapabilities {
+            items: [CdrPositionCapabilities {
                 position: CdrPosition::Top,
                 shutter_status_supported: false.into(),
                 shutter_cmd: false.into(),
@@ -436,7 +250,9 @@ mod tests {
                 output: false.into(),
                 rollback: false.into(),
                 refusal: true.into(),
-            }]),
+            },
+            CdrPositionCapabilities::new(),
+            ],
         };
 
         assert_eq!(
@@ -444,60 +260,18 @@ mod tests {
             exp_cap_list
         );
 
-        let xfs = XfsStruct::from(exp_cap_list);
-        let arr = xfs
-            .find_member(CdrPositionCapabilitiesItems::xfs_name())?
-            .value()
-            .array()
-            .unwrap();
-        let mem0 = arr.data()[0].inner().xfs_struct().unwrap();
-
-        let exp_arr = exp_xfs
-            .value()
-            .xfs_struct()
-            .unwrap()
-            .find_member(CdrPositionCapabilitiesItems::xfs_name())?
-            .value()
-            .array()
-            .unwrap();
-        let exp_mem0 = exp_arr.data()[0].inner().xfs_struct().unwrap();
-
-        assert_eq!(
-            mem0.find_member(CdrPosition::xfs_name())?,
-            exp_mem0.find_member(CdrPosition::xfs_name())?
-        );
-        assert_eq!(
-            mem0.find_member(ShutterStatusSupported::xfs_name())?,
-            exp_mem0.find_member(ShutterStatusSupported::xfs_name())?
-        );
-        assert_eq!(
-            mem0.find_member(ShutterCmd::xfs_name())?,
-            exp_mem0.find_member(ShutterCmd::xfs_name())?
-        );
-        assert_eq!(
-            mem0.find_member(ContentStatusSupported::xfs_name())?,
-            exp_mem0.find_member(ContentStatusSupported::xfs_name())?
-        );
-        assert_eq!(
-            mem0.find_member(MaxItems::xfs_name())?,
-            exp_mem0.find_member(MaxItems::xfs_name())?
-        );
-        assert_eq!(
-            mem0.find_member(Input::xfs_name())?,
-            exp_mem0.find_member(Input::xfs_name())?
-        );
-        assert_eq!(
-            mem0.find_member(Output::xfs_name())?,
-            exp_mem0.find_member(Output::xfs_name())?
-        );
-        assert_eq!(
-            mem0.find_member(Rollback::xfs_name())?,
-            exp_mem0.find_member(Rollback::xfs_name())?
-        );
-        assert_eq!(
-            mem0.find_member(Refusal::xfs_name())?,
-            exp_mem0.find_member(Refusal::xfs_name())?
-        );
+        let xfs_list = XfsMember::from(exp_cap_list);
+        for (exp, item) in exp_xfs.value().array().unwrap().data().iter().map(|m| m.inner().xfs_struct().unwrap()).zip(xfs_list.value().array().unwrap().data().iter().map(|m| m.inner().xfs_struct().unwrap())) {
+            assert_eq!(exp.find_member(CdrPosition::xfs_name())?, item.find_member(CdrPosition::xfs_name())?);
+            assert_eq!(exp.find_member(ShutterStatusSupported::xfs_name())?, item.find_member(ShutterStatusSupported::xfs_name())?);
+            assert_eq!(exp.find_member(ShutterCmd::xfs_name())?, item.find_member(ShutterCmd::xfs_name())?);
+            assert_eq!(exp.find_member(ContentStatusSupported::xfs_name())?, item.find_member(ContentStatusSupported::xfs_name())?);
+            assert_eq!(exp.find_member(MaxItems::xfs_name())?, item.find_member(MaxItems::xfs_name())?);
+            assert_eq!(exp.find_member(Input::xfs_name())?, item.find_member(Input::xfs_name())?);
+            assert_eq!(exp.find_member(Output::xfs_name())?, item.find_member(Output::xfs_name())?);
+            assert_eq!(exp.find_member(Rollback::xfs_name())?, item.find_member(Rollback::xfs_name())?);
+            assert_eq!(exp.find_member(Refusal::xfs_name())?, item.find_member(Refusal::xfs_name())?);
+        }
 
         Ok(())
     }
@@ -506,53 +280,47 @@ mod tests {
     fn test_cdr_position_capabitilities_xfs_full() -> Result<()> {
         let exp_xfs = XfsMember::create(
             CdrPositionCapabilitiesList::xfs_name(),
-            XfsValue::new().with_xfs_struct(XfsStruct::create([
-                XfsMember::create(Size::xfs_name(), Size::create(2).into()),
-                XfsMember::create(
-                    CdrPositionCapabilitiesItems::xfs_name(),
-                    XfsValue::new().with_array(XfsArray::create([
-                        XfsValue::new().with_xfs_struct(XfsStruct::create([
-                            XfsMember::create("position", XfsValue::new().with_i4(1)),
-                            XfsMember::create(
-                                "contentStatusSupported",
-                                XfsValue::new().with_boolean(1),
-                            ),
-                            XfsMember::create(
-                                "shutterStatusSupported",
-                                XfsValue::new().with_boolean(0),
-                            ),
-                            XfsMember::create("shutterCmd", XfsValue::new().with_boolean(0)),
-                            XfsMember::create("maxItems", XfsValue::new().with_i4(1)),
-                            XfsMember::create("input", XfsValue::new().with_boolean(1)),
-                            XfsMember::create("output", XfsValue::new().with_boolean(0)),
-                            XfsMember::create("rollback", XfsValue::new().with_boolean(0)),
-                            XfsMember::create("refusal", XfsValue::new().with_boolean(1)),
-                        ])),
-                        XfsValue::new().with_xfs_struct(XfsStruct::create([
-                            XfsMember::create("position", XfsValue::new().with_i4(2)),
-                            XfsMember::create(
-                                "contentStatusSupported",
-                                XfsValue::new().with_boolean(1),
-                            ),
-                            XfsMember::create(
-                                "shutterStatusSupported",
-                                XfsValue::new().with_boolean(1),
-                            ),
-                            XfsMember::create("shutterCmd", XfsValue::new().with_boolean(1)),
-                            XfsMember::create("maxItems", XfsValue::new().with_i4(15)),
-                            XfsMember::create("input", XfsValue::new().with_boolean(0)),
-                            XfsMember::create("output", XfsValue::new().with_boolean(1)),
-                            XfsMember::create("rollback", XfsValue::new().with_boolean(1)),
-                            XfsMember::create("refusal", XfsValue::new().with_boolean(0)),
-                        ])),
-                    ])),
-                ),
+            XfsValue::new().with_array(XfsArray::create([
+                XfsValue::new().with_xfs_struct(XfsStruct::create([
+                    XfsMember::create("position", XfsValue::new().with_i4(1)),
+                    XfsMember::create(
+                        "contentStatusSupported",
+                        XfsValue::new().with_boolean(1),
+                    ),
+                    XfsMember::create(
+                        "shutterStatusSupported",
+                        XfsValue::new().with_boolean(0),
+                    ),
+                    XfsMember::create("shutterCmd", XfsValue::new().with_boolean(0)),
+                    XfsMember::create("maxItems", XfsValue::new().with_i4(1)),
+                    XfsMember::create("input", XfsValue::new().with_boolean(1)),
+                    XfsMember::create("output", XfsValue::new().with_boolean(0)),
+                    XfsMember::create("rollback", XfsValue::new().with_boolean(0)),
+                    XfsMember::create("refusal", XfsValue::new().with_boolean(1)),
+                ])),
+                XfsValue::new().with_xfs_struct(XfsStruct::create([
+                    XfsMember::create("position", XfsValue::new().with_i4(2)),
+                    XfsMember::create(
+                        "contentStatusSupported",
+                        XfsValue::new().with_boolean(1),
+                    ),
+                    XfsMember::create(
+                        "shutterStatusSupported",
+                        XfsValue::new().with_boolean(1),
+                    ),
+                    XfsMember::create("shutterCmd", XfsValue::new().with_boolean(1)),
+                    XfsMember::create("maxItems", XfsValue::new().with_i4(15)),
+                    XfsMember::create("input", XfsValue::new().with_boolean(0)),
+                    XfsMember::create("output", XfsValue::new().with_boolean(1)),
+                    XfsMember::create("rollback", XfsValue::new().with_boolean(1)),
+                    XfsMember::create("refusal", XfsValue::new().with_boolean(0)),
+                ])),
             ])),
         );
+
         let exp_cap_list = CdrPositionCapabilitiesList {
-            max_size: MaxSize::create(2),
             size: Size::create(2),
-            items: CdrPositionCapabilitiesItems::create([
+            items: [
                 CdrPositionCapabilities {
                     position: CdrPosition::Top,
                     content_status_supported: true.into(),
@@ -575,7 +343,7 @@ mod tests {
                     rollback: true.into(),
                     refusal: false.into(),
                 },
-            ]),
+            ],
         };
 
         assert_eq!(
@@ -583,99 +351,18 @@ mod tests {
             exp_cap_list
         );
 
-        let xfs = XfsStruct::from(exp_cap_list);
-        let arr = xfs
-            .find_member(CdrPositionCapabilitiesItems::xfs_name())?
-            .value()
-            .array()
-            .unwrap();
-        let mem0 = arr.data()[0].inner().xfs_struct().unwrap();
-        let mem1 = arr.data()[1].inner().xfs_struct().unwrap();
-
-        let exp_arr = exp_xfs
-            .value()
-            .xfs_struct()
-            .unwrap()
-            .find_member(CdrPositionCapabilitiesItems::xfs_name())?
-            .value()
-            .array()
-            .unwrap();
-        let exp_mem0 = exp_arr.data()[0].inner().xfs_struct().unwrap();
-        let exp_mem1 = exp_arr.data()[1].inner().xfs_struct().unwrap();
-
-        assert_eq!(
-            mem0.find_member(CdrPosition::xfs_name())?,
-            exp_mem0.find_member(CdrPosition::xfs_name())?
-        );
-        assert_eq!(
-            mem0.find_member(ShutterStatusSupported::xfs_name())?,
-            exp_mem0.find_member(ShutterStatusSupported::xfs_name())?
-        );
-        assert_eq!(
-            mem0.find_member(ShutterCmd::xfs_name())?,
-            exp_mem0.find_member(ShutterCmd::xfs_name())?
-        );
-        assert_eq!(
-            mem0.find_member(ContentStatusSupported::xfs_name())?,
-            exp_mem0.find_member(ContentStatusSupported::xfs_name())?
-        );
-        assert_eq!(
-            mem0.find_member(MaxItems::xfs_name())?,
-            exp_mem0.find_member(MaxItems::xfs_name())?
-        );
-        assert_eq!(
-            mem0.find_member(Input::xfs_name())?,
-            exp_mem0.find_member(Input::xfs_name())?
-        );
-        assert_eq!(
-            mem0.find_member(Output::xfs_name())?,
-            exp_mem0.find_member(Output::xfs_name())?
-        );
-        assert_eq!(
-            mem0.find_member(Rollback::xfs_name())?,
-            exp_mem0.find_member(Rollback::xfs_name())?
-        );
-        assert_eq!(
-            mem0.find_member(Refusal::xfs_name())?,
-            exp_mem0.find_member(Refusal::xfs_name())?
-        );
-
-        assert_eq!(
-            mem1.find_member(CdrPosition::xfs_name())?,
-            exp_mem1.find_member(CdrPosition::xfs_name())?
-        );
-        assert_eq!(
-            mem1.find_member(ShutterStatusSupported::xfs_name())?,
-            exp_mem1.find_member(ShutterStatusSupported::xfs_name())?
-        );
-        assert_eq!(
-            mem1.find_member(ShutterCmd::xfs_name())?,
-            exp_mem1.find_member(ShutterCmd::xfs_name())?
-        );
-        assert_eq!(
-            mem1.find_member(ContentStatusSupported::xfs_name())?,
-            exp_mem1.find_member(ContentStatusSupported::xfs_name())?
-        );
-        assert_eq!(
-            mem1.find_member(MaxItems::xfs_name())?,
-            exp_mem1.find_member(MaxItems::xfs_name())?
-        );
-        assert_eq!(
-            mem1.find_member(Input::xfs_name())?,
-            exp_mem1.find_member(Input::xfs_name())?
-        );
-        assert_eq!(
-            mem1.find_member(Output::xfs_name())?,
-            exp_mem1.find_member(Output::xfs_name())?
-        );
-        assert_eq!(
-            mem1.find_member(Rollback::xfs_name())?,
-            exp_mem1.find_member(Rollback::xfs_name())?
-        );
-        assert_eq!(
-            mem1.find_member(Refusal::xfs_name())?,
-            exp_mem1.find_member(Refusal::xfs_name())?
-        );
+        let xfs_list = XfsMember::from(exp_cap_list);
+        for (exp, item) in exp_xfs.value().array().unwrap().data().iter().map(|m| m.inner().xfs_struct().unwrap()).zip(xfs_list.value().array().unwrap().data().iter().map(|m| m.inner().xfs_struct().unwrap())) {
+            assert_eq!(exp.find_member(CdrPosition::xfs_name())?, item.find_member(CdrPosition::xfs_name())?);
+            assert_eq!(exp.find_member(ShutterStatusSupported::xfs_name())?, item.find_member(ShutterStatusSupported::xfs_name())?);
+            assert_eq!(exp.find_member(ShutterCmd::xfs_name())?, item.find_member(ShutterCmd::xfs_name())?);
+            assert_eq!(exp.find_member(ContentStatusSupported::xfs_name())?, item.find_member(ContentStatusSupported::xfs_name())?);
+            assert_eq!(exp.find_member(MaxItems::xfs_name())?, item.find_member(MaxItems::xfs_name())?);
+            assert_eq!(exp.find_member(Input::xfs_name())?, item.find_member(Input::xfs_name())?);
+            assert_eq!(exp.find_member(Output::xfs_name())?, item.find_member(Output::xfs_name())?);
+            assert_eq!(exp.find_member(Rollback::xfs_name())?, item.find_member(Rollback::xfs_name())?);
+            assert_eq!(exp.find_member(Refusal::xfs_name())?, item.find_member(Refusal::xfs_name())?);
+        }
 
         Ok(())
     }

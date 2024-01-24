@@ -721,11 +721,15 @@ macro_rules! impl_xfs_array {
                 // Dynamic-length types initialize to zero length, and would require pushing items from `data`.
                 // Currently, all types converting to/from XfsArray are fixed-length.
                 let len = ::std::cmp::min($ty::max_size(), data.len());
-                for (dst, src) in res.items[..len]
+                for (i, (dst, src)) in res.items[..len]
                     .iter_mut()
                     .zip(data[..len].iter().map(|m| m.inner()))
+                    .enumerate()
                 {
-                    *dst = src.try_into()?;
+                    *dst = match src.try_into() {
+                        Ok(d) => d,
+                        Err(err) => return Err($crate::Error::Xfs(format!("Failed to convert item[{i}]: {err}"))),
+                    };
                 }
 
                 res.set_size(len as u32);

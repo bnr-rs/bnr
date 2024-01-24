@@ -109,6 +109,8 @@ impl DeviceHandle {
 
         ret.start_background_listener()?;
 
+        std::thread::sleep(std::time::Duration::from_millis(250));
+
         let usb = ret.usb();
 
         // write the `getIdentification` call to the call endpoint
@@ -134,166 +136,171 @@ impl DeviceHandle {
             .unwrap_or(STATUS_OCCURRED_FN_NOP);
 
         std::thread::spawn(move || -> Result<()> {
-            std::thread::sleep(std::time::Duration::from_millis(250));
-
             let timeout = std::time::Duration::from_millis(50);
 
-            if let Ok(msg) = Self::read_callback_call(&usb, timeout) {
-                let (id, op_id) = match msg.name() {
-                    Ok(XfsMethodName::OperationCompleteOccurred) => {
-                        let mut params_iter =
-                            msg.params().params().iter().map(|m| m.inner().value());
+            loop {
+                if let Ok(msg) = Self::read_callback_call(&usb, timeout) {
+                    let (id, op_id) = match msg.name() {
+                        Ok(XfsMethodName::OperationCompleteOccurred) => {
+                            let mut params_iter =
+                                msg.params().params().iter().map(|m| m.inner().value());
 
-                        let id = params_iter
-                            .next()
-                            .cloned()
-                            .unwrap_or(XfsValue::new().with_i4(0))
-                            .i4()
-                            .cloned()
-                            .unwrap_or(0);
+                            let id = params_iter
+                                .next()
+                                .cloned()
+                                .unwrap_or(XfsValue::new().with_i4(0))
+                                .i4()
+                                .cloned()
+                                .unwrap_or(0);
 
-                        let op_id: OperationId = params_iter
-                            .next()
-                            .cloned()
-                            .unwrap_or(XfsValue::new().with_i4(0))
-                            .try_into()?;
+                            let op_id: OperationId = params_iter
+                                .next()
+                                .cloned()
+                                .unwrap_or(XfsValue::new().with_i4(0))
+                                .try_into()?;
 
-                        let ret = params_iter
-                            .next()
-                            .cloned()
-                            .unwrap_or(XfsValue::new().with_i4(0))
-                            .i4()
-                            .cloned()
-                            .unwrap_or(0);
+                            let ret = params_iter
+                                .next()
+                                .cloned()
+                                .unwrap_or(XfsValue::new().with_i4(0))
+                                .i4()
+                                .cloned()
+                                .unwrap_or(0);
 
-                        let stat = params_iter
-                            .next()
-                            .cloned()
-                            .unwrap_or(XfsValue::new().with_i4(0))
-                            .i4()
-                            .cloned()
-                            .unwrap_or(0);
+                            let stat = params_iter
+                                .next()
+                                .cloned()
+                                .unwrap_or(XfsValue::new().with_i4(0))
+                                .i4()
+                                .cloned()
+                                .unwrap_or(0);
 
-                        if let Some(xfs) = params_iter.next() {
-                            match xfs.xfs_struct() {
-                                Some(xfs)
-                                    if xfs.find_member(Currency::xfs_name()).is_ok()
-                                        && xfs.find_member(Denomination::xfs_name()).is_ok() =>
-                                {
-                                    let mut cash_order = CashOrder::try_from(xfs)?;
-                                    op_complete(id, op_id.into(), ret, stat, &mut cash_order);
+                            if let Some(xfs) = params_iter.next() {
+                                match xfs.xfs_struct() {
+                                    Some(xfs)
+                                        if xfs.find_member(Currency::xfs_name()).is_ok()
+                                            && xfs.find_member(Denomination::xfs_name()).is_ok() =>
+                                    {
+                                        let mut cash_order = CashOrder::try_from(xfs)?;
+                                        op_complete(id, op_id.into(), ret, stat, &mut cash_order);
+                                    }
+                                    _ => op_complete(id, op_id.into(), ret, stat, &mut ()),
                                 }
-                                _ => op_complete(id, op_id.into(), ret, stat, &mut ()),
+                            } else {
+                                op_complete(id, op_id.into(), ret, stat, &mut ());
                             }
-                        } else {
-                            op_complete(id, op_id.into(), ret, stat, &mut ());
+
+                            (Some(id), Some(op_id))
                         }
+                        Ok(XfsMethodName::IntermediateOccurred) => {
+                            let mut params_iter =
+                                msg.params().params().iter().map(|m| m.inner().value());
 
-                        (Some(id), Some(op_id))
-                    }
-                    Ok(XfsMethodName::IntermediateOccurred) => {
-                        let mut params_iter =
-                            msg.params().params().iter().map(|m| m.inner().value());
+                            let id = params_iter
+                                .next()
+                                .cloned()
+                                .unwrap_or(XfsValue::new().with_i4(0))
+                                .i4()
+                                .cloned()
+                                .unwrap_or(0);
 
-                        let id = params_iter
-                            .next()
-                            .cloned()
-                            .unwrap_or(XfsValue::new().with_i4(0))
-                            .i4()
-                            .cloned()
-                            .unwrap_or(0);
+                            let op_id: OperationId = params_iter
+                                .next()
+                                .cloned()
+                                .unwrap_or(XfsValue::new().with_i4(0))
+                                .try_into()?;
 
-                        let op_id: OperationId = params_iter
-                            .next()
-                            .cloned()
-                            .unwrap_or(XfsValue::new().with_i4(0))
-                            .try_into()?;
+                            let ret = params_iter
+                                .next()
+                                .cloned()
+                                .unwrap_or(XfsValue::new().with_i4(0))
+                                .i4()
+                                .cloned()
+                                .unwrap_or(0);
 
-                        let ret = params_iter
-                            .next()
-                            .cloned()
-                            .unwrap_or(XfsValue::new().with_i4(0))
-                            .i4()
-                            .cloned()
-                            .unwrap_or(0);
-
-                        if let Some(xfs) = params_iter.next() {
-                            match xfs.xfs_struct() {
-                                Some(xfs)
-                                    if xfs.find_member(Currency::xfs_name()).is_ok()
-                                        && xfs.find_member(Denomination::xfs_name()).is_ok() =>
-                                {
-                                    let mut cash_order = CashOrder::try_from(xfs)?;
-                                    intermediate_occurred(id, op_id.into(), ret, &mut cash_order);
+                            if let Some(xfs) = params_iter.next() {
+                                match xfs.xfs_struct() {
+                                    Some(xfs)
+                                        if xfs.find_member(Currency::xfs_name()).is_ok()
+                                            && xfs.find_member(Denomination::xfs_name()).is_ok() =>
+                                    {
+                                        let mut cash_order = CashOrder::try_from(xfs)?;
+                                        intermediate_occurred(id, op_id.into(), ret, &mut cash_order);
+                                    }
+                                    _ => intermediate_occurred(id, op_id.into(), ret, &mut ()),
                                 }
-                                _ => intermediate_occurred(id, op_id.into(), ret, &mut ()),
+                            } else {
+                                intermediate_occurred(id, op_id.into(), ret, &mut ());
                             }
-                        } else {
-                            intermediate_occurred(id, op_id.into(), ret, &mut ());
+
+                            (Some(id), Some(op_id))
                         }
+                        Ok(XfsMethodName::StatusOccurred) => {
+                            let mut params_iter =
+                                msg.params().params().iter().map(|m| m.inner().value());
 
-                        (Some(id), Some(op_id))
-                    }
-                    Ok(XfsMethodName::StatusOccurred) => {
-                        let mut params_iter =
-                            msg.params().params().iter().map(|m| m.inner().value());
+                            let id = params_iter
+                                .next()
+                                .cloned()
+                                .unwrap_or(XfsValue::new().with_i4(0))
+                                .i4()
+                                .cloned()
+                                .unwrap_or(0);
 
-                        let id = params_iter
-                            .next()
-                            .cloned()
-                            .unwrap_or(XfsValue::new().with_i4(0))
-                            .i4()
-                            .cloned()
-                            .unwrap_or(0);
+                            let op_id: OperationId = params_iter
+                                .next()
+                                .cloned()
+                                .unwrap_or(XfsValue::new().with_i4(0))
+                                .try_into()?;
 
-                        let op_id: OperationId = params_iter
-                            .next()
-                            .cloned()
-                            .unwrap_or(XfsValue::new().with_i4(0))
-                            .try_into()?;
+                            let ret = params_iter
+                                .next()
+                                .cloned()
+                                .unwrap_or(XfsValue::new().with_i4(0))
+                                .i4()
+                                .cloned()
+                                .unwrap_or(0);
 
-                        let ret = params_iter
-                            .next()
-                            .cloned()
-                            .unwrap_or(XfsValue::new().with_i4(0))
-                            .i4()
-                            .cloned()
-                            .unwrap_or(0);
-
-                        if let Some(xfs) = params_iter.next() {
-                            match xfs.xfs_struct() {
-                                Some(xfs)
-                                    if xfs.find_member(Currency::xfs_name()).is_ok()
-                                        && xfs.find_member(Denomination::xfs_name()).is_ok() =>
-                                {
-                                    let mut cash_order = CashOrder::try_from(xfs)?;
-                                    status_occurred(id, op_id.into(), ret, &mut cash_order);
+                            if let Some(xfs) = params_iter.next() {
+                                match xfs.xfs_struct() {
+                                    Some(xfs)
+                                        if xfs.find_member(Currency::xfs_name()).is_ok()
+                                            && xfs.find_member(Denomination::xfs_name()).is_ok() =>
+                                    {
+                                        let mut cash_order = CashOrder::try_from(xfs)?;
+                                        status_occurred(id, op_id.into(), ret, &mut cash_order);
+                                    }
+                                    _ => status_occurred(id, op_id.into(), ret, &mut ()),
                                 }
-                                _ => status_occurred(id, op_id.into(), ret, &mut ()),
+                            } else {
+                                status_occurred(id, op_id.into(), ret, &mut ());
                             }
-                        } else {
-                            status_occurred(id, op_id.into(), ret, &mut ());
+
+                            (Some(id), Some(op_id))
                         }
+                        Err(_err) if msg.name_str().is_empty() => {
+                            log::trace!("No callback call");
+                            (None, None)
+                        }
+                        _stat => {
+                            let name = msg.name_str();
+                            log::warn!("Received unknown device-sent message, {name}: {msg:?}");
+                            (None, None)
+                        }
+                    };
 
-                        (Some(id), Some(op_id))
+                    if let (Some(id), Some(op_id)) = (id, op_id) {
+                        let res = XfsMethodResponse::new_params([XfsParam::create(
+                            CallbackResponse::create(id, op_id.into()).into(),
+                        )]);
+
+                        Self::write_callback_response(&usb, &res, msg.name()?, timeout)?;
                     }
-                    _stat => {
-                        let name = msg.name_str();
-                        log::warn!("Received unknown device-sent message: {name}");
-                        (None, None)
-                    }
-                };
 
-                if let (Some(id), Some(op_id)) = (id, op_id) {
-                    let res = XfsMethodResponse::new_params([XfsParam::create(
-                        CallbackResponse::create(id, op_id.into()).into(),
-                    )]);
-
-                    Self::write_callback_response(&usb, &res, msg.name()?, timeout)?;
                 }
-            }
 
-            Ok(())
+                std::thread::sleep(std::time::Duration::from_millis(2500));
+            }
         });
 
         Ok(())
@@ -470,7 +477,7 @@ impl DeviceHandle {
     pub(crate) fn get_capabilities_inner(&self) -> Result<Capabilities> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::GetCapabilities);
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(500);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -481,7 +488,7 @@ impl DeviceHandle {
     pub(crate) fn set_capabilities_inner(&self, caps: &Capabilities) -> Result<()> {
         let call = XfsMethodCall::create(XfsMethodName::SetCapabilities, [XfsParam::from(caps)]);
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(500);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -875,7 +882,7 @@ impl DeviceHandle {
         let mut read = match usb.read_bulk(BNR_CALLBACK_CALL_EP, &mut res_buf[..], timeout) {
             Ok(r) => r,
             Err(_err) => {
-                log::debug!("No callback call");
+                log::trace!("No callback call");
 
                 return Ok(XfsMethodCall::new());
             }

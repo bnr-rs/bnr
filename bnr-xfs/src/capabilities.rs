@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::status::{CdrPosition, CdrPositionCapabilitiesList};
+use crate::status::CdrPositionCapabilitiesList;
 use crate::xfs::{
     method_response::XfsMethodResponse,
     params::{XfsParam, XfsParams},
@@ -9,6 +9,7 @@ use crate::{create_xfs_bool, create_xfs_i4, impl_xfs_struct, Error, Result};
 
 mod anti_fishing_level;
 mod cdr_type;
+mod default_rollback_position;
 mod euro_art6_capability;
 mod recognition_sensor_type;
 mod reporting_mode;
@@ -17,6 +18,7 @@ mod self_test_mode;
 
 pub use anti_fishing_level::*;
 pub use cdr_type::*;
+pub use default_rollback_position::*;
 pub use euro_art6_capability::*;
 pub use recognition_sensor_type::*;
 pub use reporting_mode::*;
@@ -86,11 +88,11 @@ create_xfs_bool!(
 );
 create_xfs_bool!(
     AllowUsbFrontSwitch,
-    "allowUsbFronSwitch",
+    "allowUsbFrontSwitch",
     "Allows to use USB Front interface to communicate with the BNR. Default value is TRUE."
 );
 create_xfs_bool!(ReportUsbConsumption, "reportUsbConsumption", "Specifies whether real max USB line consumption is reported on usb configuration descriptor instead of 0mA. Default value is FALSE.");
-create_xfs_bool!(AutoRetract, "autoRetract", "Specifies whether bill will be automatically retracted to positioner when jam occurred during bill presenting at inlet or outlet. Default value is FALSE.");
+create_xfs_bool!(AutoRetractAtInlet, "autoRetractAtInlet", "Specifies whether bill will be automatically retracted to positioner when jam occurred during bill presenting at inlet or outlet. Default value is FALSE.");
 create_xfs_bool!(RejectViaOutlet, "rejectViaOutlet", "Specifies whether measured but unknown or inhibited notes are rejected via the BNR’s Outlet instead of the Inlet. Default value is FALSE.");
 
 /// Describes the BNR capabilities.
@@ -129,7 +131,7 @@ pub struct Capabilities {
     pub escrow_size: EscrowSize,
     pub detector: Detector,
     /// Specifies the default output position to rollback cash. Always [CdrPosition::Bottom](CdrPosition::Bottom) in the BNR.
-    pub default_rollback_position: CdrPosition,
+    pub default_rollback_position: DefaultRollbackPosition,
     /// Specifies the capabilities of each position supported by the device. Please refer to [CdrPositionCapabilities] for default values.
     pub position_capabilities_list: CdrPositionCapabilitiesList,
     /// Allows to choose when the BNR can perform the self tests. Default value is [Auto](SelfTestMode::Auto) (recommended).
@@ -142,7 +144,7 @@ pub struct Capabilities {
     /// Specifies the kind of report generated on failure detection with no bill transported. Default value is [Normal](ReportingMode::Normal).
     pub reporting_mode: ReportingMode,
     pub report_usb_consumption: ReportUsbConsumption,
-    pub auto_retract: AutoRetract,
+    pub auto_retract_at_inlet: AutoRetractAtInlet,
     pub reject_via_outlet: RejectViaOutlet,
     /// Indicates the security level in communication between Host and Bnr. Defaut value is [Level1](SecuredCommLevel::Level1).
     pub secured_comm_level: SecuredCommLevel,
@@ -170,7 +172,7 @@ impl Capabilities {
             escrow: Escrow::create(true),
             escrow_size: EscrowSize::create(15),
             detector: Detector::create(true),
-            default_rollback_position: CdrPosition::Bottom,
+            default_rollback_position: DefaultRollbackPosition::Bottom,
             position_capabilities_list: CdrPositionCapabilitiesList::new(),
             self_test_mode: SelfTestMode::new(),
             recognition_sensor_type: RecognitionSensorType::create(b'B'),
@@ -178,7 +180,7 @@ impl Capabilities {
             allow_usb_front_switch: AllowUsbFrontSwitch::create(true),
             reporting_mode: ReportingMode::new(),
             report_usb_consumption: ReportUsbConsumption::new(),
-            auto_retract: AutoRetract::new(),
+            auto_retract_at_inlet: AutoRetractAtInlet::new(),
             reject_via_outlet: RejectViaOutlet::new(),
             secured_comm_level: SecuredCommLevel::new(),
         }
@@ -307,7 +309,7 @@ impl fmt::Display for Capabilities {
             r#""report_usb_consumption":{},"#,
             self.report_usb_consumption
         )?;
-        write!(f, r#""auto_retract":{},"#, self.auto_retract)?;
+        write!(f, r#""auto_retract_at_inlet":{},"#, self.auto_retract_at_inlet)?;
         write!(f, r#""reject_via_outlet":{},"#, self.reject_via_outlet)?;
         write!(f, r#""secured_comm_level":{}"#, self.secured_comm_level)?;
         write!(f, "}}")
@@ -336,7 +338,7 @@ impl_xfs_struct!(
         escrow: Escrow,
         escrow_size: EscrowSize,
         detector: Detector,
-        default_rollback_position: CdrPosition,
+        default_rollback_position: DefaultRollbackPosition,
         position_capabilities_list: CdrPositionCapabilitiesList,
         self_test_mode: SelfTestMode,
         recognition_sensor_type: RecognitionSensorType,
@@ -344,7 +346,7 @@ impl_xfs_struct!(
         allow_usb_front_switch: AllowUsbFrontSwitch,
         reporting_mode: ReportingMode,
         report_usb_consumption: ReportUsbConsumption,
-        auto_retract: AutoRetract,
+        auto_retract_at_inlet: AutoRetractAtInlet,
         reject_via_outlet: RejectViaOutlet,
         secured_comm_level: SecuredCommLevel
     ]
