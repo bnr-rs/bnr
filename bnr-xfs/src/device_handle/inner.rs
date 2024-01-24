@@ -99,12 +99,13 @@ impl DeviceHandle {
 
         let ret = Self {
             usb: Arc::new(usb),
+            stop_listener: Arc::new(AtomicBool::new(false)),
             op_completed_callback,
             intermediate_occurred_callback,
             status_occurred_callback,
         };
 
-        ret.start_background_listener()?;
+        ret.start_background_listener(Arc::clone(&ret.stop_listener))?;
 
         let usb = ret.usb();
 
@@ -124,7 +125,22 @@ impl DeviceHandle {
         Ok(ret)
     }
 
-    pub(crate) fn start_background_listener(&self) -> Result<()> {
+    pub(crate) fn find_usb() -> Result<UsbDeviceHandle> {
+        let ctx = rusb::Context::new()?;
+        let dev_list = rusb::DeviceList::new_with_context(ctx)?;
+
+        let dev = dev_list.iter().find(|d| {
+            if let Ok(desc) = d.device_descriptor() {
+                desc.vendor_id() == BNR_VID && desc.product_id() == BNR_PID
+            } else {
+                false
+            }
+        });
+
+        Ok(dev.ok_or(Error::Usb(format!("failed to find a USB device with the correct VID({BNR_VID:04x}):PID({BNR_PID:04x}) pair")))?.open()?)
+    }
+
+    pub(crate) fn start_background_listener(&self, stop: Arc<AtomicBool>) -> Result<()> {
         let usb = self.usb_clone();
 
         let op_complete = self.op_completed_callback().unwrap_or(OP_COMPLETED_FN_NOP);
@@ -140,7 +156,7 @@ impl DeviceHandle {
         std::thread::spawn(move || -> Result<()> {
             let timeout = std::time::Duration::from_millis(CALLBACK_TIMEOUT);
 
-            loop {
+            while !stop.load(Ordering::Relaxed) {
                 if let Ok(msg) = Self::read_callback_call(&usb, timeout) {
                     let res = match msg.name() {
                         Ok(XfsMethodName::OperationCompleteOccurred) => {
@@ -315,9 +331,15 @@ impl DeviceHandle {
 
                 std::thread::sleep(std::time::Duration::from_millis(256));
             }
+
+            Ok(())
         });
 
         Ok(())
+    }
+
+    pub(crate) fn stop_background_listener(&self) {
+        self.stop_listener.store(true, Ordering::SeqCst);
     }
 
     pub(crate) fn reset_inner(&self) -> Result<()> {

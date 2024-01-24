@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::sync::{atomic::{AtomicBool, Ordering}, Arc};
 
 use time as datetime;
 
@@ -87,6 +87,7 @@ pub type StatusOccurredFn = fn(i32, i32, i32, &mut dyn CallbackArg);
 /// BNR XFS device handle for communication over USB.
 pub struct DeviceHandle {
     usb: Arc<UsbDeviceHandle>,
+    stop_listener: Arc<AtomicBool>,
     op_completed_callback: Option<OperationCompletedFn>,
     intermediate_occurred_callback: Option<IntermediateOccurredFn>,
     status_occurred_callback: Option<StatusOccurredFn>,
@@ -99,21 +100,21 @@ impl DeviceHandle {
         intermediate_occurred_callback: Option<IntermediateOccurredFn>,
         status_occurred_callback: Option<StatusOccurredFn>,
     ) -> Result<Self> {
-        let ctx = rusb::Context::new()?;
-        let dev_list = rusb::DeviceList::new_with_context(ctx)?;
+        Self::open_inner(
+            Self::find_usb()?,
+            op_completed_callback,
+            intermediate_occurred_callback,
+            status_occurred_callback,
+        )
+    }
 
-        let dev = dev_list.iter().find(|d| {
-            if let Ok(desc) = d.device_descriptor() {
-                desc.vendor_id() == BNR_VID && desc.product_id() == BNR_PID
-            } else {
-                false
-            }
-        });
-
-        match dev {
-            Some(usb) => Self::open_inner(usb.open()?, op_completed_callback, intermediate_occurred_callback, status_occurred_callback),
-            None => Err(Error::Usb(format!("failed to find a USB device with the correct VID({BNR_VID:04x}):PID({BNR_PID:04x}) pair"))),
-        }
+    /// Reconnects to the BNR XFS device
+    pub fn reconnect(&mut self) -> Result<()> {
+        self.stop_background_listener();
+        self.usb = Arc::new(Self::find_usb()?);
+        self.stop_listener.store(false, Ordering::SeqCst);
+        self.start_background_listener(Arc::clone(&self.stop_listener))?;
+        Ok(())
     }
 
     /// Resets the BNR device.
@@ -390,8 +391,8 @@ impl DeviceHandle {
     }
 
     /// Gets a reference to the [UsbDeviceHandle].
-    pub fn usb(&self) -> &UsbDeviceHandle {
-        &self.usb
+    pub(crate) fn usb(&self) -> &UsbDeviceHandle {
+        self.usb.as_ref()
     }
 
     pub(crate) fn usb_clone(&self) -> Arc<UsbDeviceHandle> {
