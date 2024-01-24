@@ -1,5 +1,9 @@
 use std::fmt;
 
+mod bnr_error;
+
+pub use bnr_error::*;
+
 pub type Result<T> = std::result::Result<T, Error>;
 
 /// Check the result from a bnr-sys function call.
@@ -22,6 +26,7 @@ pub enum Error {
     Rsa(String),
     Hal(String),
     Json(String),
+    Bnr(BnrError),
 }
 
 impl From<std::io::Error> for Error {
@@ -74,6 +79,7 @@ impl fmt::Display for Error {
             Self::Rsa(err) => write!(f, "RSA error: {err})"),
             Self::Hal(err) => write!(f, "HAL error: {err})"),
             Self::Json(err) => write!(f, "JSON error: {err})"),
+            Self::Bnr(err) => write!(f, "BNR device error: {err})"),
         }
     }
 }
