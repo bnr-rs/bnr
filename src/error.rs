@@ -1,9 +1,12 @@
 use std::fmt;
 
 mod bnr_error;
+mod usb_error;
 
 pub use bnr_error::*;
+pub use usb_error::*;
 
+/// Convenience alias for the library `Result` type.
 pub type Result<T> = std::result::Result<T, Error>;
 
 /// Check the result from a bnr-sys function call.
@@ -27,6 +30,7 @@ pub enum Error {
     Hal(String),
     Json(String),
     Bnr(BnrError),
+    Usb(UsbError),
 }
 
 impl From<std::io::Error> for Error {
@@ -80,6 +84,7 @@ impl fmt::Display for Error {
             Self::Hal(err) => write!(f, "HAL error: {err})"),
             Self::Json(err) => write!(f, "JSON error: {err})"),
             Self::Bnr(err) => write!(f, "BNR device error: {err})"),
+            Self::Usb(err) => write!(f, "USB error: {err})"),
         }
     }
 }
