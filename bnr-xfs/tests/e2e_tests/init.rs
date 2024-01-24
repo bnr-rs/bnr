@@ -20,3 +20,13 @@ fn test_reset() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+fn test_cancel() -> Result<()> {
+    let _lock = common::init();
+
+    let handle = DeviceHandle::open(None, None, None)?;
+    handle.cancel()?;
+
+    Ok(())
+}

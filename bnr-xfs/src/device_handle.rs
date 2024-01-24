@@ -86,6 +86,11 @@ impl DeviceHandle {
         self.reset_inner()
     }
 
+    /// Sends the message to cancel any currently active transactions/commands.
+    pub fn cancel(&self) -> Result<()> {
+        self.cancel_inner()
+    }
+
     /// Gets a reference to the [UsbDeviceHandle].
     pub const fn usb(&self) -> &UsbDeviceHandle {
         &self.usb
