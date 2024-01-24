@@ -4,6 +4,7 @@ use std::fmt;
 
 use crate::impl_xfs_struct;
 
+mod cash_order;
 mod cash_type;
 mod code;
 mod cu_enum;
@@ -11,6 +12,7 @@ mod denomination;
 mod exponent;
 mod mix;
 
+pub use cash_order::*;
 pub use cash_type::*;
 pub use code::*;
 pub use cu_enum::*;

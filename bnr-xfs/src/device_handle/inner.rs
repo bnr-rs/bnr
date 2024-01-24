@@ -13,12 +13,14 @@ use time as datetime;
 use super::*;
 use crate::callback_response::CallbackResponse;
 use crate::cash_unit::TransportCount;
+use crate::currency::{Currency, Denomination};
 use crate::xfs::{
     self,
     method_call::{XfsMethodCall, XfsMethodName},
     method_response::{XfsMethodResponse, XfsMethodResponseStruct},
     params::{XfsParam, XfsParams},
     value::XfsValue,
+    OperationId,
 };
 
 const INIT_COUNT: u64 = 1;
@@ -28,11 +30,11 @@ static CALL_COUNTER: AtomicU64 = AtomicU64::new(INIT_COUNT);
 pub const MAIN_MODULE_CLASS: i64 = 0xE0000;
 
 static OP_COMPLETED_FN_NOP: OperationCompletedFn =
-    |_id: i32, _op_id: i32, _ret: i32, _stat: i32, _cb: &mut dyn CallbackArg| {};
+    |_id: i32, _op_id: i32, _res: i32, _ext_res: i32, _details: &mut dyn CallbackArg| {};
 static INTERMEDIATE_OCCURRED_FN_NOP: IntermediateOccurredFn =
-    |_id: i32, _op_id: i32, _ret: i32, _cb: &mut dyn CallbackArg| {};
+    |_id: i32, _op_id: i32, _reason: i32, _details: &mut dyn CallbackArg| {};
 static STATUS_OCCURRED_FN_NOP: StatusOccurredFn =
-    |_id: i32, _op_id: i32, _stat: i32, _cb: &mut dyn CallbackArg| {};
+    |_status: i32, _res: i32, _ext_res: i32, _details: &mut dyn CallbackArg| {};
 
 pub(crate) fn call_counter() -> u64 {
     CALL_COUNTER.load(Ordering::Relaxed)
@@ -150,13 +152,11 @@ impl DeviceHandle {
                             .cloned()
                             .unwrap_or(0);
 
-                        let op_id = params_iter
+                        let op_id: OperationId = params_iter
                             .next()
                             .cloned()
                             .unwrap_or(XfsValue::new().with_i4(0))
-                            .i4()
-                            .cloned()
-                            .unwrap_or(0);
+                            .try_into()?;
 
                         let ret = params_iter
                             .next()
@@ -174,7 +174,20 @@ impl DeviceHandle {
                             .cloned()
                             .unwrap_or(0);
 
-                        op_complete(id, op_id, ret, stat, &mut ());
+                        if let Some(xfs) = params_iter.next() {
+                            match xfs.xfs_struct() {
+                                Some(xfs)
+                                    if xfs.find_member(Currency::xfs_name()).is_ok()
+                                        && xfs.find_member(Denomination::xfs_name()).is_ok() =>
+                                {
+                                    let mut cash_order = CashOrder::try_from(xfs)?;
+                                    op_complete(id, op_id.into(), ret, stat, &mut cash_order);
+                                }
+                                _ => op_complete(id, op_id.into(), ret, stat, &mut ()),
+                            }
+                        } else {
+                            op_complete(id, op_id.into(), ret, stat, &mut ());
+                        }
 
                         (Some(id), Some(op_id))
                     }
@@ -190,13 +203,11 @@ impl DeviceHandle {
                             .cloned()
                             .unwrap_or(0);
 
-                        let op_id = params_iter
+                        let op_id: OperationId = params_iter
                             .next()
                             .cloned()
                             .unwrap_or(XfsValue::new().with_i4(0))
-                            .i4()
-                            .cloned()
-                            .unwrap_or(0);
+                            .try_into()?;
 
                         let ret = params_iter
                             .next()
@@ -206,7 +217,20 @@ impl DeviceHandle {
                             .cloned()
                             .unwrap_or(0);
 
-                        intermediate_occurred(id, op_id, ret, &mut ());
+                        if let Some(xfs) = params_iter.next() {
+                            match xfs.xfs_struct() {
+                                Some(xfs)
+                                    if xfs.find_member(Currency::xfs_name()).is_ok()
+                                        && xfs.find_member(Denomination::xfs_name()).is_ok() =>
+                                {
+                                    let mut cash_order = CashOrder::try_from(xfs)?;
+                                    intermediate_occurred(id, op_id.into(), ret, &mut cash_order);
+                                }
+                                _ => intermediate_occurred(id, op_id.into(), ret, &mut ()),
+                            }
+                        } else {
+                            intermediate_occurred(id, op_id.into(), ret, &mut ());
+                        }
 
                         (Some(id), Some(op_id))
                     }
@@ -222,13 +246,11 @@ impl DeviceHandle {
                             .cloned()
                             .unwrap_or(0);
 
-                        let op_id = params_iter
+                        let op_id: OperationId = params_iter
                             .next()
                             .cloned()
                             .unwrap_or(XfsValue::new().with_i4(0))
-                            .i4()
-                            .cloned()
-                            .unwrap_or(0);
+                            .try_into()?;
 
                         let ret = params_iter
                             .next()
@@ -238,7 +260,20 @@ impl DeviceHandle {
                             .cloned()
                             .unwrap_or(0);
 
-                        status_occurred(id, op_id, ret, &mut ());
+                        if let Some(xfs) = params_iter.next() {
+                            match xfs.xfs_struct() {
+                                Some(xfs)
+                                    if xfs.find_member(Currency::xfs_name()).is_ok()
+                                        && xfs.find_member(Denomination::xfs_name()).is_ok() =>
+                                {
+                                    let mut cash_order = CashOrder::try_from(xfs)?;
+                                    status_occurred(id, op_id.into(), ret, &mut cash_order);
+                                }
+                                _ => status_occurred(id, op_id.into(), ret, &mut ()),
+                            }
+                        } else {
+                            status_occurred(id, op_id.into(), ret, &mut ());
+                        }
 
                         (Some(id), Some(op_id))
                     }
@@ -251,7 +286,7 @@ impl DeviceHandle {
 
                 if let (Some(id), Some(op_id)) = (id, op_id) {
                     let res = XfsMethodResponse::new_params([XfsParam::create(
-                        CallbackResponse::create(id, op_id).into(),
+                        CallbackResponse::create(id, op_id.into()).into(),
                     )]);
 
                     Self::write_callback_response(&usb, &res, msg.name()?, timeout)?;

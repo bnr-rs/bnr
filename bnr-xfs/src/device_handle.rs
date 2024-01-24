@@ -4,7 +4,7 @@ use time as datetime;
 
 use crate::capabilities::Capabilities;
 use crate::cash_unit::{CashUnit, LogicalCashUnitList, PhysicalCashUnitList};
-use crate::currency::CurrencyCode;
+use crate::currency::{CashOrder, CurrencyCode};
 use crate::dispense::DispenseRequest;
 use crate::status::CdrStatus;
 use crate::{Error, Result};
@@ -38,6 +38,9 @@ pub type UsbDeviceHandle = rusb::DeviceHandle<rusb::Context>;
 pub trait CallbackArg {
     fn value(&self) -> i32;
     fn is_null(&self) -> bool;
+    fn is_cash_order(&self) -> bool;
+    fn as_cash_order(&self) -> Result<&CashOrder>;
+    fn as_cash_order_mut(&mut self) -> Result<&mut CashOrder>;
 }
 
 impl CallbackArg for () {
@@ -47,6 +50,22 @@ impl CallbackArg for () {
 
     fn is_null(&self) -> bool {
         true
+    }
+
+    fn is_cash_order(&self) -> bool {
+        false
+    }
+
+    fn as_cash_order(&self) -> Result<&CashOrder> {
+        Err(Error::Xfs(
+            "Expected CashOrder CallbackArg, have: null".into(),
+        ))
+    }
+
+    fn as_cash_order_mut(&mut self) -> Result<&mut CashOrder> {
+        Err(Error::Xfs(
+            "Expected CashOrder CallbackArg, have: null".into(),
+        ))
     }
 }
 

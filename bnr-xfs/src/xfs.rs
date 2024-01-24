@@ -6,9 +6,12 @@ pub mod array;
 pub mod fault;
 pub mod method_call;
 pub mod method_response;
+mod operation_id;
 pub mod params;
 pub mod value;
 pub mod xfs_struct;
+
+pub use operation_id::*;
 
 pub fn to_string<S: serde::Serialize>(s: S) -> Result<String> {
     let mut sink = Vec::with_capacity(0xff);
@@ -35,9 +38,4 @@ pub fn from_str<'de, T: serde::Deserialize<'de>>(xml_str: &'de str) -> Result<T>
     ));
 
     Ok(T::deserialize(&mut de)?)
-}
-
-/// Trait for common functionality for XFS enum types.
-pub trait XfsEnum {
-    fn xfs_name() -> &'static str;
 }
