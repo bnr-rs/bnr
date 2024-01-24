@@ -68,3 +68,20 @@ fn test_get_date_time() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+fn test_set_date_time() -> Result<()> {
+    let _lock = common::init();
+
+    let handle = DeviceHandle::open(None, None, None)?;
+
+    handle.close()?;
+
+    let date = handle.get_date_time()?;
+
+    assert!(!date.is_empty());
+
+    handle.set_current_date_time()?;
+
+    Ok(())
+}

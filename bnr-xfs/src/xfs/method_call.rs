@@ -96,6 +96,8 @@ impl From<XfsMethodName> for XfsMethodCall {
 pub enum XfsMethodName {
     #[serde(rename = "bnr.getdatetime")]
     GetDateTime,
+    #[serde(rename = "bnr.setdatetime")]
+    SetDateTime,
     #[serde(rename = "bnr.cashinstart")]
     CashInStart,
     #[serde(rename = "bnr.cashin")]
@@ -160,6 +162,7 @@ impl From<&XfsMethodName> for &'static str {
     fn from(val: &XfsMethodName) -> Self {
         match val {
             XfsMethodName::GetDateTime => "bnr.getdatetime",
+            XfsMethodName::SetDateTime => "bnr.setdatetime",
             XfsMethodName::CashInStart => "bnr.cashinstart",
             XfsMethodName::CashIn => "bnr.cashin",
             XfsMethodName::CashInRollback => "bnr.cashinrollback",
@@ -200,6 +203,7 @@ impl TryFrom<&str> for XfsMethodName {
     fn try_from(val: &str) -> Result<Self> {
         match val.to_lowercase().as_str() {
             "bnr.getdatetime" => Ok(Self::GetDateTime),
+            "bnr.setdatetime" => Ok(Self::SetDateTime),
             "bnr.cashinstart" => Ok(Self::CashInStart),
             "bnr.cashin" => Ok(Self::CashIn),
             "bnr.cashinrollback" => Ok(Self::CashInRollback),

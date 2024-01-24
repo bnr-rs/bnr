@@ -14,6 +14,7 @@ pub enum Error {
     Usb(String),
     Io(String),
     Xfs(String),
+    DateTime(String),
 }
 
 impl From<rusb::Error> for Error {
@@ -46,6 +47,18 @@ impl<T> From<std::sync::PoisonError<T>> for Error {
     }
 }
 
+impl From<datetime::Error> for Error {
+    fn from(err: datetime::Error) -> Self {
+        Self::DateTime(format!("{err}"))
+    }
+}
+
+impl From<datetime::error::Format> for Error {
+    fn from(err: datetime::error::Format) -> Self {
+        Self::DateTime(format!("{err}"))
+    }
+}
+
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -56,6 +69,7 @@ impl fmt::Display for Error {
             Self::Usb(err) => write!(f, "USB error: {err}"),
             Self::Io(err) => write!(f, "I/O error: {err}"),
             Self::Xfs(err) => write!(f, "XFS error: {err}"),
+            Self::DateTime(err) => write!(f, "DateTime error: {err}"),
         }
     }
 }

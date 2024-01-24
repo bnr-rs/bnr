@@ -104,6 +104,24 @@ impl DeviceHandle {
         self.get_date_time_inner()
     }
 
+    /// Sets the ISO 8601 formatted date-time on the device to the provided time.
+    ///
+    /// **NOTE** This setting is not persistent across reboots/power-cycles.
+    ///
+    /// The default device time will reset to `2001-01-01 00:00:00`.
+    pub fn set_date_time(&self, date_time: datetime::OffsetDateTime) -> Result<()> {
+        self.set_date_time_inner(date_time)
+    }
+
+    /// Sets the ISO 8601 formatted date-time on the device to the current time.
+    ///
+    /// **NOTE** This setting is not persistent across reboots/power-cycles.
+    ///
+    /// The default device time will reset to `2001-01-01 00:00:00`.
+    pub fn set_current_date_time(&self) -> Result<()> {
+        self.set_date_time_inner(datetime::OffsetDateTime::now_utc())
+    }
+
     /// Gets a reference to the [UsbDeviceHandle].
     pub const fn usb(&self) -> &UsbDeviceHandle {
         &self.usb

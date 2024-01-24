@@ -3,7 +3,7 @@ use crate::xfs::{
     self,
     method_call::{XfsMethodCall, XfsMethodName},
     method_response::{XfsMethodResponse, XfsMethodResponseStruct},
-    params::XfsParam,
+    params::{XfsParam, XfsParams},
     value::XfsValue,
 };
 
@@ -24,7 +24,7 @@ impl DeviceHandle {
             )],
         );
 
-        let timeout = time::Duration::from_millis(500);
+        let timeout = time::Duration::from_millis(50);
 
         let mut ret = [0u8; 4];
         let read = usb.read_control(0x80, 0x6, 0x03 << 8, 0, &mut ret, timeout)?;
@@ -52,7 +52,9 @@ impl DeviceHandle {
         }
 
         // FIXME: start a background thread to monitor device-sent events
-        let _read = usb.read_interrupt(BNR_CALLBACK_CALL_EP, &mut [0u8; 4096], timeout).ok();
+        let _read = usb
+            .read_interrupt(BNR_CALLBACK_CALL_EP, &mut [0u8; 4096], timeout)
+            .ok();
 
         // write the `getIdentification` call to the call endpoint
         Self::write_call(&usb, &call, timeout)?;
@@ -155,6 +157,26 @@ impl DeviceHandle {
                 .into()),
             None => Err(Error::Xfs("expected DateTime param, none found".into())),
         }
+    }
+
+    pub(crate) fn set_date_time_inner(&self, date_time: datetime::OffsetDateTime) -> Result<()> {
+        let iso_8601 =
+            date_time.format(&datetime::format_description::well_known::Iso8601::DATE_TIME)?;
+
+        let call = XfsMethodCall::new()
+            .with_name(XfsMethodName::SetDateTime)
+            .with_params(XfsParams::create([XfsParam::create(
+                XfsValue::new().with_date_time(iso_8601),
+            )]));
+
+        let timeout = time::Duration::from_millis(50);
+        let usb = self.usb();
+
+        Self::write_call(usb, &call, timeout)?;
+
+        Self::read_response(usb, call.name()?, timeout)?;
+
+        Ok(())
     }
 
     /// Writes an [XfsMethodCall] to the BNR device.
