@@ -2,9 +2,9 @@
 
 use std::fmt;
 
-use crate::{Error, Result};
 use super::fault::XfsFault;
 use super::params::{XfsParam, XfsParams};
+use crate::{Error, Result};
 
 /// Represents an XFS method response containing (one of):
 ///
@@ -35,8 +35,7 @@ impl XfsMethodResponse {
     ///
     /// Returns: `Ok(i32)` on success, `Err(Error)` on failure
     pub fn call_id(&self) -> Result<i32> {
-        self
-            .as_params()?
+        self.as_params()?
             .params()
             .iter()
             .find(|&p| p.inner().value().i4().is_some())

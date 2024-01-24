@@ -14,6 +14,9 @@ use crate::xfs;
 use crate::{Error, Result};
 
 mod inner;
+pub mod usb;
+
+use usb::UsbDeviceHandle;
 
 /// BNR USB Vendor ID.
 pub const BNR_VID: u16 = 0x0bed;
@@ -34,9 +37,6 @@ pub const BNR_CALL_EP: u8 = 2;
 pub const BNR_CALLBACK_CALL_EP: u8 = (1 << 7) | 3;
 /// BNR USB endpoint for host-to-device asynchronous callback responses.
 pub const BNR_CALLBACK_RESPONSE_EP: u8 = 4;
-
-/// Convenience alias for [USB device handle](rusb::DeviceHandle).
-pub type UsbDeviceHandle = rusb::DeviceHandle<rusb::Context>;
 
 /// Trait for arguments to state change callbacks used by the XFS API.
 pub trait CallbackArg {
@@ -106,7 +106,7 @@ impl DeviceHandle {
         status_occurred_callback: Option<StatusOccurredFn>,
     ) -> Result<Self> {
         Self::open_inner(
-            Self::find_usb()?,
+            UsbDeviceHandle::find_usb()?,
             op_completed_callback,
             intermediate_occurred_callback,
             status_occurred_callback,
@@ -116,14 +116,11 @@ impl DeviceHandle {
     /// Reconnects to the BNR XFS device
     pub fn reconnect(&mut self) -> Result<()> {
         self.stop_background_listener();
-        self.usb = Arc::new(Self::find_usb()?);
+        self.usb = Arc::new(UsbDeviceHandle::find_usb()?);
         self.stop_listener.store(false, Ordering::SeqCst);
         let (response_tx, response_rx) = mpsc::channel();
 
-        self.start_background_listener(
-            response_tx,
-            Arc::clone(&self.stop_listener),
-        )?;
+        self.start_background_listener(response_tx, Arc::clone(&self.stop_listener))?;
 
         self.response_rx = response_rx;
 

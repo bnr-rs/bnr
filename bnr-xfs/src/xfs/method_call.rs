@@ -105,8 +105,7 @@ impl XfsMethodCall {
     ///
     /// Returns: `Ok(i32)` on success, `Err(Error)` on failure
     pub fn call_id(&self) -> Result<i32> {
-        self
-            .params()
+        self.params()
             .params()
             .iter()
             .find(|&p| p.inner().value().i4().is_some())
@@ -122,18 +121,18 @@ impl XfsMethodCall {
     ///
     /// Returns: `Ok(OperationId)` on success, `Err(Error)` on failure
     pub fn operation_id(&self) -> Result<OperationId> {
-        Ok(OperationId::create(self
-            .params()
-            .params()
-            .iter()
-            .filter(|&p| p.inner().value().i4().is_some())
-            .nth(1)
-            .ok_or(Error::Xfs("missing operation ID".into()))?
-            .inner()
-            .value()
-            .i4()
-            .cloned()
-            .ok_or(Error::Xfs("missing operation ID".into()))? as u32
+        Ok(OperationId::create(
+            self.params()
+                .params()
+                .iter()
+                .filter(|&p| p.inner().value().i4().is_some())
+                .nth(1)
+                .ok_or(Error::Xfs("missing operation ID".into()))?
+                .inner()
+                .value()
+                .i4()
+                .cloned()
+                .ok_or(Error::Xfs("missing operation ID".into()))? as u32,
         ))
     }
 
@@ -141,8 +140,7 @@ impl XfsMethodCall {
     ///
     /// Returns: `Ok(OperationId)` on success, `Err(Error)` on failure
     pub fn result(&self) -> Result<i32> {
-        self
-            .params()
+        self.params()
             .params()
             .iter()
             .filter(|&p| p.inner().value().i4().is_some())
@@ -159,8 +157,7 @@ impl XfsMethodCall {
     ///
     /// Returns: `Ok(OperationId)` on success, `Err(Error)` on failure
     pub fn ext_result(&self) -> Result<i32> {
-        self
-            .params()
+        self.params()
             .params()
             .iter()
             .filter(|&p| p.inner().value().i4().is_some())
@@ -177,8 +174,7 @@ impl XfsMethodCall {
     ///
     /// Returns: `Ok(OperationId)` on success, `Err(Error)` on failure
     pub fn xfs_struct(&self) -> Result<XfsStruct> {
-        self
-            .params()
+        self.params()
             .params()
             .iter()
             .find(|&p| p.inner().value().xfs_struct().is_some())

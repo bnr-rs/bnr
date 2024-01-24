@@ -99,13 +99,14 @@ impl_xfs_struct!(
 
 impl From<&DispenseRequest> for XfsMethodCall {
     fn from(val: &DispenseRequest) -> Self {
-        Self::new()
-            .with_params(XfsParams::create([
-                XfsParam::create(XfsValue::new().with_i4(val.mix_number().inner() as i32)),
-                XfsParam::create(XfsValue::new().with_i4(val.denomination().amount() as i32)),
-                XfsParam::create(XfsValue::new().with_string(<&str>::from(val.currency().currency_code()))),
-                XfsParam::create(XfsValue::new().with_array(val.denomination().items_raw().into())),
-                XfsParam::create(XfsValue::new().with_base64("ODAw")),
-            ]))
+        Self::new().with_params(XfsParams::create([
+            XfsParam::create(XfsValue::new().with_i4(val.mix_number().inner() as i32)),
+            XfsParam::create(XfsValue::new().with_i4(val.denomination().amount() as i32)),
+            XfsParam::create(
+                XfsValue::new().with_string(<&str>::from(val.currency().currency_code())),
+            ),
+            XfsParam::create(XfsValue::new().with_array(val.denomination().items_raw().into())),
+            XfsParam::create(XfsValue::new().with_base64("ODAw")),
+        ]))
     }
 }

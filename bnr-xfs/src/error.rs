@@ -29,12 +29,6 @@ pub enum Error {
     BnrUsb(UsbError),
 }
 
-impl From<rusb::Error> for Error {
-    fn from(err: rusb::Error) -> Self {
-        Self::Usb(format!("{err}"))
-    }
-}
-
 impl From<serde_xml_rs::Error> for Error {
     fn from(err: serde_xml_rs::Error) -> Self {
         Self::Serde(format!("{err}"))
@@ -122,5 +116,11 @@ impl fmt::Display for Error {
             Self::BnrUsb(err) => write!(f, "BNR USB error: {err}"),
             Self::Json(err) => write!(f, "JSON error: {err}"),
         }
+    }
+}
+
+impl From<nusb::transfer::TransferError> for Error {
+    fn from(err: nusb::transfer::TransferError) -> Self {
+        Self::Usb(format!("{err}"))
     }
 }

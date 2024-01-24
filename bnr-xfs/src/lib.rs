@@ -3,7 +3,7 @@ mod callback_response;
 mod capabilities;
 mod cash_unit;
 mod currency;
-mod device_handle;
+pub mod device_handle;
 mod dispense;
 mod error;
 mod intermediate_event;

@@ -1,31 +1,23 @@
-use std::sync::{
-    atomic::{AtomicU64, Ordering},
-    mpsc, Arc,
-};
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{mpsc, Arc};
 
 use base64::Engine;
-use datetime::format_description::well_known::{
-    iso8601::{Config, TimePrecision},
-    Iso8601,
-};
+use datetime::format_description::well_known::iso8601::{Config, TimePrecision};
+use datetime::format_description::well_known::Iso8601;
 use time as datetime;
 
+use super::usb::UsbDeviceHandle;
 use super::*;
 use crate::cash_unit::TransportCount;
 use crate::currency::{Currency, Denomination};
-use crate::{CallbackOperationResponse, CallbackIntermediateResponse, CallbackStatusResponse};
-use crate::xfs::{
-    self,
-    method_call::{XfsMethodCall, XfsMethodName},
-    method_response::{XfsMethodResponse, XfsMethodResponseStruct},
-    params::{XfsParam, XfsParams},
-    value::XfsValue,
-};
+use crate::xfs::method_call::{XfsMethodCall, XfsMethodName};
+use crate::xfs::method_response::XfsMethodResponse;
+use crate::xfs::params::{XfsParam, XfsParams};
+use crate::xfs::value::XfsValue;
+use crate::{CallbackIntermediateResponse, CallbackOperationResponse, CallbackStatusResponse};
 
 const INIT_COUNT: u64 = 1;
 static CALL_COUNTER: AtomicU64 = AtomicU64::new(INIT_COUNT);
-const TIMEOUT: u64 = 5000;
-const CALLBACK_TIMEOUT: u64 = 0;
 
 /// Class identifier of the `MainModule`.
 pub const MAIN_MODULE_CLASS: i64 = 0xE0000;
@@ -67,33 +59,6 @@ impl DeviceHandle {
         intermediate_occurred_callback: Option<IntermediateOccurredFn>,
         status_occurred_callback: Option<StatusOccurredFn>,
     ) -> Result<Self> {
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
-
-        let mut ret = [0u8; 4];
-        let read = usb.read_control(0x80, 0x6, 0x03 << 8, 0, &mut ret, timeout)?;
-
-        let lang_id = if read == ret.len() {
-            u16::from_le_bytes([ret[2], ret[3]])
-        } else {
-            0
-        };
-
-        if lang_id != 0 {
-            log::debug!("Get language response: 0x{lang_id:04x}");
-
-            let mut ret = [0u8; 0xff];
-            let read = usb.read_control(0x80, 0x6, 0x3 << 8 | 0x5, lang_id, &mut ret, timeout)?;
-
-            for (i, lang) in ret[..read]
-                .chunks(2)
-                .skip(1)
-                .map(|c| u16::from_le_bytes(c.try_into().unwrap_or([0, 0])))
-                .enumerate()
-            {
-                log::debug!("Interface lang[{i}]: {lang}");
-            }
-        }
-
         let (response_tx, response_rx) = mpsc::channel();
 
         let ret = Self {
@@ -105,10 +70,7 @@ impl DeviceHandle {
             response_rx,
         };
 
-        ret.start_background_listener(
-            response_tx,
-            Arc::clone(&ret.stop_listener),
-        )?;
+        ret.start_background_listener(response_tx, Arc::clone(&ret.stop_listener))?;
 
         let usb = ret.usb();
 
@@ -120,27 +82,12 @@ impl DeviceHandle {
         );
 
         // write the `getIdentification` call to the call endpoint
-        Self::write_call(usb, &call, timeout)?;
+        usb.write_call(&call)?;
 
         // read the response
-        Self::read_response(usb, call.name()?, timeout).ok();
+        usb.read_response(call.name()?).ok();
 
         Ok(ret)
-    }
-
-    pub(crate) fn find_usb() -> Result<UsbDeviceHandle> {
-        let ctx = rusb::Context::new()?;
-        let dev_list = rusb::DeviceList::new_with_context(ctx)?;
-
-        let dev = dev_list.iter().find(|d| {
-            if let Ok(desc) = d.device_descriptor() {
-                desc.vendor_id() == BNR_VID && desc.product_id() == BNR_PID
-            } else {
-                false
-            }
-        });
-
-        Ok(dev.ok_or(Error::Usb(format!("failed to find a USB device with the correct VID({BNR_VID:04x}):PID({BNR_PID:04x}) pair")))?.open()?)
     }
 
     pub(crate) fn start_background_listener(
@@ -161,18 +108,18 @@ impl DeviceHandle {
             .unwrap_or(STATUS_OCCURRED_FN_NOP);
 
         std::thread::spawn(move || -> Result<()> {
-            let timeout = std::time::Duration::from_millis(CALLBACK_TIMEOUT);
-
             while !stop.load(Ordering::Relaxed) {
-                if let Ok(msg) = Self::read_callback_call(&usb, timeout) {
+                if let Ok(msg) = usb.read_callback_call() {
                     log::trace!("Callback call: {msg}");
                     let res_id = msg.call_id().unwrap_or(-1);
                     let mut callback_arg = match msg.xfs_struct() {
-                        Ok(xfs) if xfs.find_member(Currency::xfs_name()).is_ok()
-                            && xfs.find_member(Denomination::xfs_name()).is_ok() => {
-                                CashOrder::try_from(xfs)
-                                    .map_err(|err| log::error!("Error converting CashOrder: {err}"))
-                                    .ok()
+                        Ok(xfs)
+                            if xfs.find_member(Currency::xfs_name()).is_ok()
+                                && xfs.find_member(Denomination::xfs_name()).is_ok() =>
+                        {
+                            CashOrder::try_from(xfs)
+                                .map_err(|err| log::error!("Error converting CashOrder: {err}"))
+                                .ok()
                         }
                         _ => None,
                     };
@@ -192,9 +139,9 @@ impl DeviceHandle {
                             response_tx.send(msg)?;
 
                             let response = CallbackOperationResponse::create(op_id, res_id);
-                            Some(XfsMethodResponse::new_params([
-                                XfsParam::create(XfsValue::new().with_xfs_struct(response.into()))
-                            ]))
+                            Some(XfsMethodResponse::new_params([XfsParam::create(
+                                XfsValue::new().with_xfs_struct(response.into()),
+                            )]))
                         }
                         XfsMethodName::IntermediateOccurred => {
                             log::trace!("Intermediate occurred: {msg}");
@@ -205,9 +152,9 @@ impl DeviceHandle {
                             }
 
                             let response = CallbackIntermediateResponse::create(op_id, res_id);
-                            Some(XfsMethodResponse::new_params([
-                                XfsParam::create(XfsValue::new().with_xfs_struct(response.into()))
-                            ]))
+                            Some(XfsMethodResponse::new_params([XfsParam::create(
+                                XfsValue::new().with_xfs_struct(response.into()),
+                            )]))
                         }
                         XfsMethodName::StatusOccurred => {
                             log::trace!("Status occurred: {msg}");
@@ -217,15 +164,14 @@ impl DeviceHandle {
                                 status_occurred(res_id, op_id, result, &mut ());
                             }
                             let response = CallbackStatusResponse::create(res_id, result);
-                            Some(XfsMethodResponse::new_params([
-                                XfsParam::create(XfsValue::new().with_xfs_struct(response.into()))
-                            ]))
+                            Some(XfsMethodResponse::new_params([XfsParam::create(
+                                XfsValue::new().with_xfs_struct(response.into()),
+                            )]))
                         }
                         _ => None,
                     };
                     if let Some(res) = xfs_res {
-                        let res_timeout = std::time::Duration::from_millis(1250);
-                        Self::write_callback_response(&usb, &res, msg_name, res_timeout)?;
+                        usb.write_callback_response(&res, msg_name)?;
                     }
                 }
             }
@@ -271,7 +217,9 @@ impl DeviceHandle {
                 }
             }
         } else {
-            Err(Error::Xfs("async response: no operation complete response".into()))
+            Err(Error::Xfs(
+                "async response: no operation complete response".into(),
+            ))
         }
     }
 
@@ -285,12 +233,11 @@ impl DeviceHandle {
 
         reset_call_counter();
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout)?;
+        usb.write_call(&call)?;
 
-        match Self::read_response(usb, call.name()?, timeout) {
+        match usb.read_response(call.name()?) {
             Ok(_) => Ok(()),
             Err(err) => Err(err),
         }
@@ -298,12 +245,11 @@ impl DeviceHandle {
 
     pub(crate) fn cancel_inner(&self) -> Result<()> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::Cancel);
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
+
         let usb = self.usb();
+        usb.write_call(&call)?;
 
-        Self::write_call(usb, &call, timeout)?;
-
-        match Self::read_response(usb, call.name()?, timeout) {
+        match usb.read_response(call.name()?) {
             Ok(_) => Ok(()),
             Err(Error::Xfs(err)) => {
                 log::warn!("Error reading \"bnr.cancel\" response: {err}");
@@ -315,12 +261,11 @@ impl DeviceHandle {
 
     pub(crate) fn close_inner(&self) -> Result<()> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::StopSession);
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout)?;
+        usb.write_call(&call)?;
 
-        match Self::read_response(usb, call.name()?, timeout) {
+        match usb.read_response(call.name()?) {
             Ok(_) => Ok(()),
             Err(Error::Xfs(err)) => {
                 log::warn!("Error reading \"bnr.stopsession\" response: {err}");
@@ -332,14 +277,13 @@ impl DeviceHandle {
 
     pub(crate) fn reboot_inner(&self) -> Result<()> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::Reboot);
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout)?;
+        usb.write_call(&call)?;
 
         reset_call_counter();
 
-        match Self::read_response(usb, call.name()?, timeout) {
+        match usb.read_response(call.name()?) {
             Ok(_) => Ok(()),
             Err(Error::Xfs(err)) => {
                 log::warn!("Error reading \"bnr.reboot\" response: {err}");
@@ -351,12 +295,11 @@ impl DeviceHandle {
 
     pub(crate) fn get_date_time_inner(&self) -> Result<datetime::OffsetDateTime> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::GetDateTime);
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
+
         let usb = self.usb();
+        usb.write_call(&call)?;
 
-        Self::write_call(usb, &call, timeout)?;
-
-        let res = Self::read_response(usb, call.name()?, timeout)?;
+        let res = usb.read_response(call.name()?)?;
         let params = res.into_params()?;
 
         let date_res = params
@@ -409,12 +352,9 @@ impl DeviceHandle {
                 XfsValue::new().with_date_time(date_time.format(&date_fmt)?),
             )]));
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
-
-        Self::write_call(usb, &call, timeout)?;
-
-        Self::read_response(usb, call.name()?, timeout)?;
+        usb.write_call(&call)?;
+        usb.read_response(call.name()?)?;
 
         Ok(())
     }
@@ -422,23 +362,18 @@ impl DeviceHandle {
     pub(crate) fn get_status_inner(&self) -> Result<CdrStatus> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::GetStatus);
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
-
-        Self::write_call(usb, &call, timeout)?;
-
-        Self::read_response(usb, call.name()?, timeout)?.try_into()
+        usb.write_call(&call)?;
+        usb.read_response(call.name()?)?.try_into()
     }
 
     pub(crate) fn park_inner(&self) -> Result<()> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::Park);
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout)?;
-
-        let _res = Self::read_response(usb, call.name()?, timeout)?;
+        usb.write_call(&call)?;
+        usb.read_response(call.name()?)?;
 
         Ok(())
     }
@@ -446,23 +381,18 @@ impl DeviceHandle {
     pub(crate) fn get_capabilities_inner(&self) -> Result<Capabilities> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::GetCapabilities);
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
-
-        Self::write_call(usb, &call, timeout)?;
-
-        Self::read_response(usb, call.name()?, timeout)?.try_into()
+        usb.write_call(&call)?;
+        usb.read_response(call.name()?)?.try_into()
     }
 
     pub(crate) fn set_capabilities_inner(&self, caps: &Capabilities) -> Result<Capabilities> {
         let call = XfsMethodCall::create(XfsMethodName::SetCapabilities, [XfsParam::from(caps)]);
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout)?;
-
-        let res = Self::read_response(usb, call.name()?, timeout)?;
+        usb.write_call(&call)?;
+        let res = usb.read_response(call.name()?)?;
 
         match Capabilities::try_from(&res) {
             Ok(c) => Ok(c),
@@ -479,13 +409,9 @@ impl DeviceHandle {
             .with_params(XfsParams::create([count]));
 
         let call_id = {
-            let timeout = std::time::Duration::from_millis(TIMEOUT);
             let usb = self.usb();
-
-            Self::write_call(usb, &call, timeout)?;
-
-            let res = Self::read_response(usb, call.name()?, timeout)?;
-            res.call_id()?
+            usb.write_call(&call)?;
+            usb.read_response(call.name()?)?.call_id()?
         };
 
         self.handle_async_call(call_id)?;
@@ -531,13 +457,9 @@ impl DeviceHandle {
         };
 
         let call_id = {
-            let timeout = std::time::Duration::from_millis(TIMEOUT);
             let usb = self.usb();
-
-            Self::write_call(usb, &call, timeout)?;
-
-            let res = Self::read_response(usb, call.name()?, timeout)?;
-            res.call_id()?
+            usb.write_call(&call)?;
+            usb.read_response(call.name()?)?.call_id()?
         };
 
         set_call_counter(call_id as u64);
@@ -554,13 +476,9 @@ impl DeviceHandle {
             .with_params(XfsParams::create([count]));
 
         let call_id = {
-            let timeout = std::time::Duration::from_millis(TIMEOUT);
             let usb = self.usb();
-
-            Self::write_call(usb, &call, timeout)?;
-
-            let res = Self::read_response(usb, call.name()?, timeout)?;
-            res.call_id()?
+            usb.write_call(&call)?;
+            usb.read_response(call.name()?)?.call_id()?
         };
 
         self.handle_async_call(call_id)?;
@@ -578,12 +496,9 @@ impl DeviceHandle {
             .with_name(XfsMethodName::CashInRollback)
             .with_params(XfsParams::create([count]));
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
-
-        Self::write_call(usb, &call, timeout)?;
-
-        Self::read_response(usb, call.name()?, timeout)?;
+        usb.write_call(&call)?;
+        usb.read_response(call.name()?)?;
 
         Ok(())
     }
@@ -596,12 +511,9 @@ impl DeviceHandle {
             .with_name(XfsMethodName::Eject)
             .with_params(XfsParams::create([count]));
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
-
-        Self::write_call(usb, &call, timeout)?;
-
-        Self::read_response(usb, call.name()?, timeout)?;
+        usb.write_call(&call)?;
+        usb.read_response(call.name()?)?;
 
         Ok(())
     }
@@ -618,12 +530,10 @@ impl DeviceHandle {
                 count,
             ]));
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout)?;
-
-        Self::read_response(usb, call.name()?, timeout)?;
+        usb.write_call(&call)?;
+        usb.read_response(call.name()?)?;
 
         Ok(())
     }
@@ -636,12 +546,10 @@ impl DeviceHandle {
             .with_name(XfsMethodName::Present)
             .with_params(XfsParams::create([count]));
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout)?;
-
-        Self::read_response(usb, call.name()?, timeout)?;
+        usb.write_call(&call)?;
+        usb.read_response(call.name()?)?;
 
         Ok(())
     }
@@ -654,12 +562,10 @@ impl DeviceHandle {
             .with_name(XfsMethodName::CancelWaitingCashTaken)
             .with_params(XfsParams::create([count]));
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout)?;
-
-        Self::read_response(usb, call.name()?, timeout)?;
+        usb.write_call(&call)?;
+        usb.read_response(call.name()?)?;
 
         Ok(())
     }
@@ -672,12 +578,11 @@ impl DeviceHandle {
             .with_name(XfsMethodName::Retract)
             .with_params(XfsParams::create([count]));
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout)?;
+        usb.write_call(&call)?;
 
-        Self::read_response(usb, call.name()?, timeout)?;
+        usb.read_response(call.name()?)?;
 
         Ok(())
     }
@@ -690,12 +595,11 @@ impl DeviceHandle {
             .with_name(XfsMethodName::QueryCashUnit)
             .with_params(XfsParams::create([count]));
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout)?;
+        usb.write_call(&call)?;
 
-        Self::read_response(usb, call.name()?, timeout)?.try_into()
+        usb.read_response(call.name()?)?.try_into()
     }
 
     pub(crate) fn configure_cash_unit_inner(
@@ -712,12 +616,11 @@ impl DeviceHandle {
                 XfsParam::create(pcu_list.into()),
             ]));
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout)?;
+        usb.write_call(&call)?;
 
-        Self::read_response(usb, call.name()?, timeout)?;
+        usb.read_response(call.name()?)?;
 
         Ok(())
     }
@@ -736,45 +639,35 @@ impl DeviceHandle {
                 XfsParam::create(pcu_list.into()),
             ]));
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout)?;
+        usb.write_call(&call)?;
 
-        Self::read_response(usb, call.name()?, timeout)?;
+        usb.read_response(call.name()?)?;
 
         Ok(())
     }
 
     pub(crate) fn denominate_inner(&self, request: &DispenseRequest) -> Result<()> {
-        let call = XfsMethodCall::from(request)
-            .with_name(XfsMethodName::Denominate);
+        let call = XfsMethodCall::from(request).with_name(XfsMethodName::Denominate);
 
         let call_id = {
-            let timeout = std::time::Duration::from_millis(TIMEOUT);
             let usb = self.usb();
-
-            Self::write_call(usb, &call, timeout)?;
-
-            let res = Self::read_response(usb, call.name()?, timeout)?;
-            res.call_id()?
+            usb.write_call(&call)?;
+            usb.read_response(call.name()?)?.call_id()?
         };
 
         self.handle_async_call(call_id)
     }
 
     pub(crate) fn dispense_inner(&self, request: &DispenseRequest) -> Result<()> {
-        let call = XfsMethodCall::from(request)
-            .with_name(XfsMethodName::Dispense);
+        let call = XfsMethodCall::from(request).with_name(XfsMethodName::Dispense);
 
         let call_id = {
-            let timeout = std::time::Duration::from_millis(TIMEOUT);
             let usb = self.usb();
 
-            Self::write_call(usb, &call, timeout)?;
-
-            let res = Self::read_response(usb, call.name()?, timeout)?;
-            res.call_id()?
+            usb.write_call(&call)?;
+            usb.read_response(call.name()?)?.call_id()?
         };
 
         self.handle_async_call(call_id)
@@ -782,149 +675,11 @@ impl DeviceHandle {
 
     pub(crate) fn stop_session_inner(&self) -> Result<()> {
         let call = XfsMethodCall::create(XfsMethodName::StopSession, []);
-
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout)?;
-
-        Self::read_response(usb, call.name()?, timeout)?;
+        usb.write_call(&call)?;
+        usb.read_response(call.name()?)?;
 
         Ok(())
-    }
-
-    /// Writes an [XfsMethodCall] to the BNR device.
-    pub fn write_call(
-        usb: &UsbDeviceHandle,
-        call: &XfsMethodCall,
-        timeout: std::time::Duration,
-    ) -> Result<()> {
-        match usb.write_bulk(BNR_CALL_EP, xfs::to_string(call)?.as_bytes(), timeout) {
-            Ok(_) => Ok(()),
-            Err(err) => {
-                let method = call.name()?;
-                let err_msg = format!("Error writing {method} message: {err}");
-                log::warn!("{err_msg}");
-                Err(err.into())
-            }
-        }
-    }
-
-    /// Reads an XFS method response (as a string) from the BNR response endpoint.
-    pub fn read_response(
-        usb: &UsbDeviceHandle,
-        method: XfsMethodName,
-        timeout: std::time::Duration,
-    ) -> Result<XfsMethodResponse> {
-        // Responses can be very large, so read from the endpoint in 4K chunks.
-        let mut res_buf = [0u8; 4096];
-        let mut res_acc = Vec::with_capacity(4096);
-
-        let mut read = match usb.read_bulk(BNR_RESPONSE_EP, &mut res_buf[..], timeout) {
-            Ok(r) => r,
-            Err(err) => {
-                let err_msg = format!("Error reading {method} response: {err}");
-                log::error!("{err_msg}");
-
-                return Err(Error::Usb(err_msg));
-            }
-        };
-
-        res_acc.extend_from_slice(&res_buf[..read]);
-        while read == res_buf.len() {
-            // clear the buffer to avoid leaving old data in the trailing bytes
-            res_buf.copy_from_slice([0u8; 4096].as_ref());
-            read = match usb.read_bulk(BNR_RESPONSE_EP, &mut res_buf[..], timeout) {
-                Ok(r) => r,
-                Err(err) => {
-                    let err_msg = format!("Error reading {method} response: {err}");
-                    log::warn!("{err_msg}");
-
-                    0
-                }
-            };
-            res_acc.extend_from_slice(&res_buf[..read]);
-        }
-
-        let res_str = std::str::from_utf8(res_acc.as_ref()).unwrap_or("");
-        log::trace!("Raw {method} response: {res_str}");
-
-        match xfs::from_str::<XfsMethodResponseStruct>(res_str) {
-            Ok(r) => match r.into_inner() {
-                XfsMethodResponse::Params(p) => {
-                    log::debug!("BNR {method} response: {p}");
-                    Ok(XfsMethodResponse::Params(p))
-                }
-                XfsMethodResponse::Fault(f) => {
-                    let err_msg = format!("BNR {method} response fault: {f}");
-                    log::warn!("{err_msg}");
-                    Err(Error::Xfs(err_msg))
-                }
-            },
-            Err(err) => {
-                log::warn!("Error parsing {method} response: {err}");
-                Err(err)
-            }
-        }
-    }
-
-    /// Reads an XFS method response (as a string) from the BNR response endpoint.
-    pub fn read_callback_call(
-        usb: &UsbDeviceHandle,
-        timeout: std::time::Duration,
-    ) -> Result<XfsMethodCall> {
-        // Responses can be very large, so read from the endpoint in 4K chunks.
-        let mut res_buf = [0u8; 4096];
-        let mut res_acc = Vec::with_capacity(4096);
-
-        let mut read = match usb.read_bulk(BNR_CALLBACK_CALL_EP, &mut res_buf[..], timeout) {
-            Ok(r) => r,
-            Err(_err) => {
-                log::trace!("No callback call");
-
-                return Ok(XfsMethodCall::new());
-            }
-        };
-
-        res_acc.extend_from_slice(&res_buf[..read]);
-        while read == res_buf.len() {
-            // clear the buffer to avoid leaving old data in the trailing bytes
-            res_buf.copy_from_slice([0u8; 4096].as_ref());
-            read = match usb.read_bulk(BNR_CALLBACK_CALL_EP, &mut res_buf[..], timeout) {
-                Ok(r) => r,
-                Err(err) => {
-                    let err_msg = format!("Error reading callback call: {err}");
-                    log::warn!("{err_msg}");
-
-                    0
-                }
-            };
-            res_acc.extend_from_slice(&res_buf[..read]);
-        }
-
-        let call_str = std::str::from_utf8(res_acc.as_ref()).unwrap_or("");
-
-        xfs::from_str::<XfsMethodCall>(call_str)
-    }
-
-    /// Writes an [XfsMethodCall] to the BNR device.
-    pub fn write_callback_response(
-        usb: &UsbDeviceHandle,
-        res: &XfsMethodResponse,
-        name: XfsMethodName,
-        timeout: std::time::Duration,
-    ) -> Result<()> {
-        match usb.write_bulk(
-            BNR_CALLBACK_RESPONSE_EP,
-            xfs::to_iso_string(res)?.as_bytes(),
-            timeout,
-        ) {
-            Ok(_) => Ok(()),
-            Err(err) => {
-                let err_msg = format!("Error writing {name} callback response message: {err}");
-                log::warn!("{err_msg}");
-                Err(err.into())
-            }
-        }
     }
 }
