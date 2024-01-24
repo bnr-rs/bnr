@@ -73,6 +73,31 @@ impl XfsMethodCall {
         self.set_params(params);
         self
     }
+
+    /// Gets whether the [XfsMethodCall] is asynchronous.
+    ///
+    /// Multiple asynchronous calls are `illegal`, and will fail after the initial call.
+    pub fn is_async(&self) -> bool {
+        if let Ok(name) = self.name() {
+            matches!(
+                name,
+                XfsMethodName::CashIn
+                | XfsMethodName::CashInStart
+                | XfsMethodName::CashInRollback
+                | XfsMethodName::CashInEnd
+                | XfsMethodName::Empty
+                | XfsMethodName::Eject
+                | XfsMethodName::Reset
+                | XfsMethodName::Park
+                | XfsMethodName::Denominate
+                | XfsMethodName::Dispense
+                | XfsMethodName::Present
+                | XfsMethodName::Retract
+            )
+        } else {
+            false
+        }
+    }
 }
 
 impl From<&XfsMethodName> for XfsMethodCall {

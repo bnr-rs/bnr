@@ -91,6 +91,7 @@ pub struct DeviceHandle {
     op_completed_callback: Option<OperationCompletedFn>,
     intermediate_occurred_callback: Option<IntermediateOccurredFn>,
     status_occurred_callback: Option<StatusOccurredFn>,
+    async_active: Arc<AtomicBool>,
 }
 
 impl DeviceHandle {
@@ -113,7 +114,7 @@ impl DeviceHandle {
         self.stop_background_listener();
         self.usb = Arc::new(Self::find_usb()?);
         self.stop_listener.store(false, Ordering::SeqCst);
-        self.start_background_listener(Arc::clone(&self.stop_listener))?;
+        self.start_background_listener(Arc::clone(&self.stop_listener), Arc::clone(&self.async_active))?;
         Ok(())
     }
 
