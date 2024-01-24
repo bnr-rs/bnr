@@ -142,12 +142,22 @@ impl LogicalCashUnitList {
 
     /// Gets a list of the [LogicalCashUnit]s.
     pub fn items(&self) -> &[LogicalCashUnit] {
-        self.items.as_ref()
+        let size = self.size as usize;
+        if size <= self.items.len() {
+            self.items[..size].as_ref()
+        } else {
+            self.items.as_ref()
+        }
     }
 
     /// Gets a mutable list of the [LogicalCashUnit]s.
     pub fn items_mut(&mut self) -> &mut [LogicalCashUnit] {
-        self.items.as_mut()
+        let size = self.size as usize;
+        if size <= self.items.len() {
+            self.items[..size].as_mut()
+        } else {
+            self.items.as_mut()
+        }
     }
 }
 
