@@ -98,6 +98,11 @@ impl CashUnit {
         self.set_physical_cash_unit_list(pcu);
         self
     }
+
+    /// Deconstructs the [CashUnit] into a [LogicalCashUnitList] and [PhysicalCashUnitList].
+    pub fn into_lists(self) -> (LogicalCashUnitList, PhysicalCashUnitList) {
+        (self.logical_cash_unit_list, self.physical_cash_unit_list)
+    }
 }
 
 impl fmt::Display for CashUnit {

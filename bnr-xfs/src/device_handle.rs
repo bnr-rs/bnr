@@ -296,6 +296,24 @@ impl DeviceHandle {
         self.query_cash_unit_inner()
     }
 
+    /// Configures the BNR’s cash unit. This function is used to add or remove Logical and Physical Cash Unit in the BNR.
+    ///
+    /// Those settings are persistent over power cycles.
+    ///
+    /// Params:
+    ///
+    /// - `transport_count`: number of bills in the transport system.
+    /// - `lcu_list`: [LogicalCashUnitList] for configuring [LogicalCashUnit]s.
+    /// - `pcu_list`: [PhysicalCashUnitList] for configuring [PhysicalCashUnit]s.
+    pub fn configure_cash_unit(
+        &self,
+        transport_count: u32,
+        lcu_list: &LogicalCashUnitList,
+        pcu_list: &PhysicalCashUnitList,
+    ) -> Result<()> {
+        self.configure_cash_unit_inner(transport_count, lcu_list, pcu_list)
+    }
+
     /// Updates the BNR’s cash unit. This function is used to change counts and thresholds of the BNR
     /// [CashUnit]s.
     ///
