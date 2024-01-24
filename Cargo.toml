@@ -2,6 +2,12 @@
 name = "bnr"
 version = "0.1.0"
 edition = "2021"
+authors = ["BNR Rust Developers"]
+description = "Pure Rust implementation of the BNR XFS USB communication protocol"
+keywords = ["usb", "bnr", "bill-acceptor", "bill-validator"]
+categories = ["finance", "data-structures"]
+repository = "https://github.com/bnr-rs/bnr"
+license = "MIT"
 
 [dependencies]
 env_logger = "0.10"
