@@ -171,7 +171,43 @@ impl DeviceHandle {
 
             while !stop.load(Ordering::Relaxed) {
                 if let Ok(msg) = Self::read_callback_call(&usb, timeout) {
-                    response_tx.send(msg)?;
+                    let res_id = msg.call_id().unwrap_or(-1);
+                    let mut callback_arg = match msg.xfs_struct() {
+                        Ok(xfs) if xfs.find_member(Currency::xfs_name()).is_ok()
+                            && xfs.find_member(Denomination::xfs_name()).is_ok() => {
+                                CashOrder::try_from(xfs).ok()
+                        }
+                        _ => None,
+                    };
+                    let msg_name = msg.name()?;
+                    let op_id: i32 = msg.operation_id()?.into();
+                    let result = msg.result().unwrap_or(0);
+                    let ext_result = msg.ext_result().unwrap_or(0);
+                    match msg_name {
+                        XfsMethodName::OperationCompleteOccurred => {
+                            if let Some(cash_order) = callback_arg.as_mut() {
+                                op_complete(res_id, op_id, result, ext_result, cash_order);
+                            } else {
+                                op_complete(res_id, op_id, result, ext_result, &mut ());
+                            }
+                            response_tx.send(msg)?;
+                        }
+                        XfsMethodName::IntermediateOccurred => {
+                            if let Some(cash_order) = callback_arg.as_mut() {
+                                intermediate_occurred(res_id, op_id, result, cash_order);
+                            } else {
+                                intermediate_occurred(res_id, op_id, result, &mut ());
+                            }
+                        }
+                        XfsMethodName::StatusOccurred if callback_arg.is_some() => {
+                            if let Some(cash_order) = callback_arg.as_mut() {
+                                status_occurred(res_id, op_id, result, cash_order);
+                            } else {
+                                status_occurred(res_id, op_id, result, &mut ());
+                            }
+                        }
+                        _ => (),
+                    }
                 } else {
                     std::thread::sleep(std::time::Duration::from_millis(256));
                 }
@@ -392,14 +428,20 @@ impl DeviceHandle {
             .with_name(name)
             .with_params(XfsParams::create([count]));
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
-        let usb = self.usb();
+        let call_id = {
+            let timeout = std::time::Duration::from_millis(TIMEOUT);
+            let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+            Self::write_call(usb, &call, timeout, self.async_active())?;
 
-        let res = Self::read_response(usb, call.name()?, timeout)?;
+            let res = Self::read_response(usb, call.name()?, timeout)?;
+            res.call_id()?
+        };
 
-        let call_id = res.call_id()?;
+        self.handle_async_call(call_id)
+    }
+
+    pub(crate) fn handle_async_call(&self, call_id: i32) -> Result<()> {
         let mut res_call: Option<XfsMethodCall> = None;
         let response_timeout = std::time::Duration::from_secs(10);
         let now = std::time::SystemTime::now();
@@ -414,23 +456,23 @@ impl DeviceHandle {
         }
 
         if let Some(msg) = res_call {
-            log::debug!("CashInStart response: {msg:?}");
+            log::debug!("async response: {msg:?}");
             let result = msg.result().unwrap_or(-1);
             match result {
                 0 => Ok(()),
                 -1 => {
-                    let err_msg = format!("cash_in_start: missing event result: {msg:?}");
+                    let err_msg = format!("async response: missing event result: {msg:?}");
                     log::error!("{err_msg}");
                     Err(Error::Xfs(err_msg.into()))
                 }
                 _ => {
-                    let err_msg = format!("cash_in_start: call failed: {msg:?}");
+                    let err_msg = format!("async response: call failed: {msg:?}");
                     log::error!("{err_msg}");
                     Err(Error::Xfs(err_msg.into()))
                 }
             }
         } else {
-            Err(Error::Xfs("cash_in_start: no operation complete response".into()))
+            Err(Error::Xfs("async response: no operation complete response".into()))
         }
     }
 
@@ -476,7 +518,7 @@ impl DeviceHandle {
 
         Self::write_call(usb, &call, timeout, self.async_active())?;
 
-        Self::read_response(usb, call.name()?, timeout)?;
+        let res = Self::read_response(usb, call.name()?, timeout)?;
 
         Ok(())
     }

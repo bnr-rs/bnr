@@ -4,6 +4,7 @@ use std::fmt;
 
 use super::operation_id::OperationId;
 use super::params::{XfsParam, XfsParams};
+use super::xfs_struct::XfsStruct;
 use crate::{Error, Result};
 
 /// Represents an XFS method call containing a list of [params](XfsParams).
@@ -170,6 +171,23 @@ impl XfsMethodCall {
             .i4()
             .cloned()
             .ok_or(Error::Xfs("missing extended result".into()))
+    }
+
+    /// Gets the async operation [XfsStruct] parameter from the [XfsMethodCall].
+    ///
+    /// Returns: `Ok(OperationId)` on success, `Err(Error)` on failure
+    pub fn xfs_struct(&self) -> Result<XfsStruct> {
+        self
+            .params()
+            .params()
+            .iter()
+            .find(|&p| p.inner().value().xfs_struct().is_some())
+            .ok_or(Error::Xfs("missing XFS struct parameter".into()))?
+            .inner()
+            .value()
+            .xfs_struct()
+            .cloned()
+            .ok_or(Error::Xfs("missing XFS struct parameter".into()))
     }
 }
 
