@@ -21,6 +21,7 @@ pub enum Error {
     Enum(String),
     Usb(String),
     Io(String),
+    Json(String),
     Xfs(String),
     DateTime(String),
     Bnr(BnrError),
@@ -42,6 +43,12 @@ impl From<serde_xml_rs::Error> for Error {
 impl From<std::array::TryFromSliceError> for Error {
     fn from(err: std::array::TryFromSliceError) -> Self {
         Self::Parsing(format!("{err}"))
+    }
+}
+
+impl From<std::io::Error> for Error {
+    fn from(err: std::io::Error) -> Self {
+        Self::Io(format!("{err}"))
     }
 }
 
@@ -81,6 +88,12 @@ impl From<datetime::error::Parse> for Error {
     }
 }
 
+impl From<serde_json::Error> for Error {
+    fn from(err: serde_json::Error) -> Self {
+        Self::Json(format!("{err}"))
+    }
+}
+
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -94,6 +107,7 @@ impl fmt::Display for Error {
             Self::DateTime(err) => write!(f, "DateTime error: {err}"),
             Self::Bnr(err) => write!(f, "BNR error: {err}"),
             Self::BnrUsb(err) => write!(f, "BNR USB error: {err}"),
+            Self::Json(err) => write!(f, "JSON error: {err}"),
         }
     }
 }
