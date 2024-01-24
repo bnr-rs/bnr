@@ -137,6 +137,31 @@ pub fn configure_cash_unit(
         PhysicalCashUnitList::from(pcu),
     ))
 }
+/// Updates the BNR’s cash unit. This function is used to change counts and thresholds of the BNR
+/// [CashUnit]s.
+///
+/// Those settings are persistent over power cycles.
+///
+/// Params:
+///
+/// - `transport_count`: number of bills in the transport system.
+/// - `lcu_list`: [LogicalCashUnitList] for configuring [LogicalCashUnit]s.
+/// - `pcu_list`: [PhysicalCashUnitList] for configuring [PhysicalCashUnit]s.
+pub fn update_cash_unit(
+    transport_count: u32,
+    lcu_list: &LogicalCashUnitList,
+    pcu_list: &PhysicalCashUnitList,
+) -> Result<()> {
+    let mut lcu = bnr_sys::LogicalCashUnitList::from(lcu_list);
+    let mut pcu = bnr_sys::PhysicalCashUnitList::from(pcu_list);
+
+    check_res(
+        unsafe {
+            bnr_sys::bnr_UpdateCashUnit(transport_count, &mut lcu as *mut _, &mut pcu as *mut _)
+        },
+        "update_cash_unit",
+    )
+}
 
 /// BNR_CASH_OPERATIONS Determines if the amount requested by value or by bill list, is available for dispense.
 ///
