@@ -264,8 +264,9 @@ impl fmt::Display for Denomination {
             self.size, self.amount, self.cashbox
         )?;
 
-        let items_len = self.items.len();
-        for (i, item) in self.items.iter().enumerate() {
+        let items = self.items();
+        let items_len = items.len();
+        for (i, item) in items.iter().enumerate() {
             write!(f, "{item}")?;
 
             if i != items_len - 1 {
