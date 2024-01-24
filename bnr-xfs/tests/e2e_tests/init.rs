@@ -22,8 +22,6 @@ fn test_reset() -> Result<()> {
     handle.get_date_time()?;
     handle.reset()?;
 
-    handle.close()?;
-
     Ok(())
 }
 

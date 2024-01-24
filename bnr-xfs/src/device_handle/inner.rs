@@ -1,3 +1,6 @@
+use std::sync::atomic::{AtomicU64, Ordering};
+
+use base64::Engine;
 use datetime::format_description::well_known::{
     iso8601::{Config, TimePrecision},
     Iso8601,
@@ -13,8 +16,34 @@ use crate::xfs::{
     value::XfsValue,
 };
 
+const INIT_COUNT: u64 = 1;
+static CALL_COUNTER: AtomicU64 = AtomicU64::new(INIT_COUNT);
+
 /// Class identifier of the `MainModule`.
 pub const MAIN_MODULE_CLASS: i64 = 0xE0000;
+
+pub(crate) fn call_counter() -> u64 {
+    CALL_COUNTER.load(Ordering::Relaxed)
+}
+
+pub(crate) fn call_counter_base64() -> String {
+    let count = call_counter();
+    base64::engine::general_purpose::STANDARD.encode(format!("{count}").as_bytes())
+}
+
+pub(crate) fn set_call_counter(count: u64) {
+    CALL_COUNTER.store(count, Ordering::SeqCst)
+}
+
+pub(crate) fn increment_call_counter() -> u64 {
+    let count = call_counter().saturating_mul(2);
+    set_call_counter(count);
+    count
+}
+
+pub(crate) fn reset_call_counter() {
+    CALL_COUNTER.store(INIT_COUNT, Ordering::SeqCst)
+}
 
 impl DeviceHandle {
     pub(crate) fn open_inner(
@@ -58,9 +87,7 @@ impl DeviceHandle {
         }
 
         // FIXME: start a background thread to monitor device-sent events
-        let _read = usb
-            .read_interrupt(BNR_CALLBACK_CALL_EP, &mut [0u8; 4096], timeout)
-            .ok();
+        Self::read_callback_call(&usb, timeout)?;
 
         // write the `getIdentification` call to the call endpoint
         Self::write_call(&usb, &call, timeout)?;
@@ -77,7 +104,15 @@ impl DeviceHandle {
     }
 
     pub(crate) fn reset_inner(&self) -> Result<()> {
-        let call = XfsMethodCall::new().with_name(XfsMethodName::Reset);
+        increment_call_counter();
+        let count = XfsParam::create(XfsValue::new().with_base64(call_counter_base64()));
+
+        let call = XfsMethodCall::new()
+            .with_name(XfsMethodName::Reset)
+            .with_params(XfsParams::create([count]));
+
+        reset_call_counter();
+
         let timeout = std::time::Duration::from_millis(50);
         let usb = self.usb();
 
@@ -129,6 +164,8 @@ impl DeviceHandle {
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
+
+        reset_call_counter();
 
         match Self::read_response(usb, call.name()?, timeout) {
             Ok(_) => Ok(()),
@@ -258,6 +295,109 @@ impl DeviceHandle {
         Ok(())
     }
 
+    pub(crate) fn cash_in_start_inner(&self) -> Result<()> {
+        increment_call_counter();
+
+        let name = XfsMethodName::CashInStart;
+        let count = XfsParam::create(XfsValue::new().with_base64(call_counter_base64()));
+
+        let call = XfsMethodCall::new()
+            .with_name(name)
+            .with_params(XfsParams::create([count]));
+
+        let timeout = std::time::Duration::from_millis(50);
+        let usb = self.usb();
+
+        Self::write_call(usb, &call, timeout)?;
+
+        Self::read_response(usb, call.name()?, timeout)?;
+
+        Ok(())
+    }
+
+    pub(crate) fn cash_in_inner(
+        &self,
+        limit: Option<u32>,
+        currency: Option<CurrencyCode>,
+    ) -> Result<()> {
+        increment_call_counter();
+
+        let name = XfsMethodName::CashIn;
+        let count = XfsParam::create(XfsValue::new().with_base64(call_counter_base64()));
+
+        let call = match (limit, currency) {
+            (None, None) => XfsMethodCall::new()
+                .with_name(name)
+                .with_params(XfsParams::create([count])),
+            (Some(l), None) => XfsMethodCall::new()
+                .with_name(name)
+                .with_params(XfsParams::create([
+                    XfsParam::create(XfsValue::new().with_int(l as i64)),
+                    count,
+                ])),
+            (None, Some(c)) => XfsMethodCall::new()
+                .with_name(name)
+                .with_params(XfsParams::create([
+                    XfsParam::create(XfsValue::new().with_string(<&str>::from(c))),
+                    count,
+                ])),
+            (Some(l), Some(c)) => {
+                XfsMethodCall::new()
+                    .with_name(name)
+                    .with_params(XfsParams::create([
+                        XfsParam::create(XfsValue::new().with_int(l as i64)),
+                        XfsParam::create(XfsValue::new().with_string(<&str>::from(c))),
+                        count,
+                    ]))
+            }
+        };
+
+        let timeout = std::time::Duration::from_millis(50);
+        let usb = self.usb();
+
+        Self::write_call(usb, &call, timeout)?;
+
+        Self::read_response(usb, call.name()?, timeout)?;
+
+        Ok(())
+    }
+
+    pub(crate) fn cash_in_end_inner(&self) -> Result<()> {
+        increment_call_counter();
+        let count = XfsParam::create(XfsValue::new().with_base64(call_counter_base64()));
+
+        let call = XfsMethodCall::new()
+            .with_name(XfsMethodName::CashInEnd)
+            .with_params(XfsParams::create([count]));
+
+        let timeout = std::time::Duration::from_millis(50);
+        let usb = self.usb();
+
+        Self::write_call(usb, &call, timeout)?;
+
+        Self::read_response(usb, call.name()?, timeout)?;
+
+        Ok(())
+    }
+
+    pub(crate) fn cash_in_rollback_inner(&self) -> Result<()> {
+        increment_call_counter();
+        let count = XfsParam::create(XfsValue::new().with_base64(call_counter_base64()));
+
+        let call = XfsMethodCall::new()
+            .with_name(XfsMethodName::CashInRollback)
+            .with_params(XfsParams::create([count]));
+
+        let timeout = std::time::Duration::from_millis(50);
+        let usb = self.usb();
+
+        Self::write_call(usb, &call, timeout)?;
+
+        Self::read_response(usb, call.name()?, timeout)?;
+
+        Ok(())
+    }
+
     /// Writes an [XfsMethodCall] to the BNR device.
     pub fn write_call(
         usb: &UsbDeviceHandle,
@@ -331,5 +471,45 @@ impl DeviceHandle {
                 Err(err.into())
             }
         }
+    }
+
+    /// Reads an XFS method response (as a string) from the BNR response endpoint.
+    pub fn read_callback_call(
+        usb: &UsbDeviceHandle,
+        timeout: std::time::Duration,
+    ) -> Result<XfsMethodCall> {
+        // Responses can be very large, so read from the endpoint in 4K chunks.
+        let mut res_buf = [0u8; 4096];
+        let mut res_acc = Vec::with_capacity(4096);
+
+        let mut read = match usb.read_bulk(BNR_CALLBACK_CALL_EP, &mut res_buf[..], timeout) {
+            Ok(r) => r,
+            Err(_err) => {
+                log::debug!("No callback call");
+
+                return Ok(XfsMethodCall::new());
+            }
+        };
+
+        res_acc.extend_from_slice(&res_buf[..read]);
+        while read == res_buf.len() {
+            // clear the buffer to avoid leaving old data in the trailing bytes
+            res_buf.copy_from_slice([0u8; 4096].as_ref());
+            read = match usb.read_bulk(BNR_CALLBACK_CALL_EP, &mut res_buf[..], timeout) {
+                Ok(r) => r,
+                Err(err) => {
+                    let err_msg = format!("Error reading callback call: {err}");
+                    log::warn!("{err_msg}");
+
+                    0
+                }
+            };
+            res_acc.extend_from_slice(&res_buf[..read]);
+        }
+
+        let call_str = std::str::from_utf8(res_acc.as_ref()).unwrap_or("");
+        log::trace!("Raw callback call: {call_str}");
+
+        xfs::from_str::<XfsMethodCall>(call_str)
     }
 }

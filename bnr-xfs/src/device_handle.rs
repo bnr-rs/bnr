@@ -1,6 +1,7 @@
 use time as datetime;
 
 use crate::capabilities::Capabilities;
+use crate::currency::CurrencyCode;
 use crate::status::CdrStatus;
 use crate::{Error, Result};
 
@@ -142,6 +143,57 @@ impl DeviceHandle {
     /// Sets the [Capabilities](crate::status::CdrPositionCapabilitiesList) for the BNR device.
     pub fn set_capabilities(&self, caps: &Capabilities) -> Result<()> {
         self.set_capabilities_inner(caps)
+    }
+
+    /// Sends the initial message to start a `CashIn` transaction, and begin accepting notes.
+    pub fn cash_in_start(&self) -> Result<()> {
+        self.cash_in_start_inner()
+    }
+
+    /// Sends the follow-up message to start a `CashIn` transaction, and begin accepting notes.
+    ///
+    /// After successfully sending this message, the device is ready to accept notes.
+    ///
+    /// params:
+    ///
+    /// - `limit`: optional limit on the number of notes to accept.
+    ///   - `None` will tell the device to accept one note.
+    /// - `currency`: optional restriction on currency to accept.
+    ///   - `None` will tell the device to accept all currencies.
+    ///
+    /// The BNR API takes two mutable pointers for this call, the first for `amount` and the second
+    /// for an ISO currency string (4-bytes, null-terminated ASCII).
+    ///
+    /// From the BNR API docs:
+    ///
+    /// ```no_build, no_run
+    /// @param[in] amount Amount to accept with this operation. If this parameter is NULL, the BNR
+    /// will accept only one banknote. If the amount is 0, banknotes will be accepted until the
+    /// escrow is full, or a bnr_Cancel() command is called. If the amount is different from 0,
+    /// banknotes will be accepted until the amount is reached, or the escrow is full, or a
+    /// bnr_Cancel() command is called.
+    ///
+    /// @param[in] currencyCode Currency to accept during this operation. If this parameter is
+    /// NULL or the string is empty, any currency will be accepted by the BNR.
+    /// ```
+    pub fn cash_in(&self, limit: Option<u32>, currency: Option<CurrencyCode>) -> Result<()> {
+        self.cash_in_inner(limit, currency)
+    }
+
+    /// Sends the message to end a `CashIn` transaction.
+    ///
+    /// The caller will need to call [cash_in_start](Self::cash_in_start) and [cash_in](Self::cash_in) to begin accepting notes again.
+    pub fn cash_in_end(&self) -> Result<()> {
+        self.cash_in_end_inner()
+    }
+
+    /// Sends the message to rollback a `CashIn` transaction, returning any inserted notes to the
+    /// customer.
+    ///
+    /// The caller should first call the [cancel](crate::cancel) function to cancel the `CashIn`
+    /// transaction.
+    pub fn cash_in_rollback(&self) -> Result<()> {
+        self.cash_in_rollback_inner()
     }
 
     /// Gets a reference to the [UsbDeviceHandle].
