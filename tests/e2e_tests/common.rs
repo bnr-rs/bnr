@@ -1,5 +1,5 @@
-use std::sync::{Mutex, MutexGuard};
 use bnr::Result;
+use std::sync::{Mutex, MutexGuard};
 
 static INIT: Mutex<()> = Mutex::new(());
 

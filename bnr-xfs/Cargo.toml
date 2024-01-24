@@ -1,0 +1,20 @@
+[package]
+name = "bnr-xfs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde-xml-rs = "0.6"
+rusb = "0.9"
+paste = "1.0"
+log = "0.4"
+
+[dependencies.serde]
+version = "1.0"
+features = ["derive"]
+
+[dev-dependencies]
+env_logger = "0.10"
+
+[features]
+e2e-tests = []
