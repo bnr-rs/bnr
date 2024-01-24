@@ -4,6 +4,9 @@ use std::fmt;
 
 use crate::currency::{Currency, Denomination, MixNumber};
 use crate::impl_xfs_struct;
+use crate::xfs::method_call::XfsMethodCall;
+use crate::xfs::params::{XfsParam, XfsParams};
+use crate::xfs::value::XfsValue;
 
 /// Structure that defines the parameters of `bnr_Dispense()` or `bnr_Denominate()`, to specify
 /// either an amount or a list of banknotes to dispense.
@@ -93,3 +96,16 @@ impl_xfs_struct!(
         currency: Currency
     ]
 );
+
+impl From<&DispenseRequest> for XfsMethodCall {
+    fn from(val: &DispenseRequest) -> Self {
+        Self::new()
+            .with_params(XfsParams::create([
+                XfsParam::create(XfsValue::new().with_i4(val.mix_number().inner() as i32)),
+                XfsParam::create(XfsValue::new().with_i4(val.denomination().amount() as i32)),
+                XfsParam::create(XfsValue::new().with_string(<&str>::from(val.currency().currency_code()))),
+                XfsParam::create(XfsValue::new().with_array(val.denomination().items_raw().into())),
+                XfsParam::create(XfsValue::new().with_base64("ODAw")),
+            ]))
+    }
+}

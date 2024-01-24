@@ -203,6 +203,10 @@ impl Denomination {
         self.items.items()
     }
 
+    pub(crate) const fn items_raw(&self) -> &DenominationItems {
+        &self.items
+    }
+
     /// Gets the mutable list of [DenominationItem]s of the [Denomination].
     pub fn items_mut(&mut self) -> &mut [DenominationItem] {
         self.items.items_mut()

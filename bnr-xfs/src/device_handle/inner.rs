@@ -747,39 +747,37 @@ impl DeviceHandle {
     }
 
     pub(crate) fn denominate_inner(&self, request: &DispenseRequest) -> Result<()> {
-        increment_call_counter();
-        let count = XfsParam::create(XfsValue::new().with_base64(call_counter_base64()));
+        let call = XfsMethodCall::from(request)
+            .with_name(XfsMethodName::Denominate);
 
-        let call = XfsMethodCall::new()
-            .with_name(XfsMethodName::Denominate)
-            .with_params(XfsParams::create([XfsParam::create(request.into()), count]));
+        let call_id = {
+            let timeout = std::time::Duration::from_millis(TIMEOUT);
+            let usb = self.usb();
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
-        let usb = self.usb();
+            Self::write_call(usb, &call, timeout)?;
 
-        Self::write_call(usb, &call, timeout)?;
+            let res = Self::read_response(usb, call.name()?, timeout)?;
+            res.call_id()?
+        };
 
-        Self::read_response(usb, call.name()?, timeout)?;
-
-        Ok(())
+        self.handle_async_call(call_id)
     }
 
     pub(crate) fn dispense_inner(&self, request: &DispenseRequest) -> Result<()> {
-        increment_call_counter();
-        let count = XfsParam::create(XfsValue::new().with_base64(call_counter_base64()));
+        let call = XfsMethodCall::from(request)
+            .with_name(XfsMethodName::Dispense);
 
-        let call = XfsMethodCall::new()
-            .with_name(XfsMethodName::Dispense)
-            .with_params(XfsParams::create([XfsParam::create(request.into()), count]));
+        let call_id = {
+            let timeout = std::time::Duration::from_millis(TIMEOUT);
+            let usb = self.usb();
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
-        let usb = self.usb();
+            Self::write_call(usb, &call, timeout)?;
 
-        Self::write_call(usb, &call, timeout)?;
+            let res = Self::read_response(usb, call.name()?, timeout)?;
+            res.call_id()?
+        };
 
-        Self::read_response(usb, call.name()?, timeout)?;
-
-        Ok(())
+        self.handle_async_call(call_id)
     }
 
     pub(crate) fn stop_session_inner(&self) -> Result<()> {

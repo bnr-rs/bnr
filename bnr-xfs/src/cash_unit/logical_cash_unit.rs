@@ -274,7 +274,6 @@ impl_xfs_struct!(
         initial_count: InitialCount,
         count: Count,
         status: Status,
-        extended_counters: ExtendedCounters,
         physical_cu_index: UnitId
     ]
 );
