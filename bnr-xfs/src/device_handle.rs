@@ -213,6 +213,19 @@ impl DeviceHandle {
         self.empty_inner(pcu_name, to_float)
     }
 
+    /// Activates the presentation of the cash.
+    ///
+    /// It can only be used following the [dispense] method.
+    ///
+    /// A #XFS_S_CDR_CASH_AVAILABLE status event is issued to report that the bills are presented at the outlet,
+    /// then a #XFS_S_CDR_CASH_TAKEN status event is issued to report that the user has removed the bills, and the command completes.
+    ///
+    /// After #XFS_S_CDR_CASH_AVAILABLE status event, if no #XFS_S_CDR_CASH_TAKEN status event is received within a reasonable time period,
+    /// the application should send a [cancel_waiting_cash_taken] to terminate the command, then send a [retract] to clear the bills from the outlet.
+    pub fn present(&self) -> Result<()> {
+        self.present_inner()
+    }
+
     /// Gets a reference to the [UsbDeviceHandle].
     pub const fn usb(&self) -> &UsbDeviceHandle {
         &self.usb

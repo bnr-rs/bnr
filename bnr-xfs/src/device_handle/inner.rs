@@ -423,10 +423,28 @@ impl DeviceHandle {
         let call = XfsMethodCall::new()
             .with_name(XfsMethodName::Empty)
             .with_params(XfsParams::create([
-                 XfsParam::create(XfsValue::new().with_string(pcu_name)),
-                 XfsParam::create(XfsValue::new().with_boolean(to_float as u8)),
-                 count,
+                XfsParam::create(XfsValue::new().with_string(pcu_name)),
+                XfsParam::create(XfsValue::new().with_boolean(to_float as u8)),
+                count,
             ]));
+
+        let timeout = std::time::Duration::from_millis(50);
+        let usb = self.usb();
+
+        Self::write_call(usb, &call, timeout)?;
+
+        Self::read_response(usb, call.name()?, timeout)?;
+
+        Ok(())
+    }
+
+    pub(crate) fn present_inner(&self) -> Result<()> {
+        increment_call_counter();
+        let count = XfsParam::create(XfsValue::new().with_base64(call_counter_base64()));
+
+        let call = XfsMethodCall::new()
+            .with_name(XfsMethodName::Present)
+            .with_params(XfsParams::create([count]));
 
         let timeout = std::time::Duration::from_millis(50);
         let usb = self.usb();
