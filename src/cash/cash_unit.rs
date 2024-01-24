@@ -73,9 +73,31 @@ impl CashUnit {
         &self.logical_cash_unit_list
     }
 
+    /// Sets the [LogicalCashUnitList].
+    pub fn set_logical_cash_unit_list(&mut self, lcu: LogicalCashUnitList) {
+        self.logical_cash_unit_list = lcu;
+    }
+
+    /// Builder function that sets the [LogicalCashUnitList].
+    pub fn with_logical_cash_unit_list(mut self, lcu: LogicalCashUnitList) -> Self {
+        self.set_logical_cash_unit_list(lcu);
+        self
+    }
+
     /// Gets a reference to the [PhysicalCashUnitList].
     pub const fn physical_cash_unit_list(&self) -> &PhysicalCashUnitList {
         &self.physical_cash_unit_list
+    }
+
+    /// Sets the [PhysicalCashUnitList].
+    pub fn set_physical_cash_unit_list(&mut self, pcu: PhysicalCashUnitList) {
+        self.physical_cash_unit_list = pcu;
+    }
+
+    /// Builder function that sets the [PhysicalCashUnitList].
+    pub fn with_physical_cash_unit_list(mut self, pcu: PhysicalCashUnitList) -> Self {
+        self.set_physical_cash_unit_list(pcu);
+        self
     }
 }
 
