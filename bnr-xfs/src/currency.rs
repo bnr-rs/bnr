@@ -6,19 +6,21 @@ use crate::impl_xfs_struct;
 
 mod cash_type;
 mod code;
+mod cu_enum;
 mod denomination;
 mod exponent;
 mod mix;
 
 pub use cash_type::*;
 pub use code::*;
+pub use cu_enum::*;
 pub use denomination::*;
 pub use exponent::*;
 pub use mix::*;
 
 /// Represents a currency set used in the CDR.
 #[repr(C)]
-#[derive(Clone, Copy, Debug, Default, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
 pub struct Currency {
     currency_code: CurrencyCode,
     exponent: Exponent,
