@@ -52,10 +52,10 @@ impl From<CurrencyCode> for Currency {
             | CurrencyCode::EUR
             | CurrencyCode::GBP
             | CurrencyCode::USD => -2,
-            CurrencyCode::JPY | CurrencyCode::MXN => -3,
-            CurrencyCode::AMD => -4,
+            CurrencyCode::JPY | CurrencyCode::MXN => -1,
+            CurrencyCode::AMD => 0,
             // FIXME: fill out with more actual values
-            _ => -4,
+            _ => 1,
         };
 
         Self {
