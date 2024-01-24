@@ -4,7 +4,7 @@ use std::fmt;
 #[repr(u32)]
 #[rustfmt::skip]
 #[allow(clippy::zero_prefixed_literal)]
-#[derive(Clone, Copy, Debug, Default, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
 pub enum CurrencyCode {
     /// United Arab Emirates dirham United Arab Emirates
     AED = 784,

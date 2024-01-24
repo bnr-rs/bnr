@@ -1,7 +1,9 @@
 use crate::{check_res, currency::CurrencyCode, Result};
 
+mod cash_unit;
 mod order;
 
+pub use cash_unit::*;
 pub use order::*;
 
 /// Sends the initial message to start a `CashIn` transaction, and begin accepting notes.
@@ -72,4 +74,34 @@ pub fn cash_in_end() -> Result<()> {
 /// This command allows the application to force cash that has been presented to be ejected from the bezel.
 pub fn eject() -> Result<()> {
     check_res(unsafe { bnr_sys::bnr_Eject() }, "eject")
+}
+
+/// Empties a recycler or loader cash unit in the cashbox.
+///
+/// **Note** When calling this function for a loader, the `to_float` parameter is not taken into account and the loader is completely emptied.
+///
+/// Params:
+///
+/// - `pcu_name`: Name of the physical cash unit to empty.
+/// - `to_float` If `true`, the command empties up to the low threshold of the Physical Cash Unit, otherwise to zero.
+pub fn empty(pcu_name: &PcuName, to_float: bool) -> Result<()> {
+    check_res(
+        unsafe { bnr_sys::bnr_Empty(pcu_name.clone().as_mut_ptr(), to_float.into()) },
+        "empty",
+    )
+}
+
+/// Gets the complete state of all physical and logical cash units in the BNR.
+///
+/// Returns the [CashUnit] struct with details about the [PhysicalCashUnit]s and
+/// [LogicalCashUnit]s on the BNR device.
+pub fn query_cash_unit() -> Result<CashUnit> {
+    let mut cu = bnr_sys::XfsCashUnit::from(CashUnit::new());
+
+    check_res(
+        unsafe { bnr_sys::bnr_QueryCashUnit(&mut cu as *mut _) },
+        "query_cash_unit",
+    )?;
+
+    Ok(cu.into())
 }

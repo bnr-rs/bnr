@@ -4,8 +4,8 @@ pub const DENOM_ITEM_LEN: usize = 20;
 
 /// Represents the logical cash unit in the CDR.
 #[repr(u32)]
-#[derive(Clone, Copy, Debug, Default, PartialEq)]
-pub enum LogicalCashUnit {
+#[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
+pub enum LCU {
     Dispense = bnr_sys::XFS_C_CDR_LCU_DISPENSE,
     Deposit = bnr_sys::XFS_C_CDR_LCU_DEPOSIT,
     Recycle = bnr_sys::XFS_C_CDR_LCU_RECYCLE,
@@ -35,14 +35,14 @@ pub enum LogicalCashUnit {
     NotDispensable = bnr_sys::XFS_C_CDR_LCU_NOT_DISPENSEABLE,
 }
 
-impl LogicalCashUnit {
-    /// Creates a new [LogicalCashUnit].
+impl LCU {
+    /// Creates a new [LCU].
     pub const fn new() -> Self {
         Self::Unknown
     }
 }
 
-impl From<u32> for LogicalCashUnit {
+impl From<u32> for LCU {
     fn from(val: u32) -> Self {
         match val {
             v if v == bnr_sys::XFS_C_CDR_LCU_DISPENSE => Self::Dispense,
@@ -76,52 +76,52 @@ impl From<u32> for LogicalCashUnit {
     }
 }
 
-impl From<LogicalCashUnit> for u32 {
-    fn from(val: LogicalCashUnit) -> Self {
+impl From<LCU> for u32 {
+    fn from(val: LCU) -> Self {
         val as u32
     }
 }
 
-impl From<LogicalCashUnit> for &'static str {
-    fn from(val: LogicalCashUnit) -> Self {
+impl From<LCU> for &'static str {
+    fn from(val: LCU) -> Self {
         match val {
-            LogicalCashUnit::Dispense => "dispense",
-            LogicalCashUnit::Deposit => "deposit",
-            LogicalCashUnit::Recycle => "recycle",
-            LogicalCashUnit::BaitTrap => "bait trap",
-            LogicalCashUnit::NA => "N/A",
-            LogicalCashUnit::RejectCassette => "reject cassette",
-            LogicalCashUnit::OverflowCassette => "overflow cassette",
-            LogicalCashUnit::BillCassette => "bill cassette",
-            LogicalCashUnit::CoinCylinder => "coin cylinder",
-            LogicalCashUnit::CoinDispenser => "coin dispenser",
-            LogicalCashUnit::RetractCassette => "retract cassette",
-            LogicalCashUnit::Coupon => "coupon",
-            LogicalCashUnit::CurrencyCassette => "currency cassette",
-            LogicalCashUnit::Document => "document",
-            LogicalCashUnit::Escrow => "escrow",
-            LogicalCashUnit::Unknown => "unknown",
-            LogicalCashUnit::Ok => "OK",
-            LogicalCashUnit::Full => "full",
-            LogicalCashUnit::High => "high",
-            LogicalCashUnit::Low => "low",
-            LogicalCashUnit::Empty => "empty",
-            LogicalCashUnit::Inoperable => "inoperable",
-            LogicalCashUnit::Missing => "missing",
-            LogicalCashUnit::NoValue => "no value",
-            LogicalCashUnit::NoRef => "no ref",
-            LogicalCashUnit::NotDispensable => "not dispensable",
+            LCU::Dispense => "dispense",
+            LCU::Deposit => "deposit",
+            LCU::Recycle => "recycle",
+            LCU::BaitTrap => "bait trap",
+            LCU::NA => "N/A",
+            LCU::RejectCassette => "reject cassette",
+            LCU::OverflowCassette => "overflow cassette",
+            LCU::BillCassette => "bill cassette",
+            LCU::CoinCylinder => "coin cylinder",
+            LCU::CoinDispenser => "coin dispenser",
+            LCU::RetractCassette => "retract cassette",
+            LCU::Coupon => "coupon",
+            LCU::CurrencyCassette => "currency cassette",
+            LCU::Document => "document",
+            LCU::Escrow => "escrow",
+            LCU::Unknown => "unknown",
+            LCU::Ok => "OK",
+            LCU::Full => "full",
+            LCU::High => "high",
+            LCU::Low => "low",
+            LCU::Empty => "empty",
+            LCU::Inoperable => "inoperable",
+            LCU::Missing => "missing",
+            LCU::NoValue => "no value",
+            LCU::NoRef => "no ref",
+            LCU::NotDispensable => "not dispensable",
         }
     }
 }
 
-impl From<&LogicalCashUnit> for &'static str {
-    fn from(val: &LogicalCashUnit) -> Self {
+impl From<&LCU> for &'static str {
+    fn from(val: &LCU) -> Self {
         (*val).into()
     }
 }
 
-impl fmt::Display for LogicalCashUnit {
+impl fmt::Display for LCU {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", <&str>::from(self))
     }
@@ -233,7 +233,7 @@ impl fmt::Display for Denomination {
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct DenominationItem {
     /// Logical Cash Unit number
-    unit: LogicalCashUnit,
+    unit: LCU,
     /// Bill count
     count: u32,
 }
@@ -242,7 +242,7 @@ impl DenominationItem {
     /// Creates a new [DenominationItem].
     pub const fn new() -> Self {
         Self {
-            unit: LogicalCashUnit::new(),
+            unit: LCU::new(),
             count: 0,
         }
     }

@@ -2,9 +2,11 @@
 
 use std::fmt;
 
+mod cash_type;
 mod code;
 mod denomination;
 
+pub use cash_type::*;
 pub use code::*;
 pub use denomination::*;
 
