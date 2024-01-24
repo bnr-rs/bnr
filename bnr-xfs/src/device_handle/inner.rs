@@ -11,9 +11,6 @@ use datetime::format_description::well_known::{
 use time as datetime;
 
 use super::*;
-use crate::callback_response::{
-    CallbackIntermediateResponse, CallbackOperationResponse, CallbackStatusResponse,
-};
 use crate::cash_unit::TransportCount;
 use crate::currency::{Currency, Denomination};
 use crate::xfs::{
@@ -22,7 +19,6 @@ use crate::xfs::{
     method_response::{XfsMethodResponse, XfsMethodResponseStruct},
     params::{XfsParam, XfsParams},
     value::XfsValue,
-    OperationId,
 };
 
 const INIT_COUNT: u64 = 1;
@@ -105,14 +101,12 @@ impl DeviceHandle {
             op_completed_callback,
             intermediate_occurred_callback,
             status_occurred_callback,
-            async_active: Arc::new(AtomicBool::new(false)),
             response_rx,
         };
 
         ret.start_background_listener(
             response_tx,
             Arc::clone(&ret.stop_listener),
-            Arc::clone(&ret.async_active),
         )?;
 
         let usb = ret.usb();
@@ -125,7 +119,7 @@ impl DeviceHandle {
         );
 
         // write the `getIdentification` call to the call endpoint
-        Self::write_call(usb, &call, timeout, ret.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         // read the response
         Self::read_response(usb, call.name()?, timeout).ok();
@@ -152,7 +146,6 @@ impl DeviceHandle {
         &self,
         response_tx: mpsc::Sender<XfsMethodCall>,
         stop: Arc<AtomicBool>,
-        async_active: Arc<AtomicBool>,
     ) -> Result<()> {
         let usb = self.usb_clone();
 
@@ -223,6 +216,41 @@ impl DeviceHandle {
         self.stop_listener.store(true, Ordering::SeqCst);
     }
 
+    pub(crate) fn handle_async_call(&self, call_id: i32) -> Result<()> {
+        let mut res_call: Option<XfsMethodCall> = None;
+        let response_timeout = std::time::Duration::from_secs(10);
+        let now = std::time::SystemTime::now();
+
+        while res_call.is_none() && now.elapsed()? < response_timeout {
+            if let Ok(msg) = self.response_rx.recv() {
+                let res_id = msg.call_id().unwrap_or(-1);
+                if res_id != -1 && res_id == call_id {
+                    res_call = Some(msg);
+                }
+            }
+        }
+
+        if let Some(msg) = res_call {
+            log::debug!("async response: {msg:?}");
+            let result = msg.result().unwrap_or(-1);
+            match result {
+                0 => Ok(()),
+                -1 => {
+                    let err_msg = format!("async response: missing event result: {msg:?}");
+                    log::error!("{err_msg}");
+                    Err(Error::Xfs(err_msg.into()))
+                }
+                _ => {
+                    let err_msg = format!("async response: call failed: {msg:?}");
+                    log::error!("{err_msg}");
+                    Err(Error::Xfs(err_msg.into()))
+                }
+            }
+        } else {
+            Err(Error::Xfs("async response: no operation complete response".into()))
+        }
+    }
+
     pub(crate) fn reset_inner(&self) -> Result<()> {
         increment_call_counter();
         let count = XfsParam::create(XfsValue::new().with_base64(call_counter_base64()));
@@ -236,7 +264,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         match Self::read_response(usb, call.name()?, timeout) {
             Ok(_) => Ok(()),
@@ -249,7 +277,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         match Self::read_response(usb, call.name()?, timeout) {
             Ok(_) => Ok(()),
@@ -266,7 +294,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         match Self::read_response(usb, call.name()?, timeout) {
             Ok(_) => Ok(()),
@@ -283,7 +311,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         reset_call_counter();
 
@@ -302,7 +330,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         let res = Self::read_response(usb, call.name()?, timeout)?;
         let params = res.into_params()?;
@@ -360,7 +388,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         Self::read_response(usb, call.name()?, timeout)?;
 
@@ -373,7 +401,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         Self::read_response(usb, call.name()?, timeout)?.try_into()
     }
@@ -384,7 +412,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         let _res = Self::read_response(usb, call.name()?, timeout)?;
 
@@ -397,7 +425,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         Self::read_response(usb, call.name()?, timeout)?.try_into()
     }
@@ -408,7 +436,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         let res = Self::read_response(usb, call.name()?, timeout)?;
 
@@ -432,48 +460,13 @@ impl DeviceHandle {
             let timeout = std::time::Duration::from_millis(TIMEOUT);
             let usb = self.usb();
 
-            Self::write_call(usb, &call, timeout, self.async_active())?;
+            Self::write_call(usb, &call, timeout)?;
 
             let res = Self::read_response(usb, call.name()?, timeout)?;
             res.call_id()?
         };
 
         self.handle_async_call(call_id)
-    }
-
-    pub(crate) fn handle_async_call(&self, call_id: i32) -> Result<()> {
-        let mut res_call: Option<XfsMethodCall> = None;
-        let response_timeout = std::time::Duration::from_secs(10);
-        let now = std::time::SystemTime::now();
-
-        while res_call.is_none() && now.elapsed()? < response_timeout {
-            if let Ok(msg) = self.response_rx.recv() {
-                let res_id = msg.call_id().unwrap_or(-1);
-                if res_id != -1 && res_id == call_id {
-                    res_call = Some(msg);
-                }
-            }
-        }
-
-        if let Some(msg) = res_call {
-            log::debug!("async response: {msg:?}");
-            let result = msg.result().unwrap_or(-1);
-            match result {
-                0 => Ok(()),
-                -1 => {
-                    let err_msg = format!("async response: missing event result: {msg:?}");
-                    log::error!("{err_msg}");
-                    Err(Error::Xfs(err_msg.into()))
-                }
-                _ => {
-                    let err_msg = format!("async response: call failed: {msg:?}");
-                    log::error!("{err_msg}");
-                    Err(Error::Xfs(err_msg.into()))
-                }
-            }
-        } else {
-            Err(Error::Xfs("async response: no operation complete response".into()))
-        }
     }
 
     pub(crate) fn cash_in_inner(
@@ -516,9 +509,9 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
-        let res = Self::read_response(usb, call.name()?, timeout)?;
+        Self::read_response(usb, call.name()?, timeout)?;
 
         Ok(())
     }
@@ -531,14 +524,17 @@ impl DeviceHandle {
             .with_name(XfsMethodName::CashInEnd)
             .with_params(XfsParams::create([count]));
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
-        let usb = self.usb();
+        let call_id = {
+            let timeout = std::time::Duration::from_millis(TIMEOUT);
+            let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+            Self::write_call(usb, &call, timeout)?;
 
-        Self::read_response(usb, call.name()?, timeout)?;
+            let res = Self::read_response(usb, call.name()?, timeout)?;
+            res.call_id()?
+        };
 
-        Ok(())
+        self.handle_async_call(call_id)
     }
 
     pub(crate) fn cash_in_rollback_inner(&self) -> Result<()> {
@@ -552,7 +548,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         Self::read_response(usb, call.name()?, timeout)?;
 
@@ -570,7 +566,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         Self::read_response(usb, call.name()?, timeout)?;
 
@@ -592,7 +588,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         Self::read_response(usb, call.name()?, timeout)?;
 
@@ -610,7 +606,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         Self::read_response(usb, call.name()?, timeout)?;
 
@@ -628,7 +624,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         Self::read_response(usb, call.name()?, timeout)?;
 
@@ -646,7 +642,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         Self::read_response(usb, call.name()?, timeout)?;
 
@@ -664,7 +660,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         Self::read_response(usb, call.name()?, timeout)?.try_into()
     }
@@ -686,7 +682,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         Self::read_response(usb, call.name()?, timeout)?;
 
@@ -710,7 +706,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         Self::read_response(usb, call.name()?, timeout)?;
 
@@ -728,7 +724,7 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         Self::read_response(usb, call.name()?, timeout)?;
 
@@ -746,19 +742,11 @@ impl DeviceHandle {
         let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout, self.async_active())?;
+        Self::write_call(usb, &call, timeout)?;
 
         Self::read_response(usb, call.name()?, timeout)?;
 
         Ok(())
-    }
-
-    pub(crate) fn async_active(&self) -> &AtomicBool {
-        self.async_active.as_ref()
-    }
-
-    pub(crate) fn set_async_active(&self, val: bool) {
-        self.async_active.store(val, Ordering::SeqCst);
     }
 
     /// Writes an [XfsMethodCall] to the BNR device.
@@ -766,23 +754,13 @@ impl DeviceHandle {
         usb: &UsbDeviceHandle,
         call: &XfsMethodCall,
         timeout: std::time::Duration,
-        async_active: &AtomicBool,
     ) -> Result<()> {
-        if call.is_async() {
-            let mut timeout = 500usize;
-            while async_active.load(Ordering::Relaxed) && timeout > 0 {
-                std::thread::sleep(std::time::Duration::from_millis(10));
-                timeout = timeout.saturating_sub(1);
-            }
-            async_active.store(true, Ordering::SeqCst);
-        }
         match usb.write_bulk(BNR_CALL_EP, xfs::to_string(call)?.as_bytes(), timeout) {
             Ok(_) => Ok(()),
             Err(err) => {
                 let method = call.name()?;
                 let err_msg = format!("Error writing {method} message: {err}");
                 log::warn!("{err_msg}");
-                async_active.store(false, Ordering::SeqCst);
                 Err(err.into())
             }
         }
@@ -881,7 +859,6 @@ impl DeviceHandle {
         }
 
         let call_str = std::str::from_utf8(res_acc.as_ref()).unwrap_or("");
-        log::trace!("Raw callback call: {call_str}");
 
         xfs::from_str::<XfsMethodCall>(call_str)
     }

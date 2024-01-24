@@ -95,7 +95,6 @@ pub struct DeviceHandle {
     op_completed_callback: Option<OperationCompletedFn>,
     intermediate_occurred_callback: Option<IntermediateOccurredFn>,
     status_occurred_callback: Option<StatusOccurredFn>,
-    async_active: Arc<AtomicBool>,
     response_rx: mpsc::Receiver<xfs::method_call::XfsMethodCall>,
 }
 
@@ -124,7 +123,6 @@ impl DeviceHandle {
         self.start_background_listener(
             response_tx,
             Arc::clone(&self.stop_listener),
-            Arc::clone(&self.async_active),
         )?;
 
         self.response_rx = response_rx;

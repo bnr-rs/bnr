@@ -3,7 +3,7 @@ use std::fmt;
 use crate::{create_xfs_i4, impl_xfs_struct, xfs::OperationId};
 
 create_xfs_i4!(
-    IdentificationId,
+    IntermediateIdentificationId,
     "identificationId",
     "Represents the specific call instance for a particular callback operation."
 );
@@ -13,7 +13,7 @@ create_xfs_i4!(
 #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
 pub struct CallbackIntermediateResponse {
     operation_id: OperationId,
-    identification_id: IdentificationId,
+    identification_id: IntermediateIdentificationId,
 }
 
 impl CallbackIntermediateResponse {
@@ -21,7 +21,7 @@ impl CallbackIntermediateResponse {
     pub const fn new() -> Self {
         Self {
             operation_id: OperationId::new(),
-            identification_id: IdentificationId::new(),
+            identification_id: IntermediateIdentificationId::new(),
         }
     }
 
@@ -29,7 +29,7 @@ impl CallbackIntermediateResponse {
     pub const fn create(operation_id: i32, identification_id: i32) -> Self {
         Self {
             operation_id: OperationId::create(operation_id as u32),
-            identification_id: IdentificationId::create(identification_id as u32),
+            identification_id: IntermediateIdentificationId::create(identification_id as u32),
         }
     }
 
@@ -75,7 +75,7 @@ impl fmt::Display for CallbackIntermediateResponse {
     }
 }
 
-impl_xfs_struct!(CallbackIntermediateResponse, "callbackResponse", [operation_id: OperationId, identification_id: IdentificationId]);
+impl_xfs_struct!(CallbackIntermediateResponse, "callbackResponse", [operation_id: OperationId, identification_id: IntermediateIdentificationId]);
 
 #[cfg(test)]
 mod tests {
