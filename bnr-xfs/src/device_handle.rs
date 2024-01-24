@@ -226,6 +226,21 @@ impl DeviceHandle {
         self.present_inner()
     }
 
+    /// This command allows the application to force cash that has been presented to be retracted.
+    ///
+    /// Retracted bills will be moved to the intermediate stacker area and accounted in the Bundler LCU. The application can then present bills to the user, using [cash_in_rollback](Self::cash_in_rollback) or [present](Self::present)
+    /// (depending of the kind of the transaction) or clear the intermediate stacker area using the [reject](Self::reject) method.
+    ///
+    /// This method may only be called after bills have been presented at the outlet following a [dispense](Self::dispense) (if autoPresent mode is active), [cash_in_rollback](Self::cash_in_rollback) or [present](Self::present) method call,
+    /// and before the bills have been taken by the user.
+    ///
+    /// **Note** An asynchronous method must not be called before the preceding one is terminated (i.e. OperationComplete event has been received); typically before calling [retract],
+    /// the preceding command must be terminated by calling
+    /// [cancel_waiting_cash_taken](Self::cancel_waiting_cash_taken).
+    pub fn retract(&self) -> Result<()> {
+        self.retract_inner()
+    }
+
     /// Gets a reference to the [UsbDeviceHandle].
     pub const fn usb(&self) -> &UsbDeviceHandle {
         &self.usb
