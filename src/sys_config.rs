@@ -10,8 +10,5 @@ use crate::{with_handle, Result};
 ///
 /// Returns the set [Capabilities] on success, an error code otherwise.
 pub fn set_capabilities(caps: &Capabilities) -> Result<Capabilities> {
-    with_handle::<Capabilities>(|h| {
-        h.set_capabilities(caps)?;
-        h.get_capabilities()
-    })
+    with_handle::<Capabilities>(|h| h.set_capabilities(caps))
 }

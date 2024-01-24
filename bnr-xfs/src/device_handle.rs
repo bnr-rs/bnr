@@ -175,7 +175,7 @@ impl DeviceHandle {
     }
 
     /// Sets the [Capabilities](crate::status::CdrPositionCapabilitiesList) for the BNR device.
-    pub fn set_capabilities(&self, caps: &Capabilities) -> Result<()> {
+    pub fn set_capabilities(&self, caps: &Capabilities) -> Result<Capabilities> {
         self.set_capabilities_inner(caps)
     }
 

@@ -25,6 +25,7 @@ use crate::xfs::{
 
 const INIT_COUNT: u64 = 1;
 static CALL_COUNTER: AtomicU64 = AtomicU64::new(INIT_COUNT);
+const TIMEOUT: u64 = 500;
 
 /// Class identifier of the `MainModule`.
 pub const MAIN_MODULE_CLASS: i64 = 0xE0000;
@@ -73,7 +74,7 @@ impl DeviceHandle {
             )],
         );
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
 
         let mut ret = [0u8; 4];
         let read = usb.read_control(0x80, 0x6, 0x03 << 8, 0, &mut ret, timeout)?;
@@ -107,10 +108,6 @@ impl DeviceHandle {
             status_occurred_callback,
         };
 
-        ret.start_background_listener()?;
-
-        std::thread::sleep(std::time::Duration::from_millis(250));
-
         let usb = ret.usb();
 
         // write the `getIdentification` call to the call endpoint
@@ -118,6 +115,8 @@ impl DeviceHandle {
 
         // read the response
         Self::read_response(usb, call.name()?, timeout).ok();
+
+        ret.start_background_listener()?;
 
         Ok(ret)
     }
@@ -136,7 +135,7 @@ impl DeviceHandle {
             .unwrap_or(STATUS_OCCURRED_FN_NOP);
 
         std::thread::spawn(move || -> Result<()> {
-            let timeout = std::time::Duration::from_millis(50);
+            let timeout = std::time::Duration::from_millis(TIMEOUT);
 
             loop {
                 if let Ok(msg) = Self::read_callback_call(&usb, timeout) {
@@ -316,7 +315,7 @@ impl DeviceHandle {
 
         reset_call_counter();
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -329,7 +328,7 @@ impl DeviceHandle {
 
     pub(crate) fn cancel_inner(&self) -> Result<()> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::Cancel);
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -346,7 +345,7 @@ impl DeviceHandle {
 
     pub(crate) fn close_inner(&self) -> Result<()> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::StopSession);
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -363,7 +362,7 @@ impl DeviceHandle {
 
     pub(crate) fn reboot_inner(&self) -> Result<()> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::Reboot);
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -382,7 +381,7 @@ impl DeviceHandle {
 
     pub(crate) fn get_date_time_inner(&self) -> Result<datetime::OffsetDateTime> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::GetDateTime);
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -440,7 +439,7 @@ impl DeviceHandle {
                 XfsValue::new().with_date_time(date_time.format(&date_fmt)?),
             )]));
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -453,7 +452,7 @@ impl DeviceHandle {
     pub(crate) fn get_status_inner(&self) -> Result<CdrStatus> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::GetStatus);
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -464,7 +463,7 @@ impl DeviceHandle {
     pub(crate) fn park_inner(&self) -> Result<()> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::Park);
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -477,7 +476,7 @@ impl DeviceHandle {
     pub(crate) fn get_capabilities_inner(&self) -> Result<Capabilities> {
         let call = XfsMethodCall::new().with_name(XfsMethodName::GetCapabilities);
 
-        let timeout = std::time::Duration::from_millis(500);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -485,17 +484,20 @@ impl DeviceHandle {
         Self::read_response(usb, call.name()?, timeout)?.try_into()
     }
 
-    pub(crate) fn set_capabilities_inner(&self, caps: &Capabilities) -> Result<()> {
+    pub(crate) fn set_capabilities_inner(&self, caps: &Capabilities) -> Result<Capabilities> {
         let call = XfsMethodCall::create(XfsMethodName::SetCapabilities, [XfsParam::from(caps)]);
 
-        let timeout = std::time::Duration::from_millis(500);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
 
-        let _res = Self::read_response(usb, call.name()?, timeout)?;
+        let res = Self::read_response(usb, call.name()?, timeout)?;
 
-        Ok(())
+        match Capabilities::try_from(&res) {
+            Ok(c) => Ok(c),
+            Err(_err)  => Ok(caps.clone()),
+        }
     }
 
     pub(crate) fn cash_in_start_inner(&self) -> Result<()> {
@@ -508,7 +510,7 @@ impl DeviceHandle {
             .with_name(name)
             .with_params(XfsParams::create([count]));
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -555,7 +557,7 @@ impl DeviceHandle {
             }
         };
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -573,7 +575,7 @@ impl DeviceHandle {
             .with_name(XfsMethodName::CashInEnd)
             .with_params(XfsParams::create([count]));
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -591,7 +593,7 @@ impl DeviceHandle {
             .with_name(XfsMethodName::CashInRollback)
             .with_params(XfsParams::create([count]));
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -609,7 +611,7 @@ impl DeviceHandle {
             .with_name(XfsMethodName::Eject)
             .with_params(XfsParams::create([count]));
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -631,7 +633,7 @@ impl DeviceHandle {
                 count,
             ]));
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -649,7 +651,7 @@ impl DeviceHandle {
             .with_name(XfsMethodName::Present)
             .with_params(XfsParams::create([count]));
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -667,7 +669,7 @@ impl DeviceHandle {
             .with_name(XfsMethodName::CancelWaitingCashTaken)
             .with_params(XfsParams::create([count]));
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -685,7 +687,7 @@ impl DeviceHandle {
             .with_name(XfsMethodName::Retract)
             .with_params(XfsParams::create([count]));
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -703,7 +705,7 @@ impl DeviceHandle {
             .with_name(XfsMethodName::QueryCashUnit)
             .with_params(XfsParams::create([count]));
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -725,7 +727,7 @@ impl DeviceHandle {
                 XfsParam::create(pcu_list.into()),
             ]));
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -749,7 +751,7 @@ impl DeviceHandle {
                 XfsParam::create(pcu_list.into()),
             ]));
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -767,7 +769,7 @@ impl DeviceHandle {
             .with_name(XfsMethodName::Denominate)
             .with_params(XfsParams::create([XfsParam::create(request.into()), count]));
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
@@ -785,7 +787,7 @@ impl DeviceHandle {
             .with_name(XfsMethodName::Dispense)
             .with_params(XfsParams::create([XfsParam::create(request.into()), count]));
 
-        let timeout = std::time::Duration::from_millis(50);
+        let timeout = std::time::Duration::from_millis(TIMEOUT);
         let usb = self.usb();
 
         Self::write_call(usb, &call, timeout)?;
