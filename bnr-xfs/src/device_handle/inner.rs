@@ -218,11 +218,11 @@ impl DeviceHandle {
 
     pub(crate) fn handle_async_call(&self, call_id: i32) -> Result<()> {
         let mut res_call: Option<XfsMethodCall> = None;
-        let response_timeout = std::time::Duration::from_secs(10);
+        let response_timeout = std::time::Duration::from_millis(4250);
         let now = std::time::SystemTime::now();
 
         while res_call.is_none() && now.elapsed()? < response_timeout {
-            if let Ok(msg) = self.response_rx.recv() {
+            if let Ok(msg) = self.response_rx.try_recv() {
                 let res_id = msg.call_id().unwrap_or(-1);
                 if res_id != -1 && res_id == call_id {
                     res_call = Some(msg);
@@ -447,8 +447,6 @@ impl DeviceHandle {
     }
 
     pub(crate) fn cash_in_start_inner(&self) -> Result<()> {
-        increment_call_counter();
-
         let name = XfsMethodName::CashInStart;
         let count = XfsParam::create(XfsValue::new().with_base64(call_counter_base64()));
 
@@ -466,7 +464,11 @@ impl DeviceHandle {
             res.call_id()?
         };
 
-        self.handle_async_call(call_id)
+        self.handle_async_call(call_id)?;
+
+        set_call_counter(call_id as u64);
+
+        Ok(())
     }
 
     pub(crate) fn cash_in_inner(
@@ -474,8 +476,6 @@ impl DeviceHandle {
         limit: Option<u32>,
         currency: Option<CurrencyCode>,
     ) -> Result<()> {
-        increment_call_counter();
-
         let name = XfsMethodName::CashIn;
         let count = XfsParam::create(XfsValue::new().with_base64(call_counter_base64()));
 
@@ -506,12 +506,17 @@ impl DeviceHandle {
             }
         };
 
-        let timeout = std::time::Duration::from_millis(TIMEOUT);
-        let usb = self.usb();
+        let call_id = {
+            let timeout = std::time::Duration::from_millis(TIMEOUT);
+            let usb = self.usb();
 
-        Self::write_call(usb, &call, timeout)?;
+            Self::write_call(usb, &call, timeout)?;
 
-        Self::read_response(usb, call.name()?, timeout)?;
+            let res = Self::read_response(usb, call.name()?, timeout)?;
+            res.call_id()?
+        };
+
+        set_call_counter(call_id as u64);
 
         Ok(())
     }
@@ -534,7 +539,11 @@ impl DeviceHandle {
             res.call_id()?
         };
 
-        self.handle_async_call(call_id)
+        self.handle_async_call(call_id)?;
+
+        set_call_counter(call_id as u64);
+
+        Ok(())
     }
 
     pub(crate) fn cash_in_rollback_inner(&self) -> Result<()> {
