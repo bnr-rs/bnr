@@ -1,0 +1,2866 @@
+[
+    {
+        "errorCode": 536870993,
+        "errorId": "E_SS01 ",
+        "errorDescription": "BNR is idle mode",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send Reset command"
+    },
+    {
+        "errorCode": 536870995,
+        "errorId": "E_SS02",
+        "errorDescription": "BNR is starting up",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Wait for reset to complete"
+    },
+    {
+        "errorCode": 536870994,
+        "errorId": "E_SS03",
+        "errorDescription": "BNR Interlock is open",
+        "correctiveActionLevel1": "Close the Main BNR  Lock",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 234881105,
+        "errorId": "E_MM01",
+        "errorDescription": "A software error has ocurred",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 234881107,
+        "errorId": "E_MM03",
+        "errorDescription": "A software error has ocurred",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 50462737,
+        "errorId": "E_MM04",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Remove banknote from intlet.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50724881,
+        "errorId": "E_MM05",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Top Cover or Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50462993,
+        "errorId": "E_MM06",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Top Cover or Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50398481,
+        "errorId": "E_MM07",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Top Cover or Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50397201,
+        "errorId": "E_MM08",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Top Cover or Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50398993,
+        "errorId": "E_MM09",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox and Main Module. Remove banknote  from bottom of main module",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50399249,
+        "errorId": "E_MM10",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Remove banknote from Outlet. (was Open Top Cover or Recognition Module. Remove banknote.)",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50400017,
+        "errorId": "E_MM11",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox and Main Module. Remove banknote  from bottom of main module",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50462738,
+        "errorId": "E_MM12",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Top Cover or Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50724882,
+        "errorId": "E_MM13",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Top Cover or Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50462994,
+        "errorId": "E_MM14",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Top Cover or Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50398482,
+        "errorId": "E_MM15",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Top Cover or Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50397202,
+        "errorId": "E_MM16",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Top Cover or Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50398994,
+        "errorId": "E_MM17",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox and Main Module. Remove banknote  from bottom of main module",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50399250,
+        "errorId": "E_MM18",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Remove banknote from outlet.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50400018,
+        "errorId": "E_MM19",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox and Main Module. Remove banknote  from bottom of main module",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50462739,
+        "errorId": "E_MM20",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Top Cover or Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50724883,
+        "errorId": "E_MM21",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Remove banknote from intlet.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50462995,
+        "errorId": "E_MM22",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Top Cover or Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50398483,
+        "errorId": "E_MM23",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Top Cover or Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50397203,
+        "errorId": "E_MM24",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Top Cover or Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50398995,
+        "errorId": "E_MM25",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox and Main Module. Remove banknote  from bottom of main module",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50399251,
+        "errorId": "E_MM26",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Remove banknote from outlet.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50400019,
+        "errorId": "E_MM27",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox and Main Module. Remove banknote  from bottom of main module",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50462740,
+        "errorId": "E_MM28",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Top Cover or Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50724884,
+        "errorId": "E_MM29",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Remove banknote from inlet.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50462996,
+        "errorId": "E_MM30",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Top Cover or Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50398484,
+        "errorId": "E_MM31",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Top Cover or Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50397204,
+        "errorId": "E_MM32",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Top Cover or Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50398996,
+        "errorId": "E_MM33",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox and Main Module. Remove banknote  from bottom of main module",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50399252,
+        "errorId": "E_MM34",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Remove banknote from outlet.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50400020,
+        "errorId": "E_MM35",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox and Main Module. Remove banknote  from bottom of main module",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 201326593,
+        "errorId": "E_MM41",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox. Remove object (if any) blocking the Stacking Mechanism.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 201326595,
+        "errorId": "E_MM42",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox. Remove object (if any) blocking the Stacking Mechanism.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 201326596,
+        "errorId": "E_MM43",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox. Remove object (if any) blocking the Stacking Mechanism.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 201326597,
+        "errorId": "E_MM44",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox. Remove object (if any) blocking the Stacking Mechanism.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 201326598,
+        "errorId": "E_MM45",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox. Remove object (if any) blocking the Stacking Mechanism.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 201326599,
+        "errorId": "E_MM46",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox. Remove object (if any) blocking the Stacking Mechanism.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 201326600,
+        "errorId": "E_MM47",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove main module and cashbox using \"stacker blocked in cashbox - removal procedure\"\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 201326601,
+        "errorId": "E_MM48",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox. Remove object (if any) blocking the Stacking Mechanism.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 201326602,
+        "errorId": "E_MM49",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox. Remove object (if any) blocking the Stacking Mechanism.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 201326603,
+        "errorId": "E_MM50",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Replace Cashbox with emtpy Cashbox",
+        "correctiveActionLevel2": "Remove cashbox. Remove object (if any) blocking the Stacking Mechanism.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 201326604,
+        "errorId": "E_MM51",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Encash the note with Reject."
+    },
+    {
+        "errorCode": 33554433,
+        "errorId": "E_MM52",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox. Remove unexpected object (if any) in the Bundler Area. Secure BNR.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 33554434,
+        "errorId": "E_MM53",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox. Remove unexpected object (if any) in the Bundler Area. Secure BNR.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 33554435,
+        "errorId": "E_MM54",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox. Remove unexpected object (if any) in the Bundler Area. Secure BNR.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 33554436,
+        "errorId": "E_MM55",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox. Remove unexpected object (if any) in the Bundler Area. Secure BNR.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 33554437,
+        "errorId": "E_MM56",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox. Remove unexpected object (if any) in the Bundler Area. Secure BNR.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 33554438,
+        "errorId": "E_MM57",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox. Remove unexpected object (if any) in the Bundler Area. Secure BNR.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 100663297,
+        "errorId": "E_MM58",
+        "errorDescription": "The Main Module cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Open Recognition Module. Check if flat cable is correctly connected. If Power is on, Power off, insert the flat cable correctly\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 100663298,
+        "errorId": "E_MM59",
+        "errorDescription": "The Main Module cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 100663299,
+        "errorId": "E_MM60",
+        "errorDescription": "The Main Module cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Switch off very luminous light close to Recognition Module (if any).\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 100663300,
+        "errorId": "E_MM61",
+        "errorDescription": "The Main Module cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Open Recognition sensor module. Remove unexpected object (if any), clean the sensor.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 100663301,
+        "errorId": "E_MM62",
+        "errorDescription": "The Main Module cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 100663302,
+        "errorId": "E_MM63",
+        "errorDescription": "The Main Module cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 100663303,
+        "errorId": "E_MM64",
+        "errorDescription": "The Main Module cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 100663304,
+        "errorId": "E_MM65",
+        "errorDescription": "The Main Module cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 100663305,
+        "errorId": "E_MM66",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Open Recognition sensor module. Remove unexpected object (if any), clean the sensor. \nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 251658561,
+        "errorId": "E_MM39",
+        "errorDescription": "BNR has detected an open cover which is preventing operation",
+        "correctiveActionLevel1": "Close open cover\n",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 251658305,
+        "errorId": "E_MM40",
+        "errorDescription": "BNR has detected an open cover which is preventing operation",
+        "correctiveActionLevel1": "Close open cover\n",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 16908546,
+        "errorId": "E_MM67",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Open all covers, remove object (if any) from the bill path, close covers.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 16908547,
+        "errorId": "E_MM68",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Open all covers, remove object (if any) from the bill path, close covers.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 16842754,
+        "errorId": "E_MM69",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Open all covers, remove object (if any) from the bill path\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 16842755,
+        "errorId": "E_MM70",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Open all covers, remove object (if any) from the bill path\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50462721,
+        "errorId": "E_MM71",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Top Cover, remove object (if any) from the inlet area, clean inlet\n",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50462722,
+        "errorId": "E_MM72",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Top Cover, remove object (if any) from the inlet area, clean inlet\n",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50724865,
+        "errorId": "E_MM73",
+        "errorDescription": "The Main Module cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50724866,
+        "errorId": "E_MM74",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Top Cover, remove object (if any) from the inlet area, clean inlet\n",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50462977,
+        "errorId": "E_MM75",
+        "errorDescription": "The Main Module cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50462978,
+        "errorId": "E_MM76",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Top Cover, remove object (if any) from the inlet area, clean inlet\n",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50398465,
+        "errorId": "E_MM77",
+        "errorDescription": "The Main Module cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50398466,
+        "errorId": "E_MM78",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Top Cover, remove object (if any) from the inlet area, clean inlet\n",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50397185,
+        "errorId": "E_MM79",
+        "errorDescription": "The Main Module cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50397186,
+        "errorId": "E_MM80",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Top Cover, remove object (if any) from the inlet area, clean positioner, close cover.\n",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50398977,
+        "errorId": "E_MM81",
+        "errorDescription": "The Main Module cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50398978,
+        "errorId": "E_MM82",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Cashbox, remove Main module, remove object (if any) from the bottom transport area, clean bottom transport\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50399233,
+        "errorId": "E_MM83",
+        "errorDescription": "The Main Module cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50399234,
+        "errorId": "E_MM84",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox, remove object (if any) from the bottom bill path\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 302055427,
+        "errorId": "E_MM87",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove object (if any) from the Outlet slot.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50400001,
+        "errorId": "E_MM85",
+        "errorDescription": "The Main Module cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50400002,
+        "errorId": "E_MM86",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox, remove object (if any) from the bottom bill path\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 2818572289,
+        "errorId": "E_MM88",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Recognition Sensor/Spine covers. Remove unexpected object (if any).\n",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 2818572290,
+        "errorId": "E_MM89",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Recognition Sensor/Spine covers. Remove unexpected object (if any).\n",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 2818572291,
+        "errorId": "E_MM90",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Recognition Sensor/Spine covers. Remove unexpected object (if any).\n",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 100663313,
+        "errorId": "E_MM91",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 100663314,
+        "errorId": "E_MM92",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 100663315,
+        "errorId": "E_MM93",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 100663316,
+        "errorId": "E_MM94",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open Recognition Module. Remove banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235274305,
+        "errorId": "E_BU01",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove banknotes (if any) from the Bundler.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235274306,
+        "errorId": "E_BU02",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove banknotes (if any) from the Bundler.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235274307,
+        "errorId": "E_BU03",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove banknotes (if any) from the Bundler.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235274276,
+        "errorId": "W_BU01",
+        "errorDescription": "Bundler is full",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "If in CashIn transaction, either send CashInEnd or CashInRollback; if in Dispense transaction either send Present or Reject."
+    },
+    {
+        "errorCode": 16908290,
+        "errorId": "E_BU04",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox, remove Main Module, remove object (if any) from the Bundler area\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 16908291,
+        "errorId": "E_BU05",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox, remove Main Module, remove object (if any) from the Bundler area\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50398721,
+        "errorId": "E_BU06",
+        "errorDescription": "The Main Module cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50398722,
+        "errorId": "E_BU07",
+        "errorDescription": "The Main Module cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove cashbox, remove Main Module, remove object (if any) from the Bundler area\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235274257,
+        "errorId": "E_BU08",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove banknotes (if any) from the Bundler.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235274258,
+        "errorId": "E_BU09",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove banknotes (if any) from the Bundler.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235274259,
+        "errorId": "E_BU10",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove banknotes (if any) from the Bundler.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235274260,
+        "errorId": "E_BU11",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove banknotes (if any) from the Bundler.\nIf problem persists: Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 234946609,
+        "errorId": "E_SP01",
+        "errorDescription": "BNR cannot find a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Power off. Check connection between Spine Module and Main Module.\nIf problem persists: Either Spine Module or Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 234946610,
+        "errorId": "E_SP02",
+        "errorDescription": "A software error has ocurred",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 234946611,
+        "errorId": "E_SP03",
+        "errorDescription": "BNR cannot find a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Power off. Check connection between Spine Module and Main Module\nIf problem persists: Either Spine Module or Main Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 234946612,
+        "errorId": "E_SP04",
+        "errorDescription": "BNR has detected an open cover which is preventing operation",
+        "correctiveActionLevel1": "Close the spine cover",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 234946613,
+        "errorId": "E_SP05",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": " ",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 234946614,
+        "errorId": "E_SP06",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": " ",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 50790929,
+        "errorId": "E_SP13",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50791185,
+        "errorId": "E_SP14",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50791441,
+        "errorId": "E_SP15",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50790930,
+        "errorId": "E_SP16",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50791186,
+        "errorId": "E_SP17",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50791442,
+        "errorId": "E_SP18",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50790931,
+        "errorId": "E_SP19",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50791187,
+        "errorId": "E_SP20",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50791443,
+        "errorId": "E_SP21",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50790932,
+        "errorId": "E_SP22",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50791188,
+        "errorId": "E_SP23",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50791444,
+        "errorId": "E_SP24",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 67109121,
+        "errorId": "E_SP25",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) blocking the diverters\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 67109122,
+        "errorId": "E_SP26",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) blocking the diverters\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 67109123,
+        "errorId": "E_SP27",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) blocking the diverters\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 67109377,
+        "errorId": " E_SP28",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) blocking the diverters\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 67109378,
+        "errorId": "E_SP29",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) blocking the diverters\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 67109379,
+        "errorId": "E_SP30",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) blocking the diverters\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 67109633,
+        "errorId": " E_SP31",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) blocking the diverters\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 67109634,
+        "errorId": "E_SP32",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) blocking the diverters\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 67109635,
+        "errorId": "E_SP33",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) blocking the diverters\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 67109889,
+        "errorId": " E_SP34",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) blocking the diverters\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 67109890,
+        "errorId": "E_SP35",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) blocking the diverters\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 67109891,
+        "errorId": "E_SP36",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) blocking the diverters\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 67110145,
+        "errorId": " E_SP37",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) blocking the diverters\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 67110146,
+        "errorId": "E_SP38",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) blocking the diverters\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 67110147,
+        "errorId": "E_SP39",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) blocking the diverters\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50790913,
+        "errorId": "E_SP07",
+        "errorDescription": "BNR cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50790914,
+        "errorId": "E_SP08",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) in the Spine Bill path\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50791169,
+        "errorId": "E_SP09",
+        "errorDescription": "BNR cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50791170,
+        "errorId": " E_SP10",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) in the Spine Bill path\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50791425,
+        "errorId": " E_SP11",
+        "errorDescription": "BNR cannot recover from an error",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50791426,
+        "errorId": "E_SP12",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "Open Spine door. remove object (if any) in the Spine Bill path\n",
+        "correctiveActionLevel2": "Spine Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 234946577,
+        "errorId": "E_SP40",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Recognition Sensor cover or Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 234946581,
+        "errorId": "E_SP41",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover or open module. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 234946585,
+        "errorId": "E_SP42",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "Remove cashbox and Main Module. Remove banknote  from bottom of main module",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 234946578,
+        "errorId": "E_SP43",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Recognition Sensor cover or Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 234946582,
+        "errorId": "E_SP44",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover or open module. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 234946586,
+        "errorId": "E_SP45",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "Remove cashbox and Main Module. Remove banknote  from bottom of main module",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 234946579,
+        "errorId": "E_SP46",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Recognition Sensor cover or Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 234946583,
+        "errorId": "E_SP47",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover or open module. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 234946587,
+        "errorId": "E_SP48",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "Remove cashbox and Main Module. Remove banknote  from bottom of main module",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 234946580,
+        "errorId": "E_SP49",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Recognition Sensor cover or Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 234946584,
+        "errorId": "E_SP50",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover or open module. Remove banknote",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 234946588,
+        "errorId": "E_SP51",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": " Open Spine Cover. Remove banknote",
+        "correctiveActionLevel2": "Remove cashbox and Main Module. Remove banknote  from bottom of main module",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143472,
+        "errorId": "W_LO101",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit.",
+        "correctiveActionLevel3": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit."
+    },
+    {
+        "errorCode": 235143473,
+        "errorId": "E_LO101",
+        "errorDescription": "BNR cannot find the Loader module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143474,
+        "errorId": "E_LO102",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235143475,
+        "errorId": "E_LO103",
+        "errorDescription": "BNR cannot find the Loader module",
+        "correctiveActionLevel1": "Check Loader is correctly inserted.",
+        "correctiveActionLevel2": "Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143477,
+        "errorId": "E_LO104",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235143478,
+        "errorId": "E_LO105",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235143457,
+        "errorId": "W_LO102",
+        "errorDescription": "Loader module near empty",
+        "correctiveActionLevel1": "Complete loader exchange or refill",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143458,
+        "errorId": "W_LO103",
+        "errorDescription": "Loader module empty",
+        "correctiveActionLevel1": "Complete loader exchange or refill",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143441,
+        "errorId": "E_LO106",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open spine cover remove Banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143442,
+        "errorId": "E_LO107",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open spine cover remove Banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143443,
+        "errorId": "E_LO108",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open spine cover remove Banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143444,
+        "errorId": "E_LO109",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open spine cover remove Banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117453314,
+        "errorId": "E_LO110",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, place bills correctly, review mechanical status of parts\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117453315,
+        "errorId": "E_LO111",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, place bills correctly, review mechanical status of parts\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50810881,
+        "errorId": "E_LO112",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50810882,
+        "errorId": "E_LO113",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, review mechanical status of parts, place banknotes correctly\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 285212930,
+        "errorId": "E_LO114",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, review mechanical status of parts, place banknotes correctly\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 285212931,
+        "errorId": "E_LO115",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, review mechanical status of parts, place banknotes correctly\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 301990147,
+        "errorId": "E_LO116",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, review mechanical status of parts, place banknotes correctly\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143490,
+        "errorId": "E_LO117",
+        "errorDescription": "Loader CashType does not match CashUnit configuration",
+        "correctiveActionLevel1": "Replace Loader with one having CashType corresponding to CashUnit configuration.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Change either Loader CashType or CashUnit configuration to have both match"
+    },
+    {
+        "errorCode": 235143491,
+        "errorId": "E_LO118",
+        "errorDescription": "Bills extracted from Loader do not correspond to configured Loader CashType",
+        "correctiveActionLevel1": "Remove Loader. Replace bills with correct bills.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143492,
+        "errorId": "E_LO119",
+        "errorDescription": "Bills extracted from Loader are not recognized by the BNR",
+        "correctiveActionLevel1": "Remove Loader. Replace bills with bills that BNR can recognize..",
+        "correctiveActionLevel2": "Clean Recognition Sensor.",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143984,
+        "errorId": "W_LO301",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit.",
+        "correctiveActionLevel3": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit."
+    },
+    {
+        "errorCode": 235143985,
+        "errorId": "E_LO301",
+        "errorDescription": "BNR cannot find the Loader module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143986,
+        "errorId": "E_LO302",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235143987,
+        "errorId": "E_LO303",
+        "errorDescription": "BNR cannot find the Loader module",
+        "correctiveActionLevel1": "Check Loader is correctly inserted.",
+        "correctiveActionLevel2": "Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143989,
+        "errorId": "E_LO304",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235143990,
+        "errorId": "E_LO305",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235143969,
+        "errorId": "W_LO302",
+        "errorDescription": "Loader module near empty",
+        "correctiveActionLevel1": "Complete loader exchange or refill",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143970,
+        "errorId": "W_LO303",
+        "errorDescription": "Loader module empty",
+        "correctiveActionLevel1": "Complete loader exchange or refill",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143953,
+        "errorId": "E_LO306",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open spine cover remove Banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143954,
+        "errorId": "E_LO307",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open spine cover remove Banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143955,
+        "errorId": "E_LO308",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open spine cover remove Banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235143956,
+        "errorId": "E_LO309",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open spine cover remove Banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117453570,
+        "errorId": "E_LO310",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, place bills correctly, review mechanical status of parts\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117453571,
+        "errorId": "E_LO311",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, place bills correctly, review mechanical status of parts\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50811137,
+        "errorId": "E_LO312",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50811138,
+        "errorId": "E_LO313",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, review mechanical status of parts, place banknotes correctly\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 285213186,
+        "errorId": "E_LO314",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, review mechanical status of parts, place banknotes correctly\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 285213187,
+        "errorId": "E_LO315",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, review mechanical status of parts, place banknotes correctly\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 301990403,
+        "errorId": "E_LO316",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, review mechanical status of parts, place banknotes correctly\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235144002,
+        "errorId": "E_LO317",
+        "errorDescription": "Loader CashType does not match CashUnit configuration",
+        "correctiveActionLevel1": "Replace Loader with one having CashType corresponding to CashUnit configuration.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Change either Loader CashType or CashUnit configuration to have both match"
+    },
+    {
+        "errorCode": 235144003,
+        "errorId": "E_LO318",
+        "errorDescription": "Bills extracted from Loader do not correspond to configured Loader CashType",
+        "correctiveActionLevel1": "Remove Loader. Replace bills with correct bills.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235144004,
+        "errorId": "E_LO319",
+        "errorDescription": "Bills extracted from Loader are not recognized by the BNR",
+        "correctiveActionLevel1": "Remove Loader. Replace bills with bills that BNR can recognize..",
+        "correctiveActionLevel2": "Clean Recognition Sensor.",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235144496,
+        "errorId": "W_LO501",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit.",
+        "correctiveActionLevel3": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit."
+    },
+    {
+        "errorCode": 235144497,
+        "errorId": "E_LO501",
+        "errorDescription": "BNR cannot find the Loader module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235144498,
+        "errorId": "E_LO502",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235144499,
+        "errorId": "E_LO503",
+        "errorDescription": "BNR cannot find the Loader module",
+        "correctiveActionLevel1": "Check Loader is correctly inserted.",
+        "correctiveActionLevel2": "Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235144501,
+        "errorId": "E_LO504",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235144502,
+        "errorId": "E_LO505",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235144481,
+        "errorId": "W_LO502",
+        "errorDescription": "Loader module near empty",
+        "correctiveActionLevel1": "Complete loader exchange or refill",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235144482,
+        "errorId": "W_LO503",
+        "errorDescription": "Loader module empty",
+        "correctiveActionLevel1": "Complete loader exchange or refill",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235144465,
+        "errorId": "E_LO506",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open spine cover remove Banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235144466,
+        "errorId": "E_LO507",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open spine cover remove Banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235144467,
+        "errorId": "E_LO508",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open spine cover remove Banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235144468,
+        "errorId": "E_LO509",
+        "errorDescription": "A bill has stopped before reaching its destination",
+        "correctiveActionLevel1": "Open spine cover remove Banknote.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117453826,
+        "errorId": "E_LO510",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, place bills correctly, review mechanical status of parts\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117453827,
+        "errorId": "E_LO511",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, place bills correctly, review mechanical status of parts\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50811393,
+        "errorId": "E_LO512",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50811394,
+        "errorId": "E_LO513",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, review mechanical status of parts, place banknotes correctly\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 285213442,
+        "errorId": "E_LO514",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, review mechanical status of parts, place banknotes correctly\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 285213443,
+        "errorId": "E_LO515",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, review mechanical status of parts, place banknotes correctly\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 301990659,
+        "errorId": "E_LO516",
+        "errorDescription": "Loader module failure",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Loader. Open Loader, review mechanical status of parts, place banknotes correctly\nIf problem persists: Loader needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235144514,
+        "errorId": "E_LO517",
+        "errorDescription": "Loader CashType does not match CashUnit configuration",
+        "correctiveActionLevel1": "Replace Loader with one having CashType corresponding to CashUnit configuration.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Change either Loader CashType or CashUnit configuration to have both match"
+    },
+    {
+        "errorCode": 235144515,
+        "errorId": "E_LO518",
+        "errorDescription": "Bills extracted from Loader do not correspond to configured Loader CashType",
+        "correctiveActionLevel1": "Remove Loader. Replace bills with correct bills.",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235144516,
+        "errorId": "E_LO519",
+        "errorDescription": "Bills extracted from Loader are not recognized by the BNR",
+        "correctiveActionLevel1": "Remove Loader. Replace bills with bills that BNR can recognize..",
+        "correctiveActionLevel2": "Clean Recognition Sensor.",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235077936,
+        "errorId": "W_RE101",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit.",
+        "correctiveActionLevel3": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit."
+    },
+    {
+        "errorCode": 235077937,
+        "errorId": "E_RE101",
+        "errorDescription": "BNR cannot find a Recycler module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235077938,
+        "errorId": "E_RE102",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235077939,
+        "errorId": "E_RE103",
+        "errorDescription": "BNR cannot find a Recycler module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Check if Recycler  is correctly inserted.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235077941,
+        "errorId": "E_RE104",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235077942,
+        "errorId": "E_RE105",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235077921,
+        "errorId": "W_RE102",
+        "errorDescription": "A Recycler module is near empty",
+        "correctiveActionLevel1": "If this is a key banknote, prep to add banknotes to the BNR",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235077922,
+        "errorId": "W_RE103",
+        "errorDescription": "A Recycler module is empty",
+        "correctiveActionLevel1": "If this is a key banknote, add more of that banknote to the BNR",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235077923,
+        "errorId": "W_RE104",
+        "errorDescription": "",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235077924,
+        "errorId": "W_RE105",
+        "errorDescription": "",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235077905,
+        "errorId": "E_RE106",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235077906,
+        "errorId": "E_RE107",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235077907,
+        "errorId": "E_RE108",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235077908,
+        "errorId": "E_RE109",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117440770,
+        "errorId": "E_RE110",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler, review mechanical status of parts, remove object (if any) blocking the tape. secure BNR.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117440771,
+        "errorId": "E_RE111",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler, review mechanical status of parts, remove object (if any) blocking the tape. secure BNR.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50803201,
+        "errorId": "E_RE112",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50803202,
+        "errorId": "E_RE113",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) in the Recycler bill path\nIf problem persists: Recycler Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 218104066,
+        "errorId": "E_RE114",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) on the coding wheel sensors.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 218104067,
+        "errorId": "E_RE115",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) on the coding wheel sensors.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235077954,
+        "errorId": "E_RE116",
+        "errorDescription": "Recycler CashType does not match CashUnit configuration",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Empty Recycler, or change CashUnit configuration to have it match Recycler CashType."
+    },
+    {
+        "errorCode": 235078192,
+        "errorId": "W_RE201",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit.",
+        "correctiveActionLevel3": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit."
+    },
+    {
+        "errorCode": 235078193,
+        "errorId": "E_RE201",
+        "errorDescription": "BNR cannot find a Recycler module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078194,
+        "errorId": "E_RE202",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235078195,
+        "errorId": "E_RE203",
+        "errorDescription": "BNR cannot find a Recycler module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Check if Recycler  is correctly inserted.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078197,
+        "errorId": "E_RE204",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235078198,
+        "errorId": "E_RE205",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235078177,
+        "errorId": "W_RE202",
+        "errorDescription": "A Recycler module is near empty",
+        "correctiveActionLevel1": "If this is a key banknote, prep to add banknotes to the BNR",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078178,
+        "errorId": "W_RE203",
+        "errorDescription": "A Recycler module is empty",
+        "correctiveActionLevel1": "If this is a key banknote, add more of that banknote to the BNR",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078179,
+        "errorId": "W_RE204",
+        "errorDescription": "",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078180,
+        "errorId": "W_RE205",
+        "errorDescription": "",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078161,
+        "errorId": "E_RE206",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078162,
+        "errorId": "E_RE207",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078163,
+        "errorId": "E_RE208",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078164,
+        "errorId": "E_RE209",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117441026,
+        "errorId": "E_RE210",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler, review mechanical status of parts, remove object (if any) blocking the tape. secure BNR.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117441027,
+        "errorId": "E_RE211",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler, review mechanical status of parts, remove object (if any) blocking the tape. secure BNR.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50803457,
+        "errorId": "E_RE212",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50803458,
+        "errorId": "E_RE213",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) in the Recycler bill path\nIf problem persists: Recycler Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 218104322,
+        "errorId": "E_RE214",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) on the coding wheel sensors.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 218104323,
+        "errorId": "E_RE215",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) on the coding wheel sensors.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078210,
+        "errorId": "E_RE216",
+        "errorDescription": "Recycler CashType does not match CashUnit configuration",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Empty Recycler, or change CashUnit configuration to have it match Recycler CashType."
+    },
+    {
+        "errorCode": 235078448,
+        "errorId": "W_RE301",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit.",
+        "correctiveActionLevel3": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit."
+    },
+    {
+        "errorCode": 235078449,
+        "errorId": "E_RE301",
+        "errorDescription": "BNR cannot find a Recycler module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078450,
+        "errorId": "E_RE302",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235078451,
+        "errorId": "E_RE303",
+        "errorDescription": "BNR cannot find a Recycler module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Check if Recycler  is correctly inserted.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078453,
+        "errorId": "E_RE304",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235078454,
+        "errorId": "E_RE305",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235078433,
+        "errorId": "W_RE302",
+        "errorDescription": "A Recycler module is near empty",
+        "correctiveActionLevel1": "If this is a key banknote, prep to add banknotes to the BNR",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078434,
+        "errorId": "W_RE303",
+        "errorDescription": "A Recycler module is empty",
+        "correctiveActionLevel1": "If this is a key banknote, add more of that banknote to the BNR",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078435,
+        "errorId": "W_RE304",
+        "errorDescription": "",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078436,
+        "errorId": "W_RE305",
+        "errorDescription": "",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078417,
+        "errorId": "E_RE306",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078418,
+        "errorId": "E_RE307",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078419,
+        "errorId": "E_RE308",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078420,
+        "errorId": "E_RE309",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117441282,
+        "errorId": "E_RE310",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler, review mechanical status of parts, remove object (if any) blocking the tape. secure BNR.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117441283,
+        "errorId": "E_RE311",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler, review mechanical status of parts, remove object (if any) blocking the tape. secure BNR.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50803713,
+        "errorId": "E_RE312",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50803714,
+        "errorId": "E_RE313",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) in the Recycler bill path\nIf problem persists: Recycler Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 218104578,
+        "errorId": "E_RE314",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) on the coding wheel sensors.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 218104579,
+        "errorId": "E_RE315",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) on the coding wheel sensors.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078466,
+        "errorId": "E_RE316",
+        "errorDescription": "Recycler CashType does not match CashUnit configuration",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Empty Recycler, or change CashUnit configuration to have it match Recycler CashType."
+    },
+    {
+        "errorCode": 235078704,
+        "errorId": "W_RE401",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit.",
+        "correctiveActionLevel3": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit."
+    },
+    {
+        "errorCode": 235078705,
+        "errorId": "E_RE401",
+        "errorDescription": "BNR cannot find a Recycler module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078706,
+        "errorId": "E_RE402",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235078707,
+        "errorId": "E_RE403",
+        "errorDescription": "BNR cannot find a Recycler module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Check if Recycler  is correctly inserted.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078709,
+        "errorId": "E_RE404",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235078710,
+        "errorId": "E_RE405",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235078689,
+        "errorId": "W_RE402",
+        "errorDescription": "A Recycler module is near empty",
+        "correctiveActionLevel1": "If this is a key banknote, prep to add banknotes to the BNR",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078690,
+        "errorId": "W_RE403",
+        "errorDescription": "A Recycler module is empty",
+        "correctiveActionLevel1": "If this is a key banknote, add more of that banknote to the BNR",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078691,
+        "errorId": "W_RE404",
+        "errorDescription": "",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078692,
+        "errorId": "W_RE405",
+        "errorDescription": "",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078673,
+        "errorId": "E_RE406",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078674,
+        "errorId": "E_RE407",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078675,
+        "errorId": "E_RE408",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078676,
+        "errorId": "E_RE409",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117441538,
+        "errorId": "E_RE410",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler, review mechanical status of parts, remove object (if any) blocking the tape. secure BNR.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117441539,
+        "errorId": "E_RE411",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler, review mechanical status of parts, remove object (if any) blocking the tape. secure BNR.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50803969,
+        "errorId": "E_RE412",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50803970,
+        "errorId": "E_RE413",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) in the Recycler bill path\nIf problem persists: Recycler Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 218104834,
+        "errorId": "E_RE414",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) on the coding wheel sensors.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 218104835,
+        "errorId": "E_RE415",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) on the coding wheel sensors.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078722,
+        "errorId": "E_RE416",
+        "errorDescription": "Recycler CashType does not match CashUnit configuration",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Empty Recycler, or change CashUnit configuration to have it match Recycler CashType."
+    },
+    {
+        "errorCode": 235078960,
+        "errorId": "W_RE501",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit.",
+        "correctiveActionLevel3": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit."
+    },
+    {
+        "errorCode": 235078961,
+        "errorId": "E_RE501",
+        "errorDescription": "BNR cannot find a Recycler module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078962,
+        "errorId": "E_RE502",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235078963,
+        "errorId": "E_RE503",
+        "errorDescription": "BNR cannot find a Recycler module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Check if Recycler  is correctly inserted.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078965,
+        "errorId": "E_RE504",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235078966,
+        "errorId": "E_RE505",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235078945,
+        "errorId": "W_RE502",
+        "errorDescription": "A Recycler module is near empty",
+        "correctiveActionLevel1": "If this is a key banknote, prep to add banknotes to the BNR",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078946,
+        "errorId": "W_RE503",
+        "errorDescription": "A Recycler module is empty",
+        "correctiveActionLevel1": "If this is a key banknote, add more of that banknote to the BNR",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078947,
+        "errorId": "W_RE504",
+        "errorDescription": "",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078948,
+        "errorId": "W_RE505",
+        "errorDescription": "",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078929,
+        "errorId": "E_RE506",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078930,
+        "errorId": "E_RE507",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078931,
+        "errorId": "E_RE508",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078932,
+        "errorId": "E_RE509",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117441794,
+        "errorId": "E_RE510",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler, review mechanical status of parts, remove object (if any) blocking the tape. secure BNR.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117441795,
+        "errorId": "E_RE511",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler, review mechanical status of parts, remove object (if any) blocking the tape. secure BNR.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50804225,
+        "errorId": "E_RE512",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50804226,
+        "errorId": "E_RE513",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) in the Recycler bill path\nIf problem persists: Recycler Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 218105090,
+        "errorId": "E_RE514",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) on the coding wheel sensors.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 218105091,
+        "errorId": "E_RE515",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) on the coding wheel sensors.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235078978,
+        "errorId": "E_RE516",
+        "errorDescription": "Recycler CashType does not match CashUnit configuration",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Empty Recycler, or change CashUnit configuration to have it match Recycler CashType."
+    },
+    {
+        "errorCode": 235079216,
+        "errorId": "W_RE601",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit.",
+        "correctiveActionLevel3": "bnr_ConfigureCashUnit() to unlock the corresponding PhysicalCashUnit."
+    },
+    {
+        "errorCode": 235079217,
+        "errorId": "E_RE601",
+        "errorDescription": "BNR cannot find a Recycler module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235079218,
+        "errorId": "E_RE602",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235079219,
+        "errorId": "E_RE603",
+        "errorDescription": "BNR cannot find a Recycler module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Check if Recycler  is correctly inserted.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235079221,
+        "errorId": "E_RE604",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235079222,
+        "errorId": "E_RE605",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235079201,
+        "errorId": "W_RE602",
+        "errorDescription": "A Recycler module is near empty",
+        "correctiveActionLevel1": "If this is a key banknote, prep to add banknotes to the BNR",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235079202,
+        "errorId": "W_RE603",
+        "errorDescription": "A Recycler module is empty",
+        "correctiveActionLevel1": "If this is a key banknote, add more of that banknote to the BNR",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235079203,
+        "errorId": "W_RE604",
+        "errorDescription": "",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235079204,
+        "errorId": "W_RE605",
+        "errorDescription": "",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235079185,
+        "errorId": "E_RE606",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235079186,
+        "errorId": "E_RE607",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235079187,
+        "errorId": "E_RE608",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235079188,
+        "errorId": "E_RE609",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove recycler, Remove banknote from spine or recycler",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117442050,
+        "errorId": "E_RE610",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler, review mechanical status of parts, remove object (if any) blocking the tape. secure BNR.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 117442051,
+        "errorId": "E_RE611",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler, review mechanical status of parts, remove object (if any) blocking the tape. secure BNR.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50804481,
+        "errorId": "E_RE612",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 50804482,
+        "errorId": "E_RE613",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) in the Recycler bill path\nIf problem persists: Recycler Module needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 218105346,
+        "errorId": "E_RE614",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) on the coding wheel sensors.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 218105347,
+        "errorId": "E_RE615",
+        "errorDescription": "BNR has detected a blockage or failure in a module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Remove Recycler. Remove object (if any) on the coding wheel sensors.\nIf problem persists: Recycler needs to be replaced",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235079234,
+        "errorId": "E_RE616",
+        "errorDescription": "Recycler CashType does not match CashUnit configuration",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Empty Recycler, or change CashUnit configuration to have it match Recycler CashType."
+    },
+    {
+        "errorCode": 235012145,
+        "errorId": "E_CB01",
+        "errorDescription": "BNR cannot find a Cashbox module",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "Cashbox needs to be replaced for repair",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235012146,
+        "errorId": "E_CB02",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235012147,
+        "errorId": "E_CB03",
+        "errorDescription": "BNR cannot find a Cashbox module",
+        "correctiveActionLevel1": "Check module is correctly inserted.",
+        "correctiveActionLevel2": "Cashbox needs to be replaced for repair",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235012149,
+        "errorId": "E_CB04",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235012150,
+        "errorId": "E_CB05",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235012153,
+        "errorId": "E_CB06",
+        "errorDescription": "BNR Interlock is open",
+        "correctiveActionLevel1": "Close the Main BNR Lock",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235012154,
+        "errorId": "E_CB07",
+        "errorDescription": "Cashbox is not armed",
+        "correctiveActionLevel1": "Remove Cashbox and rearm Cashbox",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235012155,
+        "errorId": "E_CB08",
+        "errorDescription": "BNR is not correctly configured",
+        "correctiveActionLevel1": "",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": "Send BNR Configuration file to unit"
+    },
+    {
+        "errorCode": 235012131,
+        "errorId": "W_CB01",
+        "errorDescription": "Cashbox is almost full",
+        "correctiveActionLevel1": "Cashbox almost full",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    },
+    {
+        "errorCode": 235012132,
+        "errorId": "E_CB09",
+        "errorDescription": "Cashbox is full",
+        "correctiveActionLevel1": "Field Cash Re-filler: complete Cashbox exchange",
+        "correctiveActionLevel2": "",
+        "correctiveActionLevel3": ""
+    }
+]
