@@ -272,6 +272,10 @@ pub enum XfsMethodName {
     GetCapabilities,
     #[serde(rename = "bnr.setcapabilities")]
     SetCapabilities,
+    #[serde(rename = "bnr.querydenominations")]
+    QueryDenominations,
+    #[serde(rename = "bnr.updatedenominations")]
+    UpdateDenominations,
     // **NOTE**: `Occured` is not a typo here, it is a mispelling in the protocol message that we have to replicate
     #[serde(rename = "BnrListener.operationCompleteOccured")]
     OperationCompleteOccurred,
@@ -318,6 +322,8 @@ impl From<&XfsMethodName> for &'static str {
             XfsMethodName::Retract => "bnr.retract",
             XfsMethodName::GetCapabilities => "bnr.getcapabilities",
             XfsMethodName::SetCapabilities => "bnr.setcapabilities",
+            XfsMethodName::QueryDenominations => "bnr.querydenominations",
+            XfsMethodName::UpdateDenominations => "bnr.updatedenominations",
             XfsMethodName::OperationCompleteOccurred => "BnrListener.operationCompleteOccured",
             XfsMethodName::IntermediateOccurred => "BnrListener.intermediateOccured",
             XfsMethodName::StatusOccurred => "BnrListener.statusOccured",
@@ -361,6 +367,8 @@ impl TryFrom<&str> for XfsMethodName {
             "bnr.retract" => Ok(Self::Retract),
             "bnr.getcapabilities" => Ok(Self::GetCapabilities),
             "bnr.setcapabilities" => Ok(Self::SetCapabilities),
+            "bnr.querydenominations" => Ok(Self::QueryDenominations),
+            "bnr.updatedenominations" => Ok(Self::UpdateDenominations),
             "bnrlistener.operationcompleteoccured" => Ok(Self::OperationCompleteOccurred),
             "bnrlistener.intermediateoccured" => Ok(Self::IntermediateOccurred),
             "bnrlistener.statusoccured" => Ok(Self::StatusOccurred),
