@@ -683,6 +683,14 @@ impl DeviceHandle {
         Ok(())
     }
 
+    pub(crate) fn query_denominations_inner(&self) -> Result<DenominationList> {
+        let call = XfsMethodCall::new().with_name(XfsMethodName::QueryDenominations);
+        let usb = self.usb();
+
+        usb.write_call(&call)?;
+        usb.read_response(call.name()?)?.try_into()
+    }
+
     pub(crate) fn update_denominations_inner(&self, request: &DenominationList) -> Result<()> {
         let call = XfsMethodCall::new()
             .with_name(XfsMethodName::UpdateDenominations)

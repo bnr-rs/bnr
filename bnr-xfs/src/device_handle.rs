@@ -406,6 +406,16 @@ impl DeviceHandle {
         self.stop_session_inner()
     }
 
+    /// Gets a list of denominations in the BNR.
+    ///
+    /// Returns:
+    ///
+    /// - Ok([DenominationList]): list of the denominations currently defined in the BNR.
+    /// - Error conditions: see [update_denominations](Self::update_denominations) for a list of error code descriptions.
+    pub fn query_denominations(&self) -> Result<DenominationList> {
+        self.query_denominations_inner()
+    }
+
     /// Updates the settings for a list of denominations.
     ///
     /// For each [DenominationInfo](crate::denominations::DenominationInfo) element of the [DenominationList](crate::denominations::DenominationList),
