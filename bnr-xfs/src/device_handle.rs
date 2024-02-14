@@ -8,6 +8,7 @@ use time as datetime;
 use crate::capabilities::Capabilities;
 use crate::cash_unit::{CashUnit, LogicalCashUnitList, PhysicalCashUnitList};
 use crate::currency::{CashOrder, CurrencyCode};
+use crate::denominations::DenominationList;
 use crate::dispense::DispenseRequest;
 use crate::status::CdrStatus;
 use crate::xfs;
@@ -403,6 +404,32 @@ impl DeviceHandle {
     /// Stops any active sessions on the BNR device.
     pub fn stop_session(&self) -> Result<()> {
         self.stop_session_inner()
+    }
+
+    /// Updates the settings for a list of denominations.
+    ///
+    /// For each [DenominationInfo](crate::denominations::DenominationInfo) element of the [DenominationList](crate::denominations::DenominationList),
+    /// the application can update its validation settings.
+    ///
+    /// From the BNR API docs:
+    ///
+    /// ```no_build,no_run
+    /// Those settings are persistent over power cycles; please refer to DenominationInfo for more details about settable properties, and their default values.
+    ///
+    /// @param[in] DenominationList This list of denominations will be a modified version of the one obtained from query_denominations() call.
+    /// ```
+    ///
+    /// Returns:
+    ///
+    /// - Ok(()) on success
+    /// - Error conditions:
+    ///   - `#XFS_E_ILLEGAL` - A dispense command is already active on the BNR.
+    ///   - `#XFS_E_NOT_SUPPORTED` - operation not supported by the BNR firmware version.
+    ///   - `#XFS_E_PARAMETER_INVALID` - Invalid array size. The array size is bigger than expected.
+    ///   - `#XFS_E_CDR_CASHIN_ACTIVE` - A cashIn command has been issued and is already active.
+    ///   - `#XFS_E_FAILURE` - a command is already running on the BNR or an internal error occured.
+    pub fn update_denominations(&self, request: &DenominationList) -> Result<()> {
+        self.update_denominations_inner(request)
     }
 
     /// Gets a reference to the [UsbDeviceHandle].
