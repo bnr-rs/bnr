@@ -77,16 +77,38 @@ impl CallbackArg for () {
 /// Function signature for the `Operation Completed` callback used by the XFS API.
 ///
 /// Handles device-sent messages indicating an asynchronous operation has completed.
+///
+/// # Parameters
+///
+/// - `call_id`: callback ID returned by the initial async call
+/// - `operation_id`: async operation ID to uniquely identify the type of call
+/// - `result`: the result status of the call
+/// - `extended_result`: the extended result of the call
+/// - `callback_arg`: callback call argument (may be the `unit` type if not supplied)
 pub type OperationCompletedFn = fn(i32, i32, i32, i32, &mut dyn CallbackArg);
 
 /// Function signature for the `Intermediate Occurred` callback used by the XFS API.
 ///
 /// Handles an intermediate state transition occurred during an ongoing transaction.
+///
+/// # Parameters
+///
+/// - `call_id`: callback ID returned by the initial async call
+/// - `operation_id`: async operation ID to uniquely identify the type of call
+/// - `reason`: specifies the reason for the intermediate event
+/// - `callback_arg`: callback call argument (may be the `unit` type if not supplied)
 pub type IntermediateOccurredFn = fn(i32, i32, i32, &mut dyn CallbackArg);
 
 /// Function signature for the `Status Occured` callback used by the XFS API.
 ///
 /// Handles a status event that occurred on the device.
+///
+/// # Parameters
+///
+/// - `status`: the status that occurred on the device (e.g. bill inserted)
+/// - `result`: the result of the status event
+/// - `extended_result`: the extended result of the status event
+/// - `callback_arg`: callback call argument (may be the `unit` type if not supplied)
 pub type StatusOccurredFn = fn(i32, i32, i32, &mut dyn CallbackArg);
 
 /// BNR XFS device handle for communication over USB.
@@ -101,6 +123,37 @@ pub struct DeviceHandle {
 
 impl DeviceHandle {
     /// Opens a new connection to the BNR XFS device.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use bnr_xfs::{CallbackArg, DeviceHandle};
+    ///
+    /// // Callback handler for when an async call completes
+    /// //
+    /// // See OperationCompletedFn for details.
+    /// fn op_com(_call_id: i32, _op_id: i32, _res: i32, _ext_res: i32, _cb_arg: &mut dyn CallbackArg) {
+    ///     // process the completion event...
+    /// }
+    ///
+    /// // Callback handler for when an intermediate event occurs
+    /// //
+    /// // See IntermediateOccurredFn for details.
+    /// fn int_oc(_call_id: i32, _op_id: i32, _reason: i32, _cb_arg: &mut dyn CallbackArg) {
+    ///     // process the intermediate event...
+    /// }
+    ///
+    /// // Callback handler for when a status event occurs
+    /// //
+    /// // See StatusOccurredFn for details.
+    /// fn st_oc(_call_id: i32, _op_id: i32, _reason: i32, _cb_arg: &mut dyn CallbackArg) {
+    ///     // process the status event...
+    /// }
+    ///
+    /// let device_handle = DeviceHandle::open(Some(op_com), Some(int_oc), Some(st_oc)).unwrap();
+    ///
+    /// let _status = device_handle.get_status().unwrap();
+    /// ```
     pub fn open(
         op_completed_callback: Option<OperationCompletedFn>,
         intermediate_occurred_callback: Option<IntermediateOccurredFn>,
@@ -181,12 +234,12 @@ impl DeviceHandle {
         self.park_inner()
     }
 
-    /// Gets the [Capabilities](crate::Capabilities) of the BNR device.
+    /// Gets the [Capabilities] of the BNR device.
     pub fn get_capabilities(&self) -> Result<Capabilities> {
         self.get_capabilities_inner()
     }
 
-    /// Sets the [Capabilities](crate::status::CdrPositionCapabilitiesList) for the BNR device.
+    /// Sets the [Capabilities] for the BNR device.
     pub fn set_capabilities(&self, caps: &Capabilities) -> Result<Capabilities> {
         self.set_capabilities_inner(caps)
     }
@@ -353,10 +406,10 @@ impl DeviceHandle {
     ///
     /// - denominateRequest->mixNumber is #XFS_C_CDR_MXA_MIN_BILLS: The BNR chooses the banknotes to be distributed in order to obtain the total amount using the minimum number of banknotes. Two parameters must be correctly set:
     ///   - denominateRequest->denomination.amount has to be expressed in MDUs
-    ///   - denominateRequest->currency.currencyCode is a string. See this page for a full list of the existing ISO currency codes: http://www.iso.org/iso/home/standards/currency_codes.htm
+    ///   - denominateRequest->currency.currencyCode is a string. See this page for a full list of the existing ISO currency codes: <http://www.iso.org/iso/home/standards/currency_codes.htm>
     /// - denominateRequest->mixNumber is #BNRXFS_C_CDR_MXA_OPTIMUM_CHANGE: The BNR chooses the banknotes to be distributed in order to obtain the total amount in a way that slows down cashbox filling. As long as the low denomination Recyclers are not near to full, change is determined like with the MinBills algorithm. But when a Recycler becomes nearly full (5/6 of Full threshold), this algorithm will try to put more of this denomination in the change so that the Recycler doesn’t become full and this denomination doesn’t start to be cashed. Two parameters must be correctly set:
     ///    - denominateRequest->denomination.amount has to be expressed in MDUs
-    ///    - denominateRequest->currency.currencyCode is a string. See this page for a full list of the existing ISO currency codes: http://www.iso.org/iso/home/standards/currency_codes.htm
+    ///    - denominateRequest->currency.currencyCode is a string. See this page for a full list of the existing ISO currency codes: <http://www.iso.org/iso/home/standards/currency_codes.htm>
     /// - denominateRequest->mixNumber is #XFS_C_CDR_MIX_DENOM: The user chooses through a list of Logical Cash Units the banknotes to be distributed by the BNR in order to obtain the total amount. The following parameters must be correctly set:
     ///   - denominateRequest->denomination.size gives the size of the items array
     ///   - for each item of denominateRequest->denomination.items from 0 to (denominateRequest->denomination.size - 1):
@@ -389,7 +442,7 @@ impl DeviceHandle {
     ///      - `DispenseRequest::denomination::items[item]::count` gives the number of banknotes to distribute from the LCU.
     ///
     /// - `DispenseRequest::currency.currency_code` is a string in the C library.
-    ///   - See [CurrencyCode](crate::currency::CurrencyCode) for a full list of the existing ISO currency codes, also: <http://www.iso.org/iso/home/standards/currency_codes.htm>
+    ///   - See [CurrencyCode] for a full list of the existing ISO currency codes, also: <http://www.iso.org/iso/home/standards/currency_codes.htm>
     ///   - conversion from the enum to a string is handled internally, the user does not need to worry about this.
     ///
     /// Params:
@@ -418,7 +471,7 @@ impl DeviceHandle {
 
     /// Updates the settings for a list of denominations.
     ///
-    /// For each [DenominationInfo](crate::denominations::DenominationInfo) element of the [DenominationList](crate::denominations::DenominationList),
+    /// For each [DenominationInfo](crate::denominations::DenominationInfo) element of the [DenominationList],
     /// the application can update its validation settings.
     ///
     /// From the BNR API docs:
