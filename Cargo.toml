@@ -1,6 +1,6 @@
 [package]
 name = "bnr"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["BNR Rust Developers"]
 description = "Pure Rust implementation of the BNR XFS USB communication protocol"
