@@ -20,6 +20,7 @@ pub use bnr_xfs::*;
 
 pub mod arrays;
 pub mod cash;
+pub mod denominations;
 pub mod init;
 pub mod maintenance;
 pub mod status;
