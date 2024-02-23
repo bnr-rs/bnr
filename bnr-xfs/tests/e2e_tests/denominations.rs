@@ -30,3 +30,18 @@ fn test_query_denominations() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+fn test_query_billset_ids() -> Result<()> {
+    let _lock = common::init();
+
+    let handle = DeviceHandle::open(None, None, None)?;
+
+    handle.close()?;
+
+    let billset_list = handle.query_billset_ids()?;
+
+    log::debug!("BNR denomination list: {billset_list}");
+
+    Ok(())
+}
