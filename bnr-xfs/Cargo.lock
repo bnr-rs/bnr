@@ -37,7 +37,7 @@ checksum = "b4682ae6287fcf752ecaabbfcc7b6f9b72aa33933dc23a554d853aea8eea8635"
 
 [[package]]
 name = "bnr-xfs"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "base64",
  "currency-iso4217",
