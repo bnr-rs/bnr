@@ -80,7 +80,7 @@ macro_rules! create_xfs_i4 {
         ::paste::paste! {
             #[doc = $doc]
             #[repr(C)]
-            #[derive(Clone, Copy, Debug, Default, PartialEq, ::serde::Deserialize, ::serde::Serialize)]
+            #[derive(Clone, Copy, Debug, Default, Eq, PartialEq, ::serde::Deserialize, ::serde::Serialize)]
             pub struct $ty(u32);
 
             impl $ty {

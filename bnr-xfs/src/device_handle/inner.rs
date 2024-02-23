@@ -702,4 +702,12 @@ impl DeviceHandle {
 
         Ok(())
     }
+
+    pub(crate) fn query_billset_ids_inner(&self) -> Result<BillsetIdList> {
+        let call = XfsMethodCall::create(XfsMethodName::QueryBillsetIds, []);
+        let usb = self.usb();
+
+        usb.write_call(&call)?;
+        usb.read_response(call.name()?)?.try_into()
+    }
 }

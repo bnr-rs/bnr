@@ -8,6 +8,7 @@ use time as datetime;
 use crate::capabilities::Capabilities;
 use crate::cash_unit::{CashUnit, LogicalCashUnitList, PhysicalCashUnitList};
 use crate::currency::{CashOrder, CurrencyCode};
+use crate::denominations::BillsetIdList;
 use crate::denominations::DenominationList;
 use crate::dispense::DispenseRequest;
 use crate::status::CdrStatus;
@@ -493,6 +494,13 @@ impl DeviceHandle {
     ///   - `#XFS_E_FAILURE` - a command is already running on the BNR or an internal error occured.
     pub fn update_denominations(&self, request: &DenominationList) -> Result<()> {
         self.update_denominations_inner(request)
+    }
+
+    /// Queries the device for the configured [BillsetIdList].
+    ///
+    /// **NOTE** Firmware Compatibility: This function requires a BNR FW v1.12.0 or newer. With older FW versions, the return will be #XFS_E_NOT_SUPPORTED.
+    pub fn query_billset_ids(&self) -> Result<BillsetIdList> {
+        self.query_billset_ids_inner()
     }
 
     /// Gets a reference to the [UsbDeviceHandle].
