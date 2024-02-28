@@ -128,9 +128,9 @@ impl BillsetInfo {
 impl fmt::Display for BillsetInfo {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{{")?;
-        write!(f, r#""billset_id":{}"#, self.billset_id)?;
-        write!(f, r#""module_type":{}"#, self.module_type)?;
-        write!(f, r#""component_type":{}"#, self.component_type)?;
+        write!(f, r#""billset_id":{},"#, self.billset_id)?;
+        write!(f, r#""module_type":{},"#, self.module_type)?;
+        write!(f, r#""component_type":{},"#, self.component_type)?;
         write!(f, r#""version":{}"#, self.version)?;
         write!(f, "}}")
     }
