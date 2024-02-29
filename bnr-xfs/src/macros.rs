@@ -680,6 +680,115 @@ macro_rules! impl_xfs_struct {
     };
 }
 
+#[macro_export]
+macro_rules! create_xfs_array {
+    ($ty:ident, $name:expr, $item:ident, $len:expr, $default:expr, $doc:expr) => {
+        ::paste::paste! {
+            #[doc = $doc]
+            #[repr(C)]
+            #[derive(Clone, Debug, PartialEq)]
+            pub struct $ty{
+                size: usize,
+                items: [$item; $len],
+            }
+
+            impl $ty {
+                #[doc = "Creates a new [" $ty "]."]
+                pub const fn new() -> Self {
+                    Self {
+                        size: 0,
+                        items: [$default; $len],
+                    }
+                }
+
+                #[doc = "Gets the maximum number of [" $ty "] items."]
+                pub const fn max_size() -> usize {
+                    $len
+                }
+
+                #[doc = "Gets the size of the [" $ty "]."]
+                pub const fn size(&self) -> usize {
+                    self.size
+                }
+
+                #[doc = "Sets the size of the [" $ty "]."]
+                #[doc = ""]
+                #[doc = "No-op if `val` is larger than [" $ty "]."]
+                pub fn set_size(&mut self, val: u32) {
+                    let size = val as usize;
+                    if size <= $len {
+                        self.size = size;
+                    }
+                }
+
+                #[doc = "Builder function that sets the size of the [" $ty "]."]
+                #[doc = ""]
+                #[doc = "No-op if `val` is larger than [" $ty "]."]
+                pub fn with_size(mut self, val: u32) -> Self {
+                    self.set_size(val);
+                    self
+                }
+
+                #[doc = "Gets a reference to the list of set [" $ty "] items."]
+                pub fn items(&self) -> &[$item] {
+                    let len = ::std::cmp::min(self.size, $len);
+                    self.items[..len].as_ref()
+                }
+
+                #[doc = "Sets the list of [" $ty "] items."]
+                pub fn set_items(&mut self, val: &[$item]) {
+                    let len = ::std::cmp::min(val.len(), $len);
+                    self.items[..len]
+                        .iter_mut()
+                        .zip(val[..len].iter())
+                        .for_each(|(dst, src)| *dst = src.clone());
+                    self.items[len..]
+                        .iter_mut()
+                        .for_each(|item| *item = $item::new());
+                    self.size = len;
+                }
+
+                #[doc = "Builder function that sets the list of [" $ty "] items."]
+                pub fn with_items(mut self, val: &[$item]) -> Self {
+                    self.set_items(val);
+                    self
+                }
+
+                #[doc = "Pushes a [" $ty "] onto the end of the list."]
+                #[doc = ""]
+                #[doc = "No-op if the list is at capacity."]
+                pub fn push_item(&mut self, val: $item) {
+                    if self.size < $len {
+                        self.items[self.size] = val;
+                        self.size += 1;
+                    }
+                }
+            }
+
+            impl Default for $ty {
+                fn default() -> Self {
+                    Self::new()
+                }
+            }
+
+            impl ::std::fmt::Display for $ty {
+                fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+                    write!(f, r#"{{"items":["#)?;
+                    for (i, item) in self.items().iter().enumerate() {
+                        if i != 0 {
+                            write!(f, ",")?;
+                        }
+                        write!(f, "{item}")?;
+                    }
+                    write!(f, "]}}")
+                }
+            }
+
+            $crate::impl_xfs_array!($ty, $name);
+        }
+    }
+}
+
 /// Common functionality for XFS `struct` types.
 ///
 /// ## Parameters:
