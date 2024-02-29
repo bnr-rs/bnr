@@ -556,6 +556,76 @@ macro_rules! impl_xfs_bool {
     };
 }
 
+/// Creates an XFS `struct` type.
+///
+/// ## Parameters:
+///
+/// - `$ty`: the type name of the Rust struct.
+/// - `$name`: the XFS name of the Rust struct.
+/// - `[$field_name: $field_ty]`: list of the Rust struct's field names and types.
+///
+/// **NOTE** all fields must implement `xfs_name`, and convert to/from
+/// [XfsMember](crate::xfs::xfs_struct::XfsMember).
+#[macro_export]
+macro_rules! create_xfs_struct {
+    ($ty:ident, $name:expr, [$($field_name:ident: $field_ty:ident),*], $doc:expr) => {
+        ::paste::paste! {
+            #[doc = $doc]
+            #[repr(C)]
+            #[derive(Clone, Debug, PartialEq)]
+            pub struct $ty {
+                $($field_name: $field_ty),*
+            }
+
+            impl $ty {
+                #[doc = "Creates a new [" $ty "]."]
+                pub const fn new() -> Self {
+                    Self {
+                        $($field_name: $field_ty::new()),*
+                    }
+                }
+
+                $(
+                #[doc = "Gets the [" $field_ty "] for [" $ty "]."]
+                pub const fn $field_name(&self) -> &$field_ty {
+                    &self.$field_name
+                }
+
+                #[doc = "Sets the [" $field_ty "] for [" $ty "]."]
+                pub fn [<set_ $field_name>](&mut self, val: $field_ty) {
+                    self.$field_name = val;
+                }
+
+                #[doc = "Builder function that sets the [" $field_ty "] for [" $ty "]."]
+                pub fn [<with_ $field_name>](mut self, val: $field_ty) -> Self {
+                    self.[<set_ $field_name>](val);
+                    self
+                }
+                )*
+            }
+
+            impl ::std::fmt::Display for $ty {
+                fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+                    write!(f, "{{")?;
+                    write!(f, r#""name": "{}""#, $name)?;
+                    $(
+                    write!(f, r#","{}": {}"#, stringify!($field_name), self.$field_name)?;
+                    )*
+                    write!(f, "}}")
+                }
+            }
+
+            impl Default for $ty {
+                fn default() -> Self {
+                    $ty::new()
+                }
+            }
+
+            $crate::impl_xfs_struct!($ty, $name, [$($field_name: $field_ty),*]);
+        }
+    }
+}
+
 /// Common functionality for XFS `struct` types.
 ///
 /// ## Parameters:
@@ -786,7 +856,7 @@ macro_rules! create_xfs_array {
 
             $crate::impl_xfs_array!($ty, $name);
         }
-    }
+    };
 }
 
 /// Common functionality for XFS `struct` types.
