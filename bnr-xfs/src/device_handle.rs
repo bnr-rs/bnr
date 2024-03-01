@@ -11,6 +11,7 @@ use crate::currency::{CashOrder, CurrencyCode};
 use crate::denominations::BillsetIdList;
 use crate::denominations::DenominationList;
 use crate::dispense::DispenseRequest;
+use crate::history::BillAcceptanceHistory;
 use crate::status::CdrStatus;
 use crate::xfs;
 use crate::{Error, Result};
@@ -501,6 +502,11 @@ impl DeviceHandle {
     /// **NOTE** Firmware Compatibility: This function requires a BNR FW v1.12.0 or newer. With older FW versions, the return will be #XFS_E_NOT_SUPPORTED.
     pub fn query_billset_ids(&self) -> Result<BillsetIdList> {
         self.query_billset_ids_inner()
+    }
+
+    /// Gets the BNR [BillAcceptanceHistory].
+    pub fn get_bill_acceptance_history(&self) -> Result<BillAcceptanceHistory> {
+        self.get_bill_acceptance_history_inner()
     }
 
     /// Gets a reference to the [UsbDeviceHandle].
