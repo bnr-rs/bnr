@@ -666,7 +666,15 @@ macro_rules! impl_xfs_struct {
             #[allow(clippy::needless_update)]
             fn try_from(val: &$crate::xfs::xfs_struct::XfsStruct) -> $crate::Result<Self> {
                 Ok(Self {
-                    $($field_name: val.find_member($field_ty::xfs_name())?.try_into()?,)*
+                    $(
+                        $field_name: match val.find_member($field_ty::xfs_name()) {
+                            Ok(m) => m.try_into()?,
+                            Err(_err) => {
+                                ::log::warn!("Missing member {} from {}", stringify!($field_name), stringify!($ty));
+                                $field_ty::new()
+                            }
+                        },
+                    )*
                     ..Default::default()
                 })
             }

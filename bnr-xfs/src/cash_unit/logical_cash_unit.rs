@@ -11,7 +11,7 @@ pub use list::*;
 
 /// Represents a logical cash unit, and its parameters.
 #[repr(C)]
-#[derive(Clone, Copy, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct LogicalCashUnit {
     cash_type: CashType,
     secondary_cash_types: CashTypeList,
