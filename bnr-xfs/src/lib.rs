@@ -8,6 +8,7 @@ mod denominations;
 pub mod device_handle;
 mod dispense;
 mod error;
+mod history;
 mod intermediate_event;
 #[macro_use]
 mod macros;
@@ -23,6 +24,7 @@ pub use denominations::*;
 pub use device_handle::*;
 pub use dispense::*;
 pub use error::*;
+pub use history::*;
 pub use intermediate_event::*;
 pub use status::*;
 
