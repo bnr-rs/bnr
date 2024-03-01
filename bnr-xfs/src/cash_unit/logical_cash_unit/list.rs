@@ -1,6 +1,6 @@
 use std::{cmp, fmt};
 
-use crate::{arrays, impl_xfs_array, impl_xfs_struct, MaxSize, Size};
+use crate::{impl_xfs_array, impl_xfs_struct, MaxSize, Size};
 
 use super::*;
 
@@ -8,10 +8,9 @@ use super::*;
 pub const LCU_LIST_LEN: usize = 83;
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct LogicalCashUnitItems {
     size: Size,
-    #[serde(with = "arrays")]
     items: [LogicalCashUnit; LCU_LIST_LEN],
 }
 
@@ -102,7 +101,7 @@ impl_xfs_array!(LogicalCashUnitItems, "items");
 
 /// Represents a list of [LogicalCashUnit]s.
 #[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq, serde::Deserialize, serde::Serialize)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct LogicalCashUnitList {
     max_size: MaxSize,
     size: Size,

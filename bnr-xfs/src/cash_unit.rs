@@ -29,7 +29,7 @@ pub use unit_id::*;
 ///
 /// Describes the entire set of [LogicalCashUnit]s and [PhysicalCashUnit]s present on a device.
 #[repr(C)]
-#[derive(Clone, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct CashUnit {
     transport_count: TransportCount,
     logical_cash_unit_list: LogicalCashUnitList,
