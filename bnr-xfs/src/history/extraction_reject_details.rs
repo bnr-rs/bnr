@@ -1,6 +1,5 @@
 use crate::create_xfs_struct;
-
-use super::{SuperimposedCount, TooLongCount};
+use crate::{SuperimposedCount, TooLongCount};
 
 create_xfs_struct!(
     ExtractionRejectDetails,

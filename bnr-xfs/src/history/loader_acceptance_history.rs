@@ -1,6 +1,5 @@
 use crate::create_xfs_struct;
-
-use super::{
+use crate::{
     BadShapeRejectCount, BillExtractedCount, ExtractionRejectCount, RecognitionRejectCount, Slots,
     TransportRejectCount, TransportRejectDetails,
 };

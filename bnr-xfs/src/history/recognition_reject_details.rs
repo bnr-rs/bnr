@@ -1,7 +1,5 @@
 use crate::create_xfs_struct;
-use crate::ForgeryCount;
-
-use super::UnknownCount;
+use crate::{ForgeryCount, UnknownCount};
 
 create_xfs_struct!(
     RecognitionRejectDetails,

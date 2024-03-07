@@ -1,6 +1,7 @@
 use std::fmt;
 
 use crate::impl_xfs_struct;
+use crate::Count;
 
 use super::*;
 

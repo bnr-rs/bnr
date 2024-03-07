@@ -2,8 +2,7 @@ use std::fmt;
 
 use crate::currency::{CashType, CashTypeList, CuKind, CuType};
 use crate::impl_xfs_struct;
-
-use super::{Count, ExtendedCounters, InitialCount, Number, Status, UnitId};
+use crate::{Count, ExtendedCounters, InitialCount, Number, Status, UnitId};
 
 mod list;
 

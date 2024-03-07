@@ -8,12 +8,12 @@ use time as datetime;
 
 use super::usb::UsbDeviceHandle;
 use super::*;
-use crate::cash_unit::TransportCount;
 use crate::currency::{Currency, Denomination};
 use crate::xfs::method_call::{XfsMethodCall, XfsMethodName};
 use crate::xfs::method_response::XfsMethodResponse;
 use crate::xfs::params::{XfsParam, XfsParams};
 use crate::xfs::value::XfsValue;
+use crate::TransportCount;
 use crate::{CallbackIntermediateResponse, CallbackOperationResponse, CallbackStatusResponse};
 
 const INIT_COUNT: u64 = 1;

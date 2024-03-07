@@ -1,8 +1,8 @@
 use crate::create_xfs_struct;
-
-mod counts;
-
-pub use counts::*;
+use crate::{
+    DepositCount, DisappearedCount, DispenseCount, EmptiedCount, ForgeryCount, RejectCount,
+    RetractedCount,
+};
 
 create_xfs_struct!(
     DepositCounters,
