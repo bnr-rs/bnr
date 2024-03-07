@@ -259,3 +259,45 @@ create_xfs_i4!(
     "stackedWhileRecyclerFullCount",
     "Represents the stacked while recycler full count."
 );
+
+create_xfs_i4!(
+    DenominateAmountCount,
+    "denominateAmountCount",
+    "Represents the denominate amount count."
+);
+
+create_xfs_i4!(
+    AmountNotAvailableCount,
+    "amountNotAvailableCount",
+    "Represents the amount not available count."
+);
+
+create_xfs_i4!(
+    BillRequestedCount,
+    "billRequestedCount",
+    "Represents the bill requested count."
+);
+
+create_xfs_i4!(
+    BillNotAvailableCount,
+    "billNotAvailableCount",
+    "Represents the bill not available count."
+);
+
+create_xfs_i4!(
+    TooManyBillsCount,
+    "tooManyBillsCount",
+    "Represents the too many bills count."
+);
+
+create_xfs_i4!(
+    DirectFromLoaderCount,
+    "directFromLoaderCount",
+    "Represents the direct from loader count."
+);
+
+create_xfs_i4!(
+    DispenseAmountCount,
+    "dispenseAmountCount",
+    "Represents the dispense amount count."
+);
