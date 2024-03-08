@@ -208,12 +208,12 @@ impl DeviceHandle {
                 -1 => {
                     let err_msg = format!("async response: missing event result: {msg}");
                     log::error!("{err_msg}");
-                    Err(Error::Xfs(err_msg.into()))
+                    Err(Error::Xfs(err_msg))
                 }
                 _ => {
                     let err_msg = format!("async response: call failed: {msg}");
                     log::error!("{err_msg}");
-                    Err(Error::Xfs(err_msg.into()))
+                    Err(Error::Xfs(err_msg))
                 }
             }
         } else {
@@ -713,6 +713,14 @@ impl DeviceHandle {
 
     pub(crate) fn get_bill_acceptance_history_inner(&self) -> Result<BillAcceptanceHistory> {
         let call = XfsMethodCall::create(XfsMethodName::GetBillAcceptanceHistory, []);
+        let usb = self.usb();
+
+        usb.write_call(&call)?;
+        usb.read_response(call.name()?)?.try_into()
+    }
+
+    pub(crate) fn get_bill_dispense_history_inner(&self) -> Result<BillDispenseHistory> {
+        let call = XfsMethodCall::create(XfsMethodName::GetBillDispenseHistory, []);
         let usb = self.usb();
 
         usb.write_call(&call)?;

@@ -280,6 +280,8 @@ pub enum XfsMethodName {
     QueryBillsetIds,
     #[serde(rename = "bnr.getbillacceptancehistory")]
     GetBillAcceptanceHistory,
+    #[serde(rename = "bnr.getbilldispensehistory")]
+    GetBillDispenseHistory,
     // **NOTE**: `Occured` is not a typo here, it is a mispelling in the protocol message that we have to replicate
     #[serde(rename = "BnrListener.operationCompleteOccured")]
     OperationCompleteOccurred,
@@ -330,6 +332,7 @@ impl From<&XfsMethodName> for &'static str {
             XfsMethodName::UpdateDenominations => "bnr.updatedenominations",
             XfsMethodName::QueryBillsetIds => "bnr.querybillsetids",
             XfsMethodName::GetBillAcceptanceHistory => "bnr.getbillacceptancehistory",
+            XfsMethodName::GetBillDispenseHistory => "bnr.getbilldispensehistory",
             XfsMethodName::OperationCompleteOccurred => "BnrListener.operationCompleteOccured",
             XfsMethodName::IntermediateOccurred => "BnrListener.intermediateOccured",
             XfsMethodName::StatusOccurred => "BnrListener.statusOccured",
@@ -377,6 +380,7 @@ impl TryFrom<&str> for XfsMethodName {
             "bnr.updatedenominations" => Ok(Self::UpdateDenominations),
             "bnr.querybillsetids" => Ok(Self::QueryBillsetIds),
             "bnr.getbillacceptancehistory" => Ok(Self::GetBillAcceptanceHistory),
+            "bnr.getbilldispensehistory" => Ok(Self::GetBillDispenseHistory),
             "bnrlistener.operationcompleteoccured" => Ok(Self::OperationCompleteOccurred),
             "bnrlistener.intermediateoccured" => Ok(Self::IntermediateOccurred),
             "bnrlistener.statusoccured" => Ok(Self::StatusOccurred),

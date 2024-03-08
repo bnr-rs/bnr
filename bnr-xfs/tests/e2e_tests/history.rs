@@ -21,3 +21,23 @@ fn test_get_bill_acceptance_history() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+fn test_get_bill_dispense_history() -> Result<()> {
+    let _lock = common::init();
+
+    let handle = DeviceHandle::open(None, None, None)?;
+
+    handle.close()?;
+
+    let date = handle.get_date_time()?;
+    if date.year() == 2001 {
+        handle.set_current_date_time()?;
+    }
+
+    let history = handle.get_bill_dispense_history()?;
+
+    log::debug!("Bill dispense history: {history}");
+
+    Ok(())
+}
