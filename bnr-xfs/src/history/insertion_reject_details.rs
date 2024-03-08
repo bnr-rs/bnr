@@ -1,6 +1,5 @@
 use crate::create_xfs_struct;
-
-use super::{
+use crate::{
     BadRoughShapeCount, BadShapeCount, ForcedInCount, HeldBackCount, InletDetectionCount,
     RemovedCount, StringDetectionCount, TooThickCount,
 };

@@ -1,9 +1,8 @@
 use std::fmt;
 
 use crate::xfs::method_response::XfsMethodResponse;
-use crate::{impl_xfs_struct, Error, Result};
+use crate::{impl_xfs_struct, Error, Result, TransportCount};
 
-mod count;
 mod counters;
 mod lock;
 mod logical_cash_unit;
@@ -14,7 +13,6 @@ mod status;
 mod threshold;
 mod unit_id;
 
-pub use count::*;
 pub use counters::*;
 pub use lock::*;
 pub use logical_cash_unit::*;

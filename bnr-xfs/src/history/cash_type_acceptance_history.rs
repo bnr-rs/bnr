@@ -1,7 +1,8 @@
 use crate::{create_xfs_array, create_xfs_struct};
-use crate::{CashType, ForgeryCount};
-
-use super::{ConfusionCount, FitnessRejectCount, SuspectCount, ValidCount, ValidUnfitCount};
+use crate::{
+    CashType, ConfusionCount, FitnessRejectCount, ForgeryCount, SuspectCount, ValidCount,
+    ValidUnfitCount,
+};
 
 pub const CASH_TYPE_HISTORY_LIST_LEN: usize = 61;
 pub const CASH_TYPE_HISTORY_DEFAULT: CashTypeAcceptanceHistory = CashTypeAcceptanceHistory::new();

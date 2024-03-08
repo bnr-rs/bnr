@@ -1,10 +1,9 @@
 use crate::create_xfs_struct;
-use crate::ForgeryCount;
-
-use super::{
+use crate::{
     BillRolledBackCount, CancelRejectCount, CashInTransactionCount, ConfigurationRejectCount,
-    ConfusionCount, FitnessCount, InsertionRejectCount, InsertionStartCount, StainedCount,
-    SuspectCount, TransportRejectCount, UnknownRejectCount, ValidCount, ValidUnfitCount,
+    ConfusionCount, FitnessCount, ForgeryCount, InsertionRejectCount, InsertionStartCount,
+    StainedCount, SuspectCount, TransportRejectCount, UnknownRejectCount, ValidCount,
+    ValidUnfitCount,
 };
 
 create_xfs_struct!(

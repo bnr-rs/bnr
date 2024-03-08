@@ -1,6 +1,5 @@
 use crate::create_xfs_struct;
-
-use super::{PositioningFailedCount, SystemEventCount, TransportEventCount};
+use crate::{PositioningFailedCount, SystemEventCount, TransportEventCount};
 
 create_xfs_struct!(
     TransportRejectDetails,

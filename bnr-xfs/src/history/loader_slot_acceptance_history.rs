@@ -1,6 +1,5 @@
 use crate::{create_xfs_array, create_xfs_i4, create_xfs_struct};
-
-use super::{
+use crate::{
     BillExtractedCount, ExtractionRejectDetails, OtherDenominationCount, RecognitionRejectDetails,
     ValidUnfitCount,
 };

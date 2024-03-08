@@ -1,7 +1,5 @@
-use crate::CashType;
 use crate::{create_xfs_array, create_xfs_struct};
-
-use super::StackedWhileRecyclerFullCount;
+use crate::{CashType, StackedWhileRecyclerFullCount};
 
 pub const CASH_TYPE_RECYCLE_LIST_LEN: usize = 10;
 pub const CASH_TYPE_RECYCLE_DEFAULT: CashTypeRecycleHistoryItem = CashTypeRecycleHistoryItem::new();
