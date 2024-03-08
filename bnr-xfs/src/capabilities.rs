@@ -220,7 +220,7 @@ impl TryFrom<&XfsParams> for Capabilities {
 
     fn try_from(val: &XfsParams) -> Result<Self> {
         val.params()
-            .get(0)
+            .first()
             .ok_or(Error::Xfs(format!("Missing param: {val}")))?
             .inner()
             .value()

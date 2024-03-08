@@ -47,7 +47,7 @@ impl XfsFault {
     /// Gets the fault code value.
     pub fn code(&self) -> i32 {
         match self.value.xfs_struct() {
-            Some(fc) => match fc.members().get(0) {
+            Some(fc) => match fc.members().first() {
                 Some(m) => match m.inner().value().i4() {
                     Some(val) => *val,
                     None => 0,

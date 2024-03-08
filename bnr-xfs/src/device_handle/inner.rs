@@ -208,12 +208,12 @@ impl DeviceHandle {
                 -1 => {
                     let err_msg = format!("async response: missing event result: {msg}");
                     log::error!("{err_msg}");
-                    Err(Error::Xfs(err_msg.into()))
+                    Err(Error::Xfs(err_msg))
                 }
                 _ => {
                     let err_msg = format!("async response: call failed: {msg}");
                     log::error!("{err_msg}");
-                    Err(Error::Xfs(err_msg.into()))
+                    Err(Error::Xfs(err_msg))
                 }
             }
         } else {
