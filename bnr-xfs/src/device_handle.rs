@@ -11,7 +11,7 @@ use crate::currency::{CashOrder, CurrencyCode};
 use crate::denominations::BillsetIdList;
 use crate::denominations::DenominationList;
 use crate::dispense::DispenseRequest;
-use crate::history::BillAcceptanceHistory;
+use crate::history::{BillAcceptanceHistory, BillDispenseHistory};
 use crate::status::CdrStatus;
 use crate::xfs;
 use crate::{Error, Result};
@@ -507,6 +507,11 @@ impl DeviceHandle {
     /// Gets the BNR [BillAcceptanceHistory].
     pub fn get_bill_acceptance_history(&self) -> Result<BillAcceptanceHistory> {
         self.get_bill_acceptance_history_inner()
+    }
+
+    /// Gets the BNR [BillDispenseHistory].
+    pub fn get_bill_dispense_history(&self) -> Result<BillDispenseHistory> {
+        self.get_bill_dispense_history_inner()
     }
 
     /// Gets a reference to the [UsbDeviceHandle].

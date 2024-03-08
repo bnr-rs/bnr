@@ -718,4 +718,12 @@ impl DeviceHandle {
         usb.write_call(&call)?;
         usb.read_response(call.name()?)?.try_into()
     }
+
+    pub(crate) fn get_bill_dispense_history_inner(&self) -> Result<BillDispenseHistory> {
+        let call = XfsMethodCall::create(XfsMethodName::GetBillDispenseHistory, []);
+        let usb = self.usb();
+
+        usb.write_call(&call)?;
+        usb.read_response(call.name()?)?.try_into()
+    }
 }
