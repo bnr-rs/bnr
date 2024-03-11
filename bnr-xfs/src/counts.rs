@@ -301,3 +301,135 @@ create_xfs_i4!(
     "dispenseAmountCount",
     "Represents the dispense amount count."
 );
+
+create_xfs_i4!(
+    HardwareFailureCount,
+    "hardwareFailureCount",
+    "Represents the hardware failure count."
+);
+
+create_xfs_i4!(
+    HardwareFailureWithBillStoppedCount,
+    "hardwareFailureWithBillStoppedCount",
+    "Represents the hardware failure with bill stopped count."
+);
+
+create_xfs_i4!(
+    OperationalDegradedCount,
+    "operationalDegradedCount",
+    "Represents the operational degraded count."
+);
+
+create_xfs_i4!(
+    BillJamCount,
+    "billJamCount",
+    "Represents the bill jam count."
+);
+
+create_xfs_i4!(
+    EnvironmentErrorCount,
+    "environmentErrorCount",
+    "Represents the environment error count."
+);
+
+create_xfs_i4!(
+    BillErrorCount,
+    "billErrorCount",
+    "Represents the bill error count."
+);
+
+create_xfs_i4!(
+    TransportErrorCount,
+    "transportErrorCount",
+    "Represents the transport error count."
+);
+
+create_xfs_i4!(
+    BillTooShortInBottomTransportBwCount,
+    "billTooShortInBottomTransportBwCount",
+    "Represents the bill too short in bottom transport bw count."
+);
+
+create_xfs_i4!(
+    BillTooLongInBottomTransportBwCount,
+    "billTooLongInBottomTransportBwCount",
+    "Represents the bill too long in bottom transport bw count."
+);
+
+create_xfs_i4!(
+    BillTooShortInSpineFwCount,
+    "billTooShortInSpineFwCount",
+    "Represents the bill too short in spine fw count."
+);
+
+create_xfs_i4!(
+    BillTooLongInSpineFwCount,
+    "billTooLongInSpineFwCount",
+    "Represents the bill too long in spine fw count."
+);
+
+create_xfs_i4!(
+    MissingModuleCount,
+    "missingModuleCount",
+    "Represents the missile module count."
+);
+
+create_xfs_i4!(
+    ConfigurationErrorCount,
+    "configurationErrorCount",
+    "Represents the configuration error count."
+);
+
+create_xfs_i4!(
+    IncompatibleSoftwareCount,
+    "incompatibleSoftwareCount",
+    "Represents the incompatible software count."
+);
+
+create_xfs_i4!(
+    ResetWithCoverOpenCount,
+    "resetWithCoverOpenCount",
+    "Represents the reset with cover open count."
+);
+
+create_xfs_i4!(
+    ResetWithInterlockOpenCount,
+    "resetWithInterlockOpenCount",
+    "Represents the reset with interlock open count."
+);
+
+create_xfs_i4!(
+    PositionerCount,
+    "positionerCount",
+    "Represents the positioner count."
+);
+
+create_xfs_i4!(
+    RecognitionSystemCount,
+    "recognitionSystemCount",
+    "Represents the recognition system count."
+);
+
+create_xfs_i4!(
+    BottomTransportCount,
+    "bottomTransportCount",
+    "Represents the bottom transport count."
+);
+
+create_xfs_i4!(
+    BundlerCount,
+    "bundlerCount",
+    "Represents the bundler count."
+);
+
+create_xfs_i4!(ModuleCount, "moduleCount", "Represents the module count.");
+
+create_xfs_i4!(
+    InterfaceCount,
+    "interfaceCount",
+    "Represents the interface count."
+);
+
+create_xfs_i4!(SpineCount, "spineCount", "Represents the spine count.");
+
+create_xfs_i4!(UnnamedCount, "", "Represents an unnamed count.");
