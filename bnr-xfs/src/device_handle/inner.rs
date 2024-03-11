@@ -726,4 +726,12 @@ impl DeviceHandle {
         usb.write_call(&call)?;
         usb.read_response(call.name()?)?.try_into()
     }
+
+    pub(crate) fn get_failure_history_inner(&self) -> Result<SystemFailureHistory> {
+        let call = XfsMethodCall::create(XfsMethodName::GetFailureHistory, []);
+        let usb = self.usb();
+
+        usb.write_call(&call)?;
+        usb.read_response(call.name()?)?.try_into()
+    }
 }
