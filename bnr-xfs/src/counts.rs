@@ -433,3 +433,63 @@ create_xfs_i4!(
 create_xfs_i4!(SpineCount, "spineCount", "Represents the spine count.");
 
 create_xfs_i4!(UnnamedCount, "", "Represents an unnamed count.");
+
+create_xfs_i4!(
+    PowerUpCount,
+    "powerUpCount",
+    "Represents the power up count."
+);
+
+create_xfs_i4!(
+    PowerDownWithBillStoppedCount,
+    "powerDownWithBillStoppedCount",
+    "Represents the power down with bill stopped count."
+);
+
+create_xfs_i4!(
+    InternalResetCount,
+    "internalResetCount",
+    "Represents the internal reset count."
+);
+
+create_xfs_i4!(
+    InternalResetWithBillStoppedCount,
+    "internalResetWithBillStoppedCount",
+    "Represents the internal reset with bill stopped count."
+);
+
+create_xfs_i4!(
+    SystemOpeningCount,
+    "systemOpeningCount",
+    "Represents the system opening count."
+);
+
+create_xfs_i4!(
+    WithBillStoppedCount,
+    "withBillStoppedCount",
+    "Represents the with bill stopped count."
+);
+
+create_xfs_i4!(
+    CashModulesLockCount,
+    "cashModulesLockCount",
+    "Represents the cash modules locked count."
+);
+
+create_xfs_i4!(
+    BillIntakeCoverCount,
+    "billIntakeCoverCount",
+    "Represents the bill intake cover count."
+);
+
+create_xfs_i4!(
+    RecognitionSensorCoverCount,
+    "RecognitionSensorCoverCount",
+    "Represents the recognition sensor cover count."
+);
+
+create_xfs_i4!(
+    SpineCoverCount,
+    "spineCoverCount",
+    "Represents the spine cover count."
+);
