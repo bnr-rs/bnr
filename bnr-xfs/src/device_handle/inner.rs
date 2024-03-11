@@ -734,4 +734,12 @@ impl DeviceHandle {
         usb.write_call(&call)?;
         usb.read_response(call.name()?)?.try_into()
     }
+
+    pub(crate) fn get_restart_history_inner(&self) -> Result<SystemRestartHistory> {
+        let call = XfsMethodCall::create(XfsMethodName::GetRestartHistory, []);
+        let usb = self.usb();
+
+        usb.write_call(&call)?;
+        usb.read_response(call.name()?)?.try_into()
+    }
 }
