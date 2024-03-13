@@ -1,6 +1,7 @@
 mod cash;
 mod common;
 mod denominations;
+mod history;
 mod init;
 mod maintenance;
 mod status;
