@@ -13,6 +13,7 @@ use crate::denominations::DenominationList;
 use crate::dispense::DispenseRequest;
 use crate::history::{
     BillAcceptanceHistory, BillDispenseHistory, SystemFailureHistory, SystemRestartHistory,
+    SystemUseHistory,
 };
 use crate::status::CdrStatus;
 use crate::xfs;
@@ -524,6 +525,11 @@ impl DeviceHandle {
     /// Gets the BNR [SystemRestartHistory].
     pub fn get_restart_history(&self) -> Result<SystemRestartHistory> {
         self.get_restart_history_inner()
+    }
+
+    /// Gets the BNR [SystemUseHistory].
+    pub fn get_use_history(&self) -> Result<SystemUseHistory> {
+        self.get_use_history_inner()
     }
 
     /// Gets a reference to the [UsbDeviceHandle].

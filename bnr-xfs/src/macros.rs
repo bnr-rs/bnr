@@ -1002,6 +1002,59 @@ macro_rules! impl_xfs_array {
     };
 }
 
+#[macro_export]
+macro_rules! create_xfs_string {
+    ($ty:ident, $name:expr, $doc:expr) => {
+        ::paste::paste! {
+            #[doc = $doc]
+            #[derive(Clone, Debug, Eq, PartialEq)]
+            pub struct $ty(String);
+
+            impl $ty {
+                #[doc = "Creates a new [" $ty "]."]
+                pub const fn new() -> Self {
+                    Self(String::new())
+                }
+
+                #[doc = "Gets a reference to the [" $ty "] inner representation."]
+                pub fn inner(&self) -> &str {
+                    self.0.as_str()
+                }
+
+                #[doc = "Sets the [" $ty "] inner representation value."]
+                pub fn set_inner(&mut self, val: &str) {
+                    self.0 = val.into();
+                }
+
+                #[doc = "Builder function that sets the [" $ty "] inner representation value."]
+                pub fn with_inner(mut self, val: &str) -> Self {
+                    self.set_inner(val);
+                    self
+                }
+
+                #[doc = "Converts the [" $ty "] into the inner representation."]
+                pub fn into_inner(self) -> String {
+                    self.0
+                }
+            }
+        }
+
+        impl Default for $ty {
+            fn default() -> Self {
+                Self::new()
+            }
+        }
+
+        impl ::std::fmt::Display for $ty {
+            fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+                write!(f, r#""{}""#, self.0)
+            }
+        }
+
+        $crate::impl_xfs_string!($ty, $name);
+    };
+}
+
 /// Common functionality for XFS `string` types.
 #[macro_export]
 macro_rules! impl_xfs_string {
@@ -1083,6 +1136,186 @@ macro_rules! impl_xfs_string {
             fn try_from(val: &$crate::xfs::xfs_struct::XfsMember) -> $crate::Result<Self> {
                 let name = $ty::xfs_name();
                 match (val.name(), val.value().string()) {
+                    (n, Some(v)) if n == name => Ok(v.into()),
+                    (n, None) if n == name => Ok("".into()),
+                    _ => Err($crate::Error::Xfs(format!(
+                        "Expected {name} XfsMember, have: {val}"
+                    ))),
+                }
+            }
+        }
+
+        impl TryFrom<$crate::xfs::xfs_struct::XfsMember> for $ty {
+            type Error = $crate::Error;
+
+            fn try_from(val: $crate::xfs::xfs_struct::XfsMember) -> $crate::Result<Self> {
+                (&val).try_into()
+            }
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! create_xfs_date_time {
+    ($ty:ident, $name:expr, $doc:expr) => {
+        ::paste::paste! {
+            #[doc = $doc]
+            #[derive(Clone, Debug, Eq, PartialEq)]
+            pub struct $ty(String);
+
+            impl $ty {
+                #[doc = "Creates a new [" $ty "]."]
+                pub const fn new() -> Self {
+                    Self(String::new())
+                }
+
+                #[doc = "Gets a reference to the [" $ty "] inner representation."]
+                pub fn inner(&self) -> &str {
+                    self.0.as_str()
+                }
+
+                #[doc = "Sets the [" $ty "] inner representation value."]
+                pub fn set_inner(&mut self, val: &str) {
+                    self.0 = val.into();
+                }
+
+                #[doc = "Builder function that sets the [" $ty "] inner representation value."]
+                pub fn with_inner(mut self, val: &str) -> Self {
+                    self.set_inner(val);
+                    self
+                }
+
+                #[doc = "Converts the [" $ty "] into the inner representation."]
+                pub fn into_inner(self) -> String {
+                    self.0
+                }
+            }
+        }
+
+        impl Default for $ty {
+            fn default() -> Self {
+                Self::new()
+            }
+        }
+
+        impl TryFrom<&$ty> for ::time::OffsetDateTime {
+            type Error = $crate::Error;
+
+            fn try_from(val: &$ty) -> $crate::Result<Self> {
+                let date_str = val.inner();
+                if date_str.len() < 17 {
+                    Err($crate::Error::DateTime(format!(
+                        "invalid ISO-8601 DateTime, too short: {date_str}"
+                    )))
+                } else {
+                    let mut date_string = date_str.to_string();
+
+                    date_string.insert(6, '-');
+                    date_string.insert(4, '-');
+
+                    date_string += "+00:00";
+
+                    ::log::debug!("Formatted DateTime: {date_string}");
+
+                    Ok(Self::parse(
+                        date_string.as_str(),
+                        &::time::format_description::well_known::Iso8601::DATE_TIME,
+                    )?)
+                }
+            }
+        }
+
+        impl ::std::fmt::Display for $ty {
+            fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+                write!(f, r#""{}""#, self.0)
+            }
+        }
+
+        $crate::impl_xfs_date_time!($ty, $name);
+    };
+}
+
+/// Common functionality for XFS `dateTime` types.
+#[macro_export]
+macro_rules! impl_xfs_date_time {
+    ($ty:ident, $name:expr) => {
+        impl $ty {
+            /// Gets the [XfsMember](crate::xfs::xfs_struct::XfsMember) name.
+            pub const fn xfs_name() -> &'static str {
+                $name
+            }
+        }
+
+        impl From<&str> for $ty {
+            fn from(val: &str) -> Self {
+                Self(val.into())
+            }
+        }
+
+        impl From<String> for $ty {
+            fn from(val: String) -> Self {
+                Self(val)
+            }
+        }
+
+        impl From<&$ty> for String {
+            fn from(val: &$ty) -> Self {
+                val.inner().into()
+            }
+        }
+
+        impl From<$ty> for String {
+            fn from(val: $ty) -> Self {
+                val.into_inner()
+            }
+        }
+
+        impl From<&$ty> for $crate::xfs::value::XfsValue {
+            fn from(val: &$ty) -> Self {
+                Self::new().with_date_time(val.inner())
+            }
+        }
+
+        impl From<$ty> for $crate::xfs::value::XfsValue {
+            fn from(val: $ty) -> Self {
+                Self::new().with_date_time(val.into_inner())
+            }
+        }
+
+        impl TryFrom<&$crate::xfs::value::XfsValue> for $ty {
+            type Error = $crate::Error;
+
+            fn try_from(val: &$crate::xfs::value::XfsValue) -> $crate::Result<Self> {
+                Ok(val.date_time().unwrap_or("").into())
+            }
+        }
+
+        impl TryFrom<$crate::xfs::value::XfsValue> for $ty {
+            type Error = $crate::Error;
+
+            fn try_from(val: $crate::xfs::value::XfsValue) -> $crate::Result<Self> {
+                (&val).try_into()
+            }
+        }
+
+        impl From<&$ty> for $crate::xfs::xfs_struct::XfsMember {
+            fn from(val: &$ty) -> Self {
+                $crate::xfs::xfs_struct::XfsMember::create($ty::xfs_name(), val.into())
+            }
+        }
+
+        impl From<$ty> for $crate::xfs::xfs_struct::XfsMember {
+            fn from(val: $ty) -> Self {
+                (&val).into()
+            }
+        }
+
+        impl TryFrom<&$crate::xfs::xfs_struct::XfsMember> for $ty {
+            type Error = $crate::Error;
+
+            fn try_from(val: &$crate::xfs::xfs_struct::XfsMember) -> $crate::Result<Self> {
+                let name = $ty::xfs_name();
+                match (val.name(), val.value().date_time()) {
                     (n, Some(v)) if n == name => Ok(v.into()),
                     (n, None) if n == name => Ok("".into()),
                     _ => Err($crate::Error::Xfs(format!(

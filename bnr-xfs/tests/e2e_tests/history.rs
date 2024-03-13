@@ -81,3 +81,24 @@ fn test_get_restart_history() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+fn test_get_use_history() -> Result<()> {
+    let _lock = common::init();
+
+    let handle = DeviceHandle::open(None, None, None)?;
+
+    handle.close()?;
+
+    let date = handle.get_date_time()?;
+    if date.year() == 2001 {
+        handle.set_current_date_time()?;
+    }
+
+    let history = handle.get_use_history()?;
+
+    log::debug!("System use history: {history}");
+    log::debug!("System current time: {}", time::OffsetDateTime::try_from(history.current_date_time())?);
+
+    Ok(())
+}
